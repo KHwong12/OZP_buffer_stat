@@ -1,9 +1,0 @@
-{
-  "name": "ozp_buffer_stat",
-  "version": "0.0.0",
-  "description": "OZP_buffer_stat",
-  "main": "server.js",
-  "author": {
-    "name": ""
-  }
-}
