@@ -72,6 +72,31 @@ require([
             tool: "reshape",
             toggleToolOnClick: false
         },
+        // Define geometry style
+        // https://developers.arcgis.com/javascript/latest/sample-code/featureeffect-geometry/index.html
+        pointSymbol: {
+            type: "text",
+            color: [51, 51, 204, 0.9],
+            text: "\ue61d",
+            font: {
+                size: 24,
+                family: "CalciteWebCoreIcons"
+                }
+            },
+        polylineSymbol: {
+                type: "simple-line",
+                color: [51, 51, 204, 0.5],
+                width: "4px"
+            },
+        polygonSymbol: {
+            type: "simple-fill", // autocasts as new SimpleFillSymbol()
+            color: [51, 51, 204, 0.4],
+            style: "solid",
+            outline: {
+                color: "white",
+                width: 1
+            }
+        },
         view: view,
         defaultCreateOptions: { hasZ: false }
     });
@@ -189,7 +214,16 @@ require([
                 bufferLayer.add(
                     new Graphic({
                         geometry: bufferGeometry,
-                        symbol: sketchViewModel.polygonSymbol
+                        // symbol: sketchViewModel.polygonSymbol,
+                        symbol: {
+                            type: "simple-fill",
+                            color: [151, 151, 204, 0.5],
+                            style: "solid",
+                            outline: {
+                                color: "white",
+                                width: 1
+                            }
+                        },
                     })
                 );
             } else {
