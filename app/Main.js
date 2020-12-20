@@ -76,6 +76,7 @@ require([
         defaultCreateOptions: { hasZ: false }
     });
 
+    // query the OZP layer when geometry is created or updated
     sketchViewModel.on("create", function (event) {
         if (event.state === "complete") {
             sketchGeometry = event.graphic.geometry;
@@ -105,7 +106,35 @@ require([
         const geometryType = event.target.value;
         clearGeometry();
         sketchViewModel.create(geometryType);
-    }                                       
+    }
+
+
+
+    const bufferNumSlider = new Slider({
+        container: "bufferNum",
+        min: 0,
+        max: 1000,
+        steps: 10,
+        visibleElements: {
+            labels: true
+        },
+        precision: 0,
+        labelFormatFunction: function (value, type) {
+            return value.toString() + "m";
+        },
+        values: [0]
+    });
+
+    // get user entered values for buffer
+    bufferNumSlider.on(
+        ["thumb-change", "thumb-drag"],
+        bufferVariablesChanged
+    );
+    function bufferVariablesChanged(event) {
+        bufferSize = event.value;
+        console.log("Querying the geometry with buffer size of ", bufferSize);
+        runQuery();
+    }  
 
     // Clear the geometry and set the default renderer
     document
