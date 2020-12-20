@@ -59,6 +59,10 @@ require([
             webLayerView = layerView;
             queryDiv.style.display = "block";
         });
+
+        // Put OZP zoning feature layer to the bottom, otherwise query geoms will be hided by the OZP polygons
+        // https://developers.arcgis.com/javascript/latest/api-reference/esri-Map.html#reorder
+        webmap.reorder(webLayer, 0);
     });
 
     view.ui.add([queryDiv], "bottom-left");
