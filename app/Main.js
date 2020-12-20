@@ -109,7 +109,6 @@ require([
     }
 
 
-
     const bufferNumSlider = new Slider({
         container: "bufferNum",
         min: 0,
@@ -152,15 +151,63 @@ require([
         resultDiv.style.display = "none";
     }
 
+    // set the geometry query on the visible SceneLayerView
+    var debouncedRunQuery = promiseUtils.debounce(function () {
+        if (!sketchGeometry) {
+            return;
+        }
+
+        resultDiv.style.display = "block";
+        updateBufferGraphic(bufferSize);
+        return promiseUtils.eachAlways([
+            // queryStatistics(),
+            updateMapLayer()
+        ]);
+    });
+
     function runQuery() {
-        // TODO
+        debouncedRunQuery().catch((error) => {
+            if (error.name === "AbortError") {
+                return;
+            }
+
+            console.error(error);
+        });
+    }
+
+    // update the graphic with buffer
+    function updateBufferGraphic(buffer) {
+        // add a polygon graphic for the buffer
+        if (buffer > 0) {
+            var bufferGeometry = geometryEngine.geodesicBuffer(
+                sketchGeometry,
+                buffer,
+                "meters"
+            );
+            if (bufferLayer.graphics.length === 0) {
+                bufferLayer.add(
+                    new Graphic({
+                        geometry: bufferGeometry,
+                        symbol: sketchViewModel.polygonSymbol
+                    })
+                );
+            } else {
+                bufferLayer.graphics.getItemAt(0).geometry = bufferGeometry;
+            }
+        } else {
+            bufferLayer.removeAll();
+        }
     }
 
     function updateMapLayer() {
         const query = webLayerView.createQuery();
         query.geometry = sketchGeometry;
         query.distance = bufferSize;
-        return webLayerView.queryObjectIds(query).then(highlightBuildings);
+        // return webLayerView.queryObjectIds(query).then(highlightBuildings);
+        return webLayerView.queryObjectIds(query);
     }
 
+    function queryStatistics() {
+        // TODO
+    }
 });
