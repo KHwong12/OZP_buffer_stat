@@ -19,14 +19,14 @@ require([
     Graphic,
     promiseUtils
 ) {
-    // Load webmap and display it in a SceneView
+    // Load webmap and display it in a MapView
     const webmap = new WebMap({
         portalItem: { // autocasts as new PortalItem()
             id: "01807d9d7e954671bcfbcbe64290ac92"
         }
     });
 
-    // create the SceneView
+    // create the MapView
     const view = new MapView({
         container: "viewDiv",
         map: webmap,
@@ -92,6 +92,7 @@ require([
     });
 
     // draw geometry buttons - use the selected geometry to sketch
+
     document
         .getElementById("point-geometry-button")
         .addEventListener("click", geometryButtonsClickHandler);
@@ -135,7 +136,7 @@ require([
         runQuery();
     }  
 
-    // Clear the geometry and set the default renderer
+    // Listener of "Clear Geometry" Button
     document
         .getElementById("clearGeometry")
         .addEventListener("click", clearGeometry);
@@ -146,12 +147,12 @@ require([
         sketchViewModel.cancel();
         sketchLayer.removeAll();
         bufferLayer.removeAll();
-/*        clearHighlighting();*/
+        clearHighlighting();
 /*        clearCharts();*/
         resultDiv.style.display = "none";
     }
 
-    // set the geometry query on the visible SceneLayerView
+    // set the geometry query on the visible webLayerView
     var debouncedRunQuery = promiseUtils.debounce(function () {
         if (!sketchGeometry) {
             return;
@@ -160,7 +161,7 @@ require([
         resultDiv.style.display = "block";
         updateBufferGraphic(bufferSize);
         return promiseUtils.eachAlways([
-            // queryStatistics(),
+            queryStatistics(),
             updateMapLayer()
         ]);
     });
@@ -199,12 +200,32 @@ require([
         }
     }
 
+    
+    var highlightHandle = null;
+
+    function clearHighlighting() {
+        if (highlightHandle) {
+            highlightHandle.remove();
+            highlightHandle = null;
+        }
+    }
+
+    // Highlight (i.e. select) the geometries selected in the OZP layer
+    function highlightGeometries(objectIds) {
+        // Remove any previous highlighting
+        clearHighlighting();
+
+        const objectIdField = webLayer.objectIdField;
+        document.getElementById("count").innerHTML = objectIds.length;
+
+        highlightHandle = webLayerView.highlight(objectIds);
+    }
+
     function updateMapLayer() {
         const query = webLayerView.createQuery();
         query.geometry = sketchGeometry;
         query.distance = bufferSize;
-        // return webLayerView.queryObjectIds(query).then(highlightBuildings);
-        return webLayerView.queryObjectIds(query);
+        return webLayerView.queryObjectIds(query).then(highlightGeometries);
     }
 
     function queryStatistics() {
