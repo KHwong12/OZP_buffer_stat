@@ -23,7 +23,8 @@ require([
     const webmap = new WebMap({
         portalItem: { // autocasts as new PortalItem()
             id: "01807d9d7e954671bcfbcbe64290ac92"
-        }
+        },
+        basemap: "dark-gray-vector"	
     });
 
     // create the MapView
@@ -266,7 +267,17 @@ require([
         return webLayerView.queryObjectIds(query).then(highlightGeometries);
     }
 
+
+    /// *** Create Charts *** ///
+
     function queryStatistics() {
         // TODO
+    }
+
+    function createZoningAreaChart() {
+
+        const zoningAreaCanvas = document.getElementById("zoning-area-chart");
+
+
     }
 });
