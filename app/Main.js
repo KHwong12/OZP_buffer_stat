@@ -30,7 +30,7 @@ require([
     const view = new MapView({
         container: "viewDiv",
         map: webmap,
-        zoom: 10,
+        zoom: 12,
         center: [114.145, 22.360] // lon, lat
     });
 
@@ -45,9 +45,10 @@ require([
     let webLayerView = null;
     let bufferSize = 0;
 
-    // Assign scene layer once webmap is loaded and initialize UI
+    // Assign web layer once webmap is loaded and initialize UI
     webmap.load().then(function () {
         webLayer = webmap.layers.find(function (layer) {
+            // title of layer, not name of the webmap
             return layer.title === "OZP_Nov2019_Sim";
         });
         // Fetch all fields
@@ -62,4 +63,75 @@ require([
 
     view.ui.add([queryDiv], "bottom-left");
     view.ui.add([resultDiv], "top-right");
+
+    // use SketchViewModel to draw polygons that are used as a query
+    let sketchGeometry = null;
+    const sketchViewModel = new SketchViewModel({
+        layer: sketchLayer,
+        defaultUpdateOptions: {
+            tool: "reshape",
+            toggleToolOnClick: false
+        },
+        view: view,
+        defaultCreateOptions: { hasZ: false }
+    });
+
+    sketchViewModel.on("create", function (event) {
+        if (event.state === "complete") {
+            sketchGeometry = event.graphic.geometry;
+            runQuery();
+        }
+    });
+
+    sketchViewModel.on("update", function (event) {
+        if (event.state === "complete") {
+            sketchGeometry = event.graphics[0].geometry;
+            runQuery();
+        }
+    });
+
+    // draw geometry buttons - use the selected geometry to sketch
+    document
+        .getElementById("point-geometry-button")
+        .addEventListener("click", geometryButtonsClickHandler);
+    document
+        .getElementById("line-geometry-button")
+        .addEventListener("click", geometryButtonsClickHandler);
+    document
+        .getElementById("polygon-geometry-button")
+        .addEventListener("click", geometryButtonsClickHandler);
+
+    function geometryButtonsClickHandler(event) {
+        const geometryType = event.target.value;
+        clearGeometry();
+        sketchViewModel.create(geometryType);
+    }                                       
+
+    // Clear the geometry and set the default renderer
+    document
+        .getElementById("clearGeometry")
+        .addEventListener("click", clearGeometry);
+
+    // Clear the geometry and set the default renderer
+    function clearGeometry() {
+        sketchGeometry = null;
+        sketchViewModel.cancel();
+        sketchLayer.removeAll();
+        bufferLayer.removeAll();
+/*        clearHighlighting();*/
+/*        clearCharts();*/
+        resultDiv.style.display = "none";
+    }
+
+    function runQuery() {
+        // TODO
+    }
+
+    function updateMapLayer() {
+        const query = webLayerView.createQuery();
+        query.geometry = sketchGeometry;
+        query.distance = bufferSize;
+        return webLayerView.queryObjectIds(query).then(highlightBuildings);
+    }
+
 });
