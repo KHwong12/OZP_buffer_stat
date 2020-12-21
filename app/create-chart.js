@@ -18,7 +18,14 @@ function createzoningNumberChart() {
             datasets: [
                 {
                     label: "Zoning",
-                    backgroundColor: "#149dcf",
+                    backgroundColor: [
+                      '#a1291f',
+                      '#c27428',
+                      '#e6b831',
+                      '#bee1e6',
+                      '#7eb827',
+                      '#eb5b60'
+                    ],
                     stack: "Stack 0",
                     data: [0, 0, 0, 0, 0, 0]
                 }
