@@ -5,9 +5,11 @@ require([
     "esri/layers/GraphicsLayer",
     "esri/widgets/Sketch/SketchViewModel",
     "esri/widgets/Slider",
+    "esri/geometry/Polygon",
     "esri/geometry/geometryEngine",
     "esri/Graphic",
-    "esri/core/promiseUtils"
+    "esri/core/promiseUtils",
+    "esri/tasks/support/AreasAndLengthsParameters"
 ], function (
     WebMap,
     MapView,
@@ -15,9 +17,11 @@ require([
     GraphicsLayer,
     SketchViewModel,
     Slider,
+    Polygon,
     geometryEngine,
     Graphic,
-    promiseUtils
+    promiseUtils,
+    AreasAndLengthsParameters
 ) {
     // Load webmap and display it in a MapView
     const webmap = new WebMap({
@@ -31,8 +35,8 @@ require([
     const view = new MapView({
         container: "viewDiv",
         map: webmap,
-        zoom: 12,
-        center: [114.145, 22.360] // lon, lat
+        zoom: 13,
+        center: [114.172, 22.281] // lon, lat
     });
 
     window.view = view;
@@ -163,7 +167,7 @@ require([
     );
     function bufferVariablesChanged(event) {
         bufferSize = event.value;
-        console.log("Querying the geometry with buffer size of ", bufferSize);
+
         runQuery();
     }
 
@@ -218,6 +222,7 @@ require([
                 buffer,
                 "meters"
             );
+            // graphic layer can contain multiple features (i.e. length > 1)
             if (bufferLayer.graphics.length === 0) {
                 bufferLayer.add(
                     new Graphic({
@@ -237,9 +242,30 @@ require([
             } else {
                 bufferLayer.graphics.getItemAt(0).geometry = bufferGeometry;
             }
+
+            // Calculate buffer size
+            var bufferGeodesicArea = geometryEngine.geodesicArea(bufferGeometry, "square-meters");
+
+            // Format the size and update the value
+            document.getElementById("buffer-size").innerHTML = bufferGeodesicArea;
+
         } else {
             bufferLayer.removeAll();
         }
+    }
+
+    // Calculate geodesic area of a graphic layer (multiple features possible)
+    // https://community.esri.com/t5/arcgis-api-for-javascript/calculate-geodesic-area-of-polygon/td-p/367598
+    function calculateGeodesicArea(graphicsLayer) {
+      // TODO
+
+      // var GeodesicArea = 0
+      //
+      // graphicsLayer.graphics.map(function (grap) {
+      //   GeodesicArea = geometryEngine.geodesicArea(grap.geometry, "square-meters");
+      // });
+      //
+      // return GeodesicArea;
     }
 
 
