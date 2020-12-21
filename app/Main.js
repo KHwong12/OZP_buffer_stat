@@ -190,7 +190,9 @@ require([
         }
 
         resultDiv.style.display = "block";
+
         updateBufferGraphic(bufferSize);
+
         return promiseUtils.eachAlways([
             queryStatistics(),
             updateMapLayer()
@@ -268,6 +270,68 @@ require([
         return webLayerView.queryObjectIds(query).then(highlightGeometries);
     }
 
+    const statDefinitions = [
+        {
+            onStatisticField:
+                "CASE WHEN ZONE_MAS = 'R(A)' THEN 1 ELSE 0 END",
+            outStatisticFieldName: "zone_RA",
+            statisticType: "sum"
+        },
+        {
+            onStatisticField:
+                "CASE WHEN ZONE_MAS = 'R(B)' THEN 1 ELSE 0 END",
+            outStatisticFieldName: "zone_RB",
+            statisticType: "sum"
+        },
+        {
+            onStatisticField:
+                "CASE WHEN ZONE_MAS = 'R(C)' THEN 1 ELSE 0 END",
+            outStatisticFieldName: "zone_RC",
+            statisticType: "sum"
+        },
+        {
+            onStatisticField:
+                "CASE WHEN ZONE_MAS = 'G/IC' THEN 1 ELSE 0 END",
+            outStatisticFieldName: "zone_GIC",
+            statisticType: "sum"
+        },
+        {
+            onStatisticField:
+                "CASE WHEN ZONE_MAS = 'O' THEN 1 ELSE 0 END",
+            outStatisticFieldName: "zone_O",
+            statisticType: "sum"
+        },
+        {
+            onStatisticField:
+                "CASE WHEN ZONE_MAS = 'C' THEN 1 ELSE 0 END",
+            outStatisticFieldName: "zone_C",
+            statisticType: "sum"
+        }
+    ];
+
+    function queryStatistics() {
+
+        const query = webLayerView.createQuery();
+
+        query.geometry = sketchGeometry;
+        query.distance = bufferSize;
+        query.outStatistics = statDefinitions;
+
+        return webLayerView.queryFeatures(query).then(function (result) {
+            const allStats = result.features[0].attributes;
+
+            console.log(result);
+
+            updateChart(zoningNumberChart, [
+                allStats.zone_RA,
+                allStats.zone_RB,
+                allStats.zone_RC,
+                allStats.zone_GIC,
+                allStats.zone_O,
+                allStats.zone_C,
+            ]);
+        }, console.error);
+    }
 
     createzoningNumberChart();
 });
