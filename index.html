@@ -53,21 +53,26 @@
     </div>
 
     <div id="resultDiv" class="esri-widget">
-        <div class="buffer-size">
-            Buffer size:
-            <div class="buffer-size" id="buffer-size">0</div>
-            (sq.m.)
+        <div class="query-stat-num">
+            <div class="buffer-size">
+                <h3>Buffer size:</h3>
+                <div class="buffer-size-ha" id="buffer-size-ha">0</div>
+                (ha) |
+                <div class="buffer-size-sqkm" id="buffer-size-sqkm">0</div>
+                (sq.km.)
+            </div>
+            <br />
+            <div class="selected-area">
+                <h3>OZP-covered area:</h3>
+                <div class="selected-area" id="selected-area">TODO</div>
+            </div>
+            <br />
+            <div class="count">
+                <h3>Number of zoning pieces:</h3>
+                <div class="count" id="count">0</div>
+            </div>
         </div>
-        <br />
-        <div class="count">
-            Number of zoning pieces:
-            <div class="count" id="count">0</div>
-        </div>
-        <br />
-        <div class="selected-area">
-            Selected area:
-            <div class="selected-area" id="selected-area">TODO</div>
-        </div>
+
         <div class="charts">
             <div>
                 <canvas id="zoning-number-chart" width="250" height="300" />

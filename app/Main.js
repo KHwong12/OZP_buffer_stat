@@ -35,7 +35,7 @@ require([
     const view = new MapView({
         container: "viewDiv",
         map: webmap,
-        zoom: 13,
+        zoom: 14,
         center: [114.172, 22.281] // lon, lat
     });
 
@@ -247,7 +247,8 @@ require([
             var bufferGeodesicArea = geometryEngine.geodesicArea(bufferGeometry, "square-meters");
 
             // Format the size and update the value
-            document.getElementById("buffer-size").innerHTML = bufferGeodesicArea;
+            document.getElementById("buffer-size-ha").innerHTML = parseFloat((bufferGeodesicArea * 1e-4).toPrecision(3));
+            document.getElementById("buffer-size-sqkm").innerHTML = parseFloat((bufferGeodesicArea * 1e-7).toPrecision(3));
 
         } else {
             bufferLayer.removeAll();
@@ -268,6 +269,8 @@ require([
       // return GeodesicArea;
     }
 
+    // Highlight feautres within buffer area
+    // Not used now
 
     var highlightHandle = null;
 
@@ -289,13 +292,18 @@ require([
         highlightHandle = webLayerView.highlight(objectIds);
     }
 
+    // Change count of features within buffer
+    function changeFeatureCount(objectIds) {
+        document.getElementById("count").innerHTML = objectIds.length;
+    }
+
     function updateMapLayer() {
         const query = webLayerView.createQuery();
 
         query.geometry = sketchGeometry;
         query.distance = bufferSize;
 
-        return webLayerView.queryObjectIds(query);
+        return webLayerView.queryObjectIds(query).then(changeFeatureCount);
         // return webLayerView.queryObjectIds(query).then(highlightGeometries);
     }
 

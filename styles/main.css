@@ -43,7 +43,7 @@ body,
     margin: 2.5em auto 0;
 }
 
-.count, .selected-area {
+.query-stat-num div {
     white-space: nowrap;
     font-size: 14px;
     font-weight: bold;
