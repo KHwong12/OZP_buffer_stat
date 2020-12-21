@@ -178,7 +178,7 @@ require([
         sketchViewModel.cancel();
         sketchLayer.removeAll();
         bufferLayer.removeAll();
-        clearHighlighting();
+        // clearHighlighting();
         clearCharts();
         resultDiv.style.display = "none";
     }
@@ -265,9 +265,12 @@ require([
 
     function updateMapLayer() {
         const query = webLayerView.createQuery();
+
         query.geometry = sketchGeometry;
         query.distance = bufferSize;
-        return webLayerView.queryObjectIds(query).then(highlightGeometries);
+
+        return webLayerView.queryObjectIds(query);
+        // return webLayerView.queryObjectIds(query).then(highlightGeometries);
     }
 
     const statDefinitions = [
