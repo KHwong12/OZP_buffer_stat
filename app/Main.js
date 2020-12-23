@@ -38,7 +38,11 @@ require([
         container: "viewDiv",
         map: webmap,
         zoom: 14,
-        center: [114.172, 22.281] // lon, lat
+        center: [114.172, 22.281], // lon, lat
+        constraints: {
+          maxScale: 0,
+          minScale: 200000
+        }
     });
 
     window.view = view;

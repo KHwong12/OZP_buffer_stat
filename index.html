@@ -25,8 +25,8 @@
 <body>
     <div id="viewDiv"></div>
     <div id="queryDiv" class="esri-widget">
-        <b>Query by geometry</b><br />
-        <br />Draw a geometry to query by:
+        <h2>Query by geometry</h2>
+        Draw a geometry to query zones:
         <div class="geometry-options">
             <button class="esri-widget--button esri-icon-map-pin geometry-button"
                     id="point-geometry-button"
@@ -43,7 +43,7 @@
         </div>
         <br />
         <div class="tooltip">
-            <label for="bufferNum">Distance from gemetry (buffer size):</label>
+            <label for="bufferNum">Distance (buffer size):</label>
             <div id="bufferNum"></div>
         </div>
         <br />
@@ -68,7 +68,7 @@
             </div>
             <br />
             <div class="count">
-                <h3>Number of zoning pieces:</h3>
+                <h3>No. of zoning pieces:</h3>
                 <div class="count" id="count">0</div>
             </div>
         </div>
@@ -115,5 +115,18 @@
             and ☕.
         </footer>
     </div>
+
+    <footer>
+        Created by <a href="https://twitter.com/Kenneth_KHW" target="_blank">Kenneth Wong</a>.
+        <br>
+        Last modified on <span id="lastModified">12/22/2020 05:16:18</span>.
+        <br>
+        This application is for coding practice and demonstration purposes. Accuracy of data and results are not guaranteed.
+        <br>
+        Made and developed with
+        <a href="https://pro.arcgis.com/en/pro-app/" target="_blank">ArcGIS Pro</a>,
+        <a href="https://developers.arcgis.com/javascript/" target="_blank">ArcGIS API for JavaScript</a>,
+        and ☕.
+    </footer>
 </body>
 </html>
