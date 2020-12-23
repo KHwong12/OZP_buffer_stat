@@ -9,7 +9,8 @@ require([
     "esri/geometry/geometryEngine",
     "esri/Graphic",
     "esri/core/promiseUtils",
-    "esri/tasks/support/AreasAndLengthsParameters"
+    "esri/tasks/support/AreasAndLengthsParameters",
+    "esri/widgets/Expand"
 ], function (
     WebMap,
     MapView,
@@ -21,7 +22,8 @@ require([
     geometryEngine,
     Graphic,
     promiseUtils,
-    AreasAndLengthsParameters
+    AreasAndLengthsParameters,
+    Expand
 ) {
     // Load webmap and display it in a MapView
     const webmap = new WebMap({
@@ -72,6 +74,26 @@ require([
 
     view.ui.add([queryDiv], "bottom-left");
     view.ui.add([resultDiv], "top-right");
+
+    // https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-Expand.html
+    // https://developers.arcgis.com/javascript/latest/sample-code/layers-imagery-clientside/index.html
+    const instructionsExpand = new Expand({
+        expandIconClass: "esri-icon-question",
+        expandTooltip: "How to use this application",
+        view: view,
+        expanded: true,
+        content:
+            "<div style='width:200px; padding:10px'><b>Click</b> the buttons to <b>draw</b> your area of interest. For lines and polygons, double click to finish drawing. <br><br><b>Move</b> the slider to change the buffer distance.</div>"
+    });
+
+    view.ui.add(instructionsExpand, "top-left");
+
+    // Close the 'help' popup when view is focused
+    view.watch("focused", function (isFocused) {
+        if (isFocused) {
+            instructionsExpand.expanded = false;
+        }
+    });
 
     // use SketchViewModel to draw polygons for spatial query
     let sketchGeometry = null;
