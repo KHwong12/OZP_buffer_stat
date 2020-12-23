@@ -7,10 +7,13 @@ require([
     "esri/widgets/Slider",
     "esri/geometry/Polygon",
     "esri/geometry/geometryEngine",
+    "esri/tasks/GeometryService",
     "esri/Graphic",
     "esri/core/promiseUtils",
     "esri/tasks/support/AreasAndLengthsParameters",
-    "esri/widgets/Expand"
+    "esri/widgets/Expand",
+    "esri/tasks/QueryTask",
+    "esri/tasks/support/Query"
 ], function (
     WebMap,
     MapView,
@@ -20,10 +23,13 @@ require([
     Slider,
     Polygon,
     geometryEngine,
+    GeometryService,
     Graphic,
     promiseUtils,
     AreasAndLengthsParameters,
-    Expand
+    Expand,
+    QueryTask,
+    Query
 ) {
     // Load webmap and display it in a MapView
     const webmap = new WebMap({
@@ -235,6 +241,16 @@ require([
         });
     }
 
+    const OZPLayer = new FeatureLayer({
+        // URL to the service
+        url: "https://services5.arcgis.com/xH8UmTNerx1qYfXM/arcgis/rest/services/OZP_Nov2019_Sim/FeatureServer"
+    });
+
+    function clipOZP() {
+        // TODO
+        geometryEngine.intersect(bufferGeometry, OZPLayer)
+    }
+
     // update the graphic with buffer
     function updateBufferGraphic(buffer) {
         // add a polygon graphic for the buffer
@@ -268,6 +284,58 @@ require([
             // Calculate buffer size
             var bufferGeodesicArea = geometryEngine.geodesicArea(bufferGeometry, "square-meters");
 
+/*            console.log(webLayer);
+            console.log(webLayer.queryFeatures());*/
+
+            const query = webLayerView.createQuery();
+
+            query.geometry = bufferGeometry;
+/*            query.outStatistics = statDefinitions;*/
+
+/*            var query = new Query();
+            query.geometry = bufferGeometry;*/
+            query.outSpatialReference = { wkid: 4326 };
+            query.spatialRelationship = "intersects";
+/*            query.returnGeometry = true;
+            query.outFields = ["*"];*/
+
+            var geometryService = new GeometryService("https://utility.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
+
+
+            webLayerView.queryFeatures(query).then(function (results) {
+/*                console.log(results);*/
+/*                console.info(results);
+                console.info(results.features);*/
+
+                if (results.features.length > 0) {
+                    // TODO
+                    var selectedOZPGeoms = []
+
+                    results.features.forEach(function (item) {
+                        selectedOZPGeoms.push(item.geometry)
+                    });
+
+                    console.log(selectedOZPGeoms);
+
+                    var unionGeoms = geometryEngine.union(selectedOZPGeoms)
+                    console.log(unionGeoms);
+
+                    view.graphics.add(new Graphic(unionGeoms));
+
+
+                    var bufferOZPIntersect = geometryEngine.intersect(bufferGeometry, unionGeoms);
+
+/*                    view.graphics.add(new Graphic(bufferOZPIntersect));*/
+                }
+
+
+/*                console.log(geometryService.union(results.features));*/
+/*                console.log(geometryEngine.intersect(bufferGeometry, results.features));*/
+            });
+
+
+/*            console.log(geometryEngine.intersect(bufferGeometry, webLayer.queryFeatures()));*/
+
             // Format the size and update the value
             document.getElementById("buffer-size-ha").innerHTML = parseFloat((bufferGeodesicArea * 1e-4).toPrecision(3));
             document.getElementById("buffer-size-sqkm").innerHTML = parseFloat((bufferGeodesicArea * 1e-7).toPrecision(3));
@@ -290,6 +358,7 @@ require([
       //
       // return GeodesicArea;
     }
+
 
     // Highlight feautres within buffer area
     // Not used now
@@ -367,6 +436,7 @@ require([
             statisticType: "sum"
         }
     ];
+
 
     function queryStatistics() {
 
