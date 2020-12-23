@@ -1,14 +1,23 @@
 html,
-body,
-#viewDiv {
+body {
     padding: 0;
     margin: 0;
     height: 100%;
     width: 100%;
+    overflow: hidden;
 }
 
 .esri-ui-top-right {
     max-height: 100%;
+}
+
+#viewDiv {
+    position: absolute;
+    right: 0;
+    left: 30%;
+    top: 0;
+    bottom: 0;
+    height: 100%;
 }
 
 #queryDiv,
@@ -20,6 +29,19 @@ body,
     overflow-y: auto;
     overflow-x: hidden;
 }
+
+#contentDiv {
+    position: absolute;
+    left: 0;
+    height: 100%;
+    width: 30%;
+    min-width: 300px;
+    overflow: scroll;
+    padding: 10px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
 
 .geometry-options {
     display: flex;

@@ -52,7 +52,7 @@
         </button>
     </div>
 
-    <div id="resultDiv" class="esri-widget">
+<!--    <div id="resultDiv" class="esri-widget">
         <div class="query-stat-num">
             <div class="buffer-size">
                 <h3>Buffer size:</h3>
@@ -72,7 +72,30 @@
                 <div class="count" id="count">0</div>
             </div>
         </div>
+    </div>-->
 
+    <div id="contentDiv" class="esri-widget">
+        <h1>Zone In</h1>
+        This is a web map application for users to interactively explore the land use zonings in Hong Kong. You can investigate the distribution of zonings in the proximity in any areas.
+        <div class="query-stat-num">
+            <div class="buffer-size">
+                <h3>Buffer size:</h3>
+                <div class="buffer-size-ha" id="buffer-size-ha">0</div>
+                (ha) |
+                <div class="buffer-size-sqkm" id="buffer-size-sqkm">0</div>
+                (sq.km.)
+            </div>
+            <br />
+            <div class="selected-area">
+                <h3>OZP-covered area:</h3>
+                <div class="selected-area" id="selected-area">TODO</div>
+            </div>
+            <br />
+            <div class="count">
+                <h3>Number of zoning pieces:</h3>
+                <div class="count" id="count">0</div>
+            </div>
+        </div>
         <div class="charts">
             <div>
                 <canvas id="zoning-number-chart" width="250" height="300" />

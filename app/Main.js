@@ -73,7 +73,7 @@ require([
     });
 
     view.ui.add([queryDiv], "bottom-left");
-    view.ui.add([resultDiv], "top-right");
+/*    view.ui.add([resultDiv], "top-right");*/
 
     // https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-Expand.html
     // https://developers.arcgis.com/javascript/latest/sample-code/layers-imagery-clientside/index.html
@@ -206,7 +206,7 @@ require([
         bufferLayer.removeAll();
         // clearHighlighting();
         clearCharts();
-        resultDiv.style.display = "none";
+        // resultDiv.style.display = "none";
     }
 
     // set the geometry query on the visible webLayerView
@@ -215,7 +215,7 @@ require([
             return;
         }
 
-        resultDiv.style.display = "block";
+        // resultDiv.style.display = "block";
 
         updateBufferGraphic(bufferSize);
 
