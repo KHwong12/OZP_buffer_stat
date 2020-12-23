@@ -393,4 +393,7 @@ require([
     }
 
     createzoningNumberChart();
+
+
+    document.getElementById("lastModified").innerHTML = document.lastModified;
 });
