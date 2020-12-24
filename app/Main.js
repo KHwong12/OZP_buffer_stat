@@ -284,28 +284,143 @@ require([
             // Calculate buffer size
             var bufferGeodesicArea = geometryEngine.geodesicArea(bufferGeometry, "square-meters");
 
-/*            console.log(webLayer);
-            console.log(webLayer.queryFeatures());*/
+            // Format the size and update the value
+            document.getElementById("buffer-size-ha").innerHTML = parseFloat((bufferGeodesicArea * 1e-4).toPrecision(3));
+            document.getElementById("buffer-size-sqkm").innerHTML = parseFloat((bufferGeodesicArea * 1e-7).toPrecision(3));
 
-            const query = webLayerView.createQuery();
+        } else {
+            bufferLayer.removeAll();
+        }
+    }
 
-            query.geometry = bufferGeometry;
-/*            query.outStatistics = statDefinitions;*/
+    function getAreaInBufferByZoning(buffer) {
 
-/*            var query = new Query();
-            query.geometry = bufferGeometry;*/
-            query.outSpatialReference = { wkid: 4326 };
-            query.spatialRelationship = "intersects";
-/*            query.returnGeometry = true;
-            query.outFields = ["*"];*/
+        if (buffer > 0) {
+
+            var bufferGeometry = geometryEngine.geodesicBuffer(
+                sketchGeometry,
+                buffer,
+                "meters"
+            );
+
+            // Get breakdown zoning area one by one
+
+            const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C", "MRDJ"]
+            const selectedZoningAreas = []
+
+            var areaInBufferByZoningForLoop = {};
 
             var geometryService = new GeometryService("https://utility.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
 
+            for (zoning of selectedZonings) {
+                let query = webLayerView.createQuery();
+
+                query.geometry = bufferGeometry;
+                query.where = "ZONE_MAS = '" + zoning + "'";
+                query.spatialRelationship = "intersects";
+
+                webLayerView.queryFeatures(query).then(function (results) {
+                    /*                console.log(results);*/
+                    /*                console.info(results);
+                                    console.info(results.features);*/
+
+                    if (results.features.length > 0) {
+                        // TODO
+                        var selectedOZPGeoms = []
+
+                        results.features.forEach(function (item) {
+                            selectedOZPGeoms.push(item.geometry)
+                        });
+
+                        console.log(selectedOZPGeoms);
+
+                        var unionGeoms = geometryEngine.union(selectedOZPGeoms)
+                        console.log(unionGeoms);
+
+
+                        var bufferOZPIntersect = geometryEngine.intersect(bufferGeometry, unionGeoms);
+
+                        areaInBufferByZoningForLoop[zoning] = geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters");
+
+                        selectedZoningAreas.push(geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters"));
+
+                    } else {
+                        selectedZoningAreas.push(0);
+                        areaInBufferByZoningForLoop[zoning] = 0;
+                    }
+                });
+            };
+
+            console.log(areaInBufferByZoningForLoop);
+
+
+
+            Promise.all([selectedZoningAreas, selectedZonings]).then(function () {
+
+                console.log(selectedZoningAreas);
+                console.log(selectedZonings);
+
+                var areaInBufferByZoning = {};
+                /*                var areaInBufferByZoningReduce = {};*/
+
+                selectedZonings.forEach((key, i) => areaInBufferByZoning[key] = selectedZoningAreas[i]);
+                areaInBufferByZoningReduce = selectedZonings.reduce((acc, key, index) => ({ ...acc, [key]: selectedZoningAreas[index] }), {})
+
+
+                console.log(areaInBufferByZoning);
+                console.log(areaInBufferByZoningReduce)
+            });
+
+            // 
+
+            let query = webLayerView.createQuery();
+
+            const statDefinitions = [
+                {
+                    onStatisticField:
+                        "CASE WHEN ZONE_MAS = 'R(A)' THEN 1 ELSE 0 END",
+                    outStatisticFieldName: "zone_RA",
+                    statisticType: "sum"
+                },
+                {
+                    onStatisticField:
+                        "CASE WHEN ZONE_MAS = 'R(B)' THEN 1 ELSE 0 END",
+                    outStatisticFieldName: "zone_RB",
+                    statisticType: "sum"
+                },
+                {
+                    onStatisticField:
+                        "CASE WHEN ZONE_MAS = 'R(C)' THEN 1 ELSE 0 END",
+                    outStatisticFieldName: "zone_RC",
+                    statisticType: "sum"
+                },
+                {
+                    onStatisticField:
+                        "CASE WHEN ZONE_MAS = 'G/IC' THEN 1 ELSE 0 END",
+                    outStatisticFieldName: "zone_GIC",
+                    statisticType: "sum"
+                },
+                {
+                    onStatisticField:
+                        "CASE WHEN ZONE_MAS = 'O' THEN 1 ELSE 0 END",
+                    outStatisticFieldName: "zone_O",
+                    statisticType: "sum"
+                },
+                {
+                    onStatisticField:
+                        "CASE WHEN ZONE_MAS = 'C' THEN 1 ELSE 0 END",
+                    outStatisticFieldName: "zone_C",
+                    statisticType: "sum"
+                }
+            ];
+
+            query.geometry = bufferGeometry;
+            /*            query.outStatistics = statDefinitions;*/
+            /*            query.where = "ZONE_MAS = '" + zoning + "'";*/
+            query.spatialRelationship = "intersects";
 
             webLayerView.queryFeatures(query).then(function (results) {
-/*                console.log(results);*/
-/*                console.info(results);
-                console.info(results.features);*/
+
 
                 if (results.features.length > 0) {
                     // TODO
@@ -320,29 +435,66 @@ require([
                     var unionGeoms = geometryEngine.union(selectedOZPGeoms)
                     console.log(unionGeoms);
 
-                    view.graphics.add(new Graphic(unionGeoms));
-
 
                     var bufferOZPIntersect = geometryEngine.intersect(bufferGeometry, unionGeoms);
 
-/*                    view.graphics.add(new Graphic(bufferOZPIntersect));*/
+                    areaInBufferByZoningForLoop[zoning] = geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters");
+
+                    selectedZoningAreas.push(geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters"));
+
+                } else {
+                    selectedZoningAreas.push(0);
+                    areaInBufferByZoningForLoop[zoning] = 0;
                 }
-
-
-/*                console.log(geometryService.union(results.features));*/
-/*                console.log(geometryEngine.intersect(bufferGeometry, results.features));*/
             });
 
+        else {
 
-/*            console.log(geometryEngine.intersect(bufferGeometry, webLayer.queryFeatures()));*/
+            }
 
-            // Format the size and update the value
-            document.getElementById("buffer-size-ha").innerHTML = parseFloat((bufferGeodesicArea * 1e-4).toPrecision(3));
-            document.getElementById("buffer-size-sqkm").innerHTML = parseFloat((bufferGeodesicArea * 1e-7).toPrecision(3));
 
-        } else {
-            bufferLayer.removeAll();
-        }
+        /*            var query = webLayerView.createQuery();
+    
+                    query.geometry = bufferGeometry;
+                    query.where = "ZONE_MAS = 'R(A)'"
+                    query.spatialRelationship = "intersects";
+    
+    
+                    webLayerView.queryFeatures(query).then(function (results) {
+                        *//*                console.log(results);*/
+        /*                console.info(results);
+                        console.info(results.features);*//*
+
+    if (results.features.length > 0) {
+    // TODO
+    var selectedOZPGeoms = []
+
+    results.features.forEach(function (item) {
+    selectedOZPGeoms.push(item.geometry)
+    });
+
+    console.log(selectedOZPGeoms);
+
+    var unionGeoms = geometryEngine.union(selectedOZPGeoms)
+    console.log(unionGeoms);
+
+
+    var bufferOZPIntersect = geometryEngine.intersect(bufferGeometry, unionGeoms);
+
+    console.log("Area of intersect R(A) area:", geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters"));
+
+    *//*                    view.graphics.add(new Graphic(bufferOZPIntersect));*//*
+    }
+    */
+
+        /*                console.log(geometryService.union(results.features));*/
+        /*                console.log(geometryEngine.intersect(bufferGeometry, results.features));*/
+
+
+
+        /*            console.log(geometryEngine.intersect(bufferGeometry, webLayer.queryFeatures()));*/
+
+
     }
 
     // Calculate geodesic area of a graphic layer (multiple features possible)
