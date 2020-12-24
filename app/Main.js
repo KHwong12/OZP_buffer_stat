@@ -258,8 +258,8 @@ require([
 
         console.log(selectedZoningAreas);
 
-        // console.log("updating zoning area chart!");
-        // updateChart(zoningAreaChart, selectedZoningAreas);
+        console.log("updating zoning area chart!");
+        updateChart(zoningAreaChart, selectedZoningAreas);
 
        
 
