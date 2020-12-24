@@ -252,6 +252,9 @@ require([
         const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C"]
         // const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C", "MRDJ"]
 
+        // TODO: improve efficiency with async + map array
+        // https://flaviocopes.com/javascript-async-await-array-map/
+
         for (zoning of selectedZonings) {
             selectedZoningAreas.push(await getAreaInBuffer(zoning, bufferSize));
         }
@@ -261,13 +264,6 @@ require([
         console.log("updating zoning area chart!");
         updateChart(zoningAreaChart, selectedZoningAreas);
 
-       
-
-        // var areaRA = await getAreaInBuffer(selectedZonings[0], bufferSize);
-        // var areaRB = await getAreaInBuffer(selectedZonings[0], bufferSize);
-        
-
-        // console.log(selectedZonings[0], "area in buffer", areaRA);
 
 /*        var selectedZoningsArea = await selectedZonings.map(
             async function (x) { return await getAreaInBuffer(x, bufferSize); }
@@ -355,8 +351,12 @@ require([
 
 
     // Get total zoning area within the buffer
+    // async function, will wait until query process finished, not suitable for large dataset
     async function getAreaInBuffer(zoning, buffer) {
 
+        // TODO: consider buffer = 0, yet geometry is not point!
+
+        // Only execute function when buffer has actual size?
         if (buffer > 0) {
 
             var bufferGeometry = geometryEngine.geodesicBuffer(
@@ -377,13 +377,15 @@ require([
             query.where = "ZONE_MAS = '" + zoning + "'";
             query.spatialRelationship = "intersects";
 
-            console.log(zoning, "outside queryFeatures");
+            // console.log(zoning, "outside queryFeatures");
 
             let results = await webLayerView.queryFeatures(query);
 
-            console.log("queried")
-            console.log(results)
+            console.log("Finished quering" + zoning + "in buffer");
+            console.log(results);
 
+            // Check if any features intersect with the buffer
+            // If no, length of results will be 0, i.e. area in buffer = 0
             if (results.features.length > 0) {
                 // TODO
                 var selectedOZPGeoms = []
@@ -407,8 +409,6 @@ require([
                 console.log(areaInBuffer);
 
             }
-
-            console.log(areaInBuffer, "Outside query");
 
             return areaInBuffer;
 

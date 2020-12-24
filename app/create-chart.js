@@ -128,5 +128,6 @@ function updateChart(chart, dataValues) {
 
 function clearCharts() {
     updateChart(zoningNumberChart, [0, 0, 0, 0, 0, 0]);
+    updateChart(zoningAreaChart, [0, 0, 0, 0, 0, 0]);
     document.getElementById("count").innerHTML = 0;
 }
