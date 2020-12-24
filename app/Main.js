@@ -350,67 +350,70 @@ require([
     }
 
 
-    // Get total zoning area within the buffer
+    // Get total zoning area within the buffer of one specific zoning
     // async function, will wait until query process finished, not suitable for large dataset
+
+    // Steps: query OZP in featurelayer intersect with buffer (select by location) and in that zoning (select by attributes)
+    // -> union all "selected" zoning (needed?)
+    // -> use buffer to intersect (act as cookie cutter) to cut the result geoms -> calculate geom area
+
+    // TODO: to improve, find ways to clip FeatureLayer by Graphics, GeometryEngine seems only works with grahpics
     async function getAreaInBuffer(zoning, buffer) {
 
-        // TODO: consider buffer = 0, yet geometry is not point!
+        // TODO: test if Only execute function when buffer has actual size?
 
-        // Only execute function when buffer has actual size?
-        if (buffer > 0) {
+        var geometryService = new GeometryService("https://utility.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
 
+        var areaInBuffer = 0;
+
+        let query = webLayerView.createQuery();
+
+        query.geometry = sketchGeometry;
+        query.distance = bufferSize;
+        query.where = "ZONE_MAS = '" + zoning + "'";
+        query.spatialRelationship = "intersects";
+
+        // console.log(zoning, "outside queryFeatures");
+
+        let results = await webLayerView.queryFeatures(query);
+
+        console.log("Queried zoning of " + zoning + " intersects with buffer");
+        console.log(results);
+
+        // Check if any features intersect with the buffer
+        // If no, length of results will be 0, i.e. area in buffer = 0
+        if (results.features.length > 0) {
+            // TODO
+            var selectedOZPGeoms = []
+
+            results.features.forEach(function (item) {
+                selectedOZPGeoms.push(item.geometry)
+            });
+
+            // console.log(selectedOZPGeoms);
+
+            // bufferGeometry is required for intersecting OZP
             var bufferGeometry = geometryEngine.geodesicBuffer(
                 sketchGeometry,
                 buffer,
                 "meters"
             );
 
-            // Get breakdown zoning area one by one
+            var unionGeoms = await geometryEngine.union(selectedOZPGeoms)
+            // console.log(unionGeoms);
+            console.log("union function performed");
 
-            var geometryService = new GeometryService("https://utility.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
+            var bufferOZPIntersect = await geometryEngine.intersect(bufferGeometry, unionGeoms);
+            console.log("intersect function performed");
 
-            var areaInBuffer = 0;
+            areaInBuffer = await geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters");
+            console.log("area calculated");
 
-            let query = webLayerView.createQuery();
+            console.log(areaInBuffer);
 
-            query.geometry = bufferGeometry;
-            query.where = "ZONE_MAS = '" + zoning + "'";
-            query.spatialRelationship = "intersects";
+        // }
 
-            // console.log(zoning, "outside queryFeatures");
-
-            let results = await webLayerView.queryFeatures(query);
-
-            console.log("Finished quering" + zoning + "in buffer");
-            console.log(results);
-
-            // Check if any features intersect with the buffer
-            // If no, length of results will be 0, i.e. area in buffer = 0
-            if (results.features.length > 0) {
-                // TODO
-                var selectedOZPGeoms = []
-
-                results.features.forEach(function (item) {
-                    selectedOZPGeoms.push(item.geometry)
-                });
-
-                // console.log(selectedOZPGeoms);
-
-                var unionGeoms = await geometryEngine.union(selectedOZPGeoms)
-                // console.log(unionGeoms);
-                console.log("union function performed");
-
-                var bufferOZPIntersect = await geometryEngine.intersect(bufferGeometry, unionGeoms);
-                console.log("intersect function performed");
-
-                areaInBuffer = await geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters");
-                console.log("area calculated");
-
-                console.log(areaInBuffer);
-
-            }
-
-            return areaInBuffer;
+        return areaInBuffer;
 
 /*            return webLayerView.queryFeatures(query).then(function (results) {
 
