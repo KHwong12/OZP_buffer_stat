@@ -205,6 +205,7 @@ require([
         .addEventListener("click", clearGeometry);
 
     // Clear the geometry and set the default renderer
+    // Reset all to default
     function clearGeometry() {
         sketchGeometry = null;
         sketchViewModel.cancel();
@@ -212,6 +213,9 @@ require([
         bufferLayer.removeAll();
         // clearHighlighting();
         clearCharts();
+
+        document.getElementById("buffer-size-ha").innerHTML = 0;
+        document.getElementById("buffer-size-sqkm").innerHTML = 0;
         // resultDiv.style.display = "none";
     }
 
@@ -262,7 +266,9 @@ require([
         console.log(selectedZoningAreas);
 
         console.log("updating zoning area chart!");
-        updateChart(zoningAreaChart, selectedZoningAreas);
+
+        // Round to nearest integer for readability
+        updateChart(zoningAreaChart, selectedZoningAreas.map(Math.round));
 
 
 /*        var selectedZoningsArea = await selectedZonings.map(

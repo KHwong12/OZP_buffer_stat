@@ -77,7 +77,7 @@ function createzoningAreaChart() {
             ],
             datasets: [
                 {
-                    label: "Zoning",
+                    label: "Area (sq.m.)",
                     backgroundColor: [
                         '#a1291f',
                         '#c27428',
