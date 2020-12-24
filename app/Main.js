@@ -224,23 +224,7 @@ require([
         // resultDiv.style.display = "block";
 
         updateBufferGraphic(bufferSize);
-        // getAreaInBufferByZoning(bufferSize);
-
-        const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C", "MRDJ"]
-
-        selectedZoningsArea = selectedZonings.map(
-            function (x) { return getAreaInBuffer(x, bufferSize); }
-        );
-
-        console.log(selectedZoningsArea);
-
-/*        Promise.all(selectedZoningsArea).then(function () {
-            console.log(selectedZoningsArea);
-        });*/
-
-/*        console.log(selectedZonings.map(
-            function (x) { return getAreaInBuffer(x, bufferSize); }
-        ));*/
+        calculateAreaByZoning();
 
         return promiseUtils.eachAlways([
             queryStatistics(),
@@ -256,6 +240,37 @@ require([
 
             console.error(error);
         });
+    }
+
+    function calculateAreaByZoning() {
+        // getAreaInBufferByZoning(bufferSize);
+
+        const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C", "MRDJ"]
+
+        selectedZoningsArea = selectedZonings.map(
+            function (x) { return getAreaInBuffer(x, bufferSize); }
+        );
+
+        console.log(selectedZoningsArea);
+/*        console.log(getAreaInBuffer("R(A)", bufferSize));*/
+
+        Promise.all(selectedZoningsArea).then(x => {
+            console.log(selectedZoningsArea, "inside all promise");
+        /*            console.log(getAreaInBuffer("R(A)", bufferSize), "inside all promise");*/
+            areaByZoning = selectedZonings.reduce((acc, key, index) => ({ ...acc, [key]: selectedZoningsArea[index] }), {})
+
+            console.log(areaByZoning);
+
+
+        });
+
+    /*        Promise.all(selectedZoningsArea).then(function () {
+                console.log(selectedZoningsArea);
+            });*/
+
+    /*        console.log(selectedZonings.map(
+                function (x) { return getAreaInBuffer(x, bufferSize); }
+            ));*/
     }
 
     const OZPLayer = new FeatureLayer({
@@ -312,7 +327,7 @@ require([
 
 
     // Get total zoning area within the buffer
-    function getAreaInBuffer(zoning, buffer) {
+    async function getAreaInBuffer(zoning, buffer) {
 
         if (buffer > 0) {
 
@@ -324,86 +339,84 @@ require([
 
             // Get breakdown zoning area one by one
 
-            
-
-            var areaInBufferByZoningForLoop = {};
-
             var geometryService = new GeometryService("https://utility.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
 
+            var areaInBuffer = 0;
 
-            // for (zoning of selectedZonings) {
+            let query = webLayerView.createQuery();
 
-                let query = webLayerView.createQuery();
+            query.geometry = bufferGeometry;
+            query.where = "ZONE_MAS = '" + zoning + "'";
+            query.spatialRelationship = "intersects";
 
-                query.geometry = bufferGeometry;
-                query.where = "ZONE_MAS = '" + zoning + "'";
-                query.spatialRelationship = "intersects";
+            console.log(zoning, "outside queryFeatures");
 
-                console.log(zoning, "outside queryFeatures");
+            let results = await webLayerView.queryFeatures(query);
 
-                webLayerView.queryFeatures(query).then(function (results) {
-                    /*                console.log(results);*/
-                    /*                console.info(results);
-                                    console.info(results.features);*/
+            if (results.features.length > 0) {
+                // TODO
+                var selectedOZPGeoms = []
 
-                    console.log(zoning, "in queryFeatures");
-
-                    if (results.features.length > 0) {
-                        // TODO
-                        var selectedOZPGeoms = []
-
-                        results.features.forEach(function (item) {
-                            selectedOZPGeoms.push(item.geometry)
-                        });
-
-                        // console.log(selectedOZPGeoms);
-
-                        var unionGeoms = geometryEngine.union(selectedOZPGeoms)
-                        // console.log(unionGeoms);
-
-
-                        var bufferOZPIntersect = geometryEngine.intersect(bufferGeometry, unionGeoms);
-
-                        areaInBuffer = geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters");
-
-                        console.log(areaInBuffer);
-                        // console.log(areaInBufferByZoningForLoop);
-/*
-                        selectedZoningAreas.push(areaInBuffer);*/
-
-                        return geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters");
-
-                    } else {
-/*                        selectedZoningAreas.push(0);*/
-                        areaInBufferByZoningForLoop[zoning] = 0;
-
-                        console.log(0);
-
-                        return 0;
-                    }
+                results.features.forEach(function (item) {
+                    selectedOZPGeoms.push(item.geometry)
                 });
-            // };
 
-            console.log(areaInBufferByZoningForLoop);
+                // console.log(selectedOZPGeoms);
 
-            
+                var unionGeoms = geometryEngine.union(selectedOZPGeoms)
+                // console.log(unionGeoms);
+                console.log("union function performed");
 
-/*            Promise.all([selectedZoningAreas, selectedZonings]).then(function () {
+                var bufferOZPIntersect = geometryEngine.intersect(bufferGeometry, unionGeoms);
+                console.log("intersect function performed");
 
-                console.log(selectedZoningAreas);
-                console.log(selectedZoningAreas.length);
-                console.log(selectedZonings);
-                console.log(selectedZonings.length);
+                areaInBuffer = geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters");
+                console.log("area calculated");
 
-                var areaInBufferByZoning = {};
+                console.log(areaInBuffer);
 
-                selectedZonings.forEach((key, i) => areaInBufferByZoning[key] = selectedZoningAreas[i]);
-                areaInBufferByZoningReduce = selectedZonings.reduce((acc, key, index) => ({ ...acc, [key]: selectedZoningAreas[index] }), {})
+            }
 
+            console.log(areaInBuffer, "Outside query");
+            return areaInBuffer;
 
-                console.log(areaInBufferByZoning);
-                console.log(areaInBufferByZoningReduce)
+/*            return webLayerView.queryFeatures(query).then(function (results) {
+
+                
+                console.log(results);
+                console.info(results);
+                console.info(results.features);
+
+                console.log(zoning, "in queryFeatures");
+
+                if (results.features.length > 0) {
+                    // TODO
+                    var selectedOZPGeoms = []
+
+                    results.features.forEach(function (item) {
+                        selectedOZPGeoms.push(item.geometry)
+                    });
+                    
+                    // console.log(selectedOZPGeoms);
+
+                    var unionGeoms = geometryEngine.union(selectedOZPGeoms)
+                    // console.log(unionGeoms);
+                    console.log("union function performed");
+
+                    var bufferOZPIntersect = geometryEngine.intersect(bufferGeometry, unionGeoms);
+                    console.log("intersect function performed");
+
+                    areaInBuffer = geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters");
+                    console.log("area calculated");
+
+                    console.log(areaInBuffer);
+
+                }
+
+                console.log(areaInBuffer, "Outside query");
+                return areaInBuffer;
             });*/
+
 
         }
 
