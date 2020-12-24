@@ -226,6 +226,8 @@ require([
         updateBufferGraphic(bufferSize);
         calculateAreaByZoning();
 
+
+
         return promiseUtils.eachAlways([
             queryStatistics(),
             updateMapLayer()
@@ -242,27 +244,53 @@ require([
         });
     }
 
-    function calculateAreaByZoning() {
+    async function calculateAreaByZoning() {
         // getAreaInBufferByZoning(bufferSize);
 
-        const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C", "MRDJ"]
+        var selectedZoningAreas = []
 
-        selectedZoningsArea = selectedZonings.map(
-            function (x) { return getAreaInBuffer(x, bufferSize); }
+        const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C"]
+        // const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C", "MRDJ"]
+
+        for (zoning of selectedZonings) {
+            selectedZoningAreas.push(await getAreaInBuffer(zoning, bufferSize));
+        }
+
+        console.log(selectedZoningAreas);
+
+        // console.log("updating zoning area chart!");
+        // updateChart(zoningAreaChart, selectedZoningAreas);
+
+       
+
+        // var areaRA = await getAreaInBuffer(selectedZonings[0], bufferSize);
+        // var areaRB = await getAreaInBuffer(selectedZonings[0], bufferSize);
+        
+
+        // console.log(selectedZonings[0], "area in buffer", areaRA);
+
+/*        var selectedZoningsArea = await selectedZonings.map(
+            async function (x) { return await getAreaInBuffer(x, bufferSize); }
         );
 
-        console.log(selectedZoningsArea);
-/*        console.log(getAreaInBuffer("R(A)", bufferSize));*/
 
-        Promise.all(selectedZoningsArea).then(x => {
+/*        console.log(getAreaInBuffer("R(A)", bufferSize));*//*
+
+        const test1 = Promise.all(selectedZoningsArea).then(x => {
             console.log(selectedZoningsArea, "inside all promise");
-        /*            console.log(getAreaInBuffer("R(A)", bufferSize), "inside all promise");*/
+                    console.log(getAreaInBuffer("R(A)", bufferSize), "inside all promise");
             areaByZoning = selectedZonings.reduce((acc, key, index) => ({ ...acc, [key]: selectedZoningsArea[index] }), {})
 
-            console.log(areaByZoning);
+            console.log(areaByZoning["R(A)"]);
 
-
+            alert(areaByZoning["R(A)"]);
         });
+
+        const test = async () => {
+            const a = await test1;
+            console.log(a);
+            alert("async here");
+        };*/
 
     /*        Promise.all(selectedZoningsArea).then(function () {
                 console.log(selectedZoningsArea);
@@ -353,6 +381,9 @@ require([
 
             let results = await webLayerView.queryFeatures(query);
 
+            console.log("queried")
+            console.log(results)
+
             if (results.features.length > 0) {
                 // TODO
                 var selectedOZPGeoms = []
@@ -363,14 +394,14 @@ require([
 
                 // console.log(selectedOZPGeoms);
 
-                var unionGeoms = geometryEngine.union(selectedOZPGeoms)
+                var unionGeoms = await geometryEngine.union(selectedOZPGeoms)
                 // console.log(unionGeoms);
                 console.log("union function performed");
 
-                var bufferOZPIntersect = geometryEngine.intersect(bufferGeometry, unionGeoms);
+                var bufferOZPIntersect = await geometryEngine.intersect(bufferGeometry, unionGeoms);
                 console.log("intersect function performed");
 
-                areaInBuffer = geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters");
+                areaInBuffer = await geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters");
                 console.log("area calculated");
 
                 console.log(areaInBuffer);
@@ -378,6 +409,7 @@ require([
             }
 
             console.log(areaInBuffer, "Outside query");
+
             return areaInBuffer;
 
 /*            return webLayerView.queryFeatures(query).then(function (results) {
@@ -541,7 +573,7 @@ require([
     }
 
     createzoningNumberChart();
-
+    createzoningAreaChart();
 
     document.getElementById("lastModified").innerHTML = document.lastModified;
 });
