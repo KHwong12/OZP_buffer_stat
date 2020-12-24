@@ -7,10 +7,13 @@ require([
     "esri/widgets/Slider",
     "esri/geometry/Polygon",
     "esri/geometry/geometryEngine",
+    "esri/tasks/GeometryService",
     "esri/Graphic",
     "esri/core/promiseUtils",
     "esri/tasks/support/AreasAndLengthsParameters",
-    "esri/widgets/Expand"
+    "esri/widgets/Expand",
+    "esri/tasks/QueryTask",
+    "esri/tasks/support/Query"
 ], function (
     WebMap,
     MapView,
@@ -20,10 +23,13 @@ require([
     Slider,
     Polygon,
     geometryEngine,
+    GeometryService,
     Graphic,
     promiseUtils,
     AreasAndLengthsParameters,
-    Expand
+    Expand,
+    QueryTask,
+    Query
 ) {
     // Load webmap and display it in a MapView
     const webmap = new WebMap({
@@ -203,6 +209,7 @@ require([
         .addEventListener("click", clearGeometry);
 
     // Clear the geometry and set the default renderer
+    // Reset all to default
     function clearGeometry() {
         sketchGeometry = null;
         sketchViewModel.cancel();
@@ -210,6 +217,9 @@ require([
         bufferLayer.removeAll();
         // clearHighlighting();
         clearCharts();
+
+        document.getElementById("buffer-size-ha").innerHTML = 0;
+        document.getElementById("buffer-size-sqkm").innerHTML = 0;
         // resultDiv.style.display = "none";
     }
 
@@ -222,6 +232,9 @@ require([
         // resultDiv.style.display = "block";
 
         updateBufferGraphic(bufferSize);
+        calculateAreaByZoning();
+
+
 
         return promiseUtils.eachAlways([
             queryStatistics(),
@@ -237,6 +250,71 @@ require([
 
             console.error(error);
         });
+    }
+
+    async function calculateAreaByZoning() {
+        // getAreaInBufferByZoning(bufferSize);
+
+        var selectedZoningAreas = []
+
+        const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C"]
+        // const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C", "MRDJ"]
+
+        // TODO: improve efficiency with async + map array
+        // https://flaviocopes.com/javascript-async-await-array-map/
+
+        for (zoning of selectedZonings) {
+            selectedZoningAreas.push(await getAreaInBuffer(zoning, bufferSize));
+        }
+
+        console.log(selectedZoningAreas);
+
+        console.log("updating zoning area chart!");
+
+        // Round to nearest integer for readability
+        updateChart(zoningAreaChart, selectedZoningAreas.map(Math.round));
+
+
+/*        var selectedZoningsArea = await selectedZonings.map(
+            async function (x) { return await getAreaInBuffer(x, bufferSize); }
+        );
+
+
+/*        console.log(getAreaInBuffer("R(A)", bufferSize));*//*
+
+        const test1 = Promise.all(selectedZoningsArea).then(x => {
+            console.log(selectedZoningsArea, "inside all promise");
+                    console.log(getAreaInBuffer("R(A)", bufferSize), "inside all promise");
+            areaByZoning = selectedZonings.reduce((acc, key, index) => ({ ...acc, [key]: selectedZoningsArea[index] }), {})
+
+            console.log(areaByZoning["R(A)"]);
+
+            alert(areaByZoning["R(A)"]);
+        });
+
+        const test = async () => {
+            const a = await test1;
+            console.log(a);
+            alert("async here");
+        };*/
+
+    /*        Promise.all(selectedZoningsArea).then(function () {
+                console.log(selectedZoningsArea);
+            });*/
+
+    /*        console.log(selectedZonings.map(
+                function (x) { return getAreaInBuffer(x, bufferSize); }
+            ));*/
+    }
+
+    const OZPLayer = new FeatureLayer({
+        // URL to the service
+        url: "https://services5.arcgis.com/xH8UmTNerx1qYfXM/arcgis/rest/services/OZP_Nov2019_Sim/FeatureServer"
+    });
+
+    function clipOZP() {
+        // TODO
+        geometryEngine.intersect(bufferGeometry, OZPLayer)
     }
 
     // update the graphic with buffer
@@ -281,6 +359,114 @@ require([
         }
     }
 
+
+    // Get total zoning area within the buffer of one specific zoning
+    // async function, will wait until query process finished, not suitable for large dataset
+
+    // Steps: query OZP in featurelayer intersect with buffer (select by location) and in that zoning (select by attributes)
+    // -> union all "selected" zoning (needed?)
+    // -> use buffer to intersect (act as cookie cutter) to cut the result geoms -> calculate geom area
+
+    // TODO: to improve, find ways to clip FeatureLayer by Graphics, GeometryEngine seems only works with grahpics
+    async function getAreaInBuffer(zoning, buffer) {
+
+        // TODO: test if Only execute function when buffer has actual size?
+
+        var geometryService = new GeometryService("https://utility.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
+
+        var areaInBuffer = 0;
+
+        let query = webLayerView.createQuery();
+
+        query.geometry = sketchGeometry;
+        query.distance = bufferSize;
+        query.where = "ZONE_MAS = '" + zoning + "'";
+        query.spatialRelationship = "intersects";
+
+        // console.log(zoning, "outside queryFeatures");
+
+        let results = await webLayerView.queryFeatures(query);
+
+        console.log("Queried zoning of " + zoning + " intersects with buffer");
+        console.log(results);
+
+        // Check if any features intersect with the buffer
+        // If no, length of results will be 0, i.e. area in buffer = 0
+        if (results.features.length > 0) {
+            // TODO
+            var selectedOZPGeoms = []
+
+            results.features.forEach(function (item) {
+                selectedOZPGeoms.push(item.geometry)
+            });
+
+            // console.log(selectedOZPGeoms);
+
+            // bufferGeometry is required for intersecting OZP
+            var bufferGeometry = geometryEngine.geodesicBuffer(
+                sketchGeometry,
+                buffer,
+                "meters"
+            );
+
+            var unionGeoms = await geometryEngine.union(selectedOZPGeoms)
+            // console.log(unionGeoms);
+            console.log("union function performed");
+
+            var bufferOZPIntersect = await geometryEngine.intersect(bufferGeometry, unionGeoms);
+            console.log("intersect function performed");
+
+            areaInBuffer = await geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters");
+            console.log("area calculated");
+
+            console.log(areaInBuffer);
+
+        // }
+
+        return areaInBuffer;
+
+/*            return webLayerView.queryFeatures(query).then(function (results) {
+
+                
+                console.log(results);
+                console.info(results);
+                console.info(results.features);
+
+                console.log(zoning, "in queryFeatures");
+
+                if (results.features.length > 0) {
+                    // TODO
+                    var selectedOZPGeoms = []
+
+                    results.features.forEach(function (item) {
+                        selectedOZPGeoms.push(item.geometry)
+                    });
+                    
+                    // console.log(selectedOZPGeoms);
+
+                    var unionGeoms = geometryEngine.union(selectedOZPGeoms)
+                    // console.log(unionGeoms);
+                    console.log("union function performed");
+
+                    var bufferOZPIntersect = geometryEngine.intersect(bufferGeometry, unionGeoms);
+                    console.log("intersect function performed");
+
+                    areaInBuffer = geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters");
+                    console.log("area calculated");
+
+                    console.log(areaInBuffer);
+
+                }
+
+                console.log(areaInBuffer, "Outside query");
+                return areaInBuffer;
+            });*/
+
+
+        }
+
+    }
+
     // Calculate geodesic area of a graphic layer (multiple features possible)
     // https://community.esri.com/t5/arcgis-api-for-javascript/calculate-geodesic-area-of-polygon/td-p/367598
     function calculateGeodesicArea(graphicsLayer) {
@@ -294,6 +480,7 @@ require([
       //
       // return GeodesicArea;
     }
+
 
     // Highlight feautres within buffer area
     // Not used now
@@ -372,6 +559,7 @@ require([
         }
     ];
 
+
     function queryStatistics() {
 
         const query = webLayerView.createQuery();
@@ -381,9 +569,10 @@ require([
         query.outStatistics = statDefinitions;
 
         return webLayerView.queryFeatures(query).then(function (result) {
-            const allStats = result.features[0].attributes;
 
-            console.log(result);
+            // console.log(result);
+
+            const allStats = result.features[0].attributes;
 
             updateChart(zoningNumberChart, [
                 allStats.zone_RA,
@@ -397,7 +586,7 @@ require([
     }
 
     createzoningNumberChart();
-
+    createzoningAreaChart();
 
     document.getElementById("lastModified").innerHTML = document.lastModified;
 });

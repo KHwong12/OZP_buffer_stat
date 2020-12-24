@@ -60,6 +60,66 @@ function createzoningNumberChart() {
     });
 }
 
+function createzoningAreaChart() {
+
+    const zoningAreaCanvas = document.getElementById("zoning-area-chart");
+
+    zoningAreaChart = new Chart(zoningAreaCanvas.getContext("2d"), {
+        type: "horizontalBar",
+        data: {
+            labels: [
+                "R(A)",
+                "R(B)",
+                "R(C)",
+                "G/IC",
+                "O",
+                "C"
+            ],
+            datasets: [
+                {
+                    label: "Area (sq.m.)",
+                    backgroundColor: [
+                        '#a1291f',
+                        '#c27428',
+                        '#e6b831',
+                        '#bee1e6',
+                        '#7eb827',
+                        '#eb5b60'
+                    ],
+                    stack: "Stack 0",
+                    data: [0, 0, 0, 0, 0, 0]
+                }
+            ]
+        },
+        options: {
+            responsive: false,
+            legend: {
+                display: false
+            },
+            title: {
+                display: true,
+                text: "Zoning Area"
+            },
+            scales: {
+                xAxes: [
+                    {
+                        stacked: true,
+                        ticks: {
+                            beginAtZero: true,
+                            precision: 0
+                        }
+                    }
+                ],
+                yAxes: [
+                    {
+                        stacked: true
+                    }
+                ]
+            }
+        }
+    });
+}
+
 // Updates the given chart with new data
 function updateChart(chart, dataValues) {
     chart.data.datasets[0].data = dataValues;
@@ -68,5 +128,6 @@ function updateChart(chart, dataValues) {
 
 function clearCharts() {
     updateChart(zoningNumberChart, [0, 0, 0, 0, 0, 0]);
+    updateChart(zoningAreaChart, [0, 0, 0, 0, 0, 0]);
     document.getElementById("count").innerHTML = 0;
 }

@@ -24,3 +24,15 @@
 ## Licensing
 
 TODO
+
+## Features TODO
+
+- Use stacked bar chart to show total
+- Calculate area of "other" category (by total - main categories)
+- add point north widgets
+- add basemap widget
+- control transparency of OZP layer
+
+## Possible performance improvements
+
+- drop async/await
