@@ -86,10 +86,10 @@ require([
     // https://developers.arcgis.com/javascript/latest/sample-code/layers-imagery-clientside/index.html
     const instructionsExpand = new Expand({
         expandIconClass: "esri-icon-question",
-        expandTooltip: "How to use this application",
+        expandTooltip: "How to use",
         view: view,
         expanded: true,
-        content: "<div style='width:200px; padding:10px; background-color: #242424cc'><b>Click</b> the buttons to <b>draw</b> your area of interest. For lines and polygons, double click to finish drawing. <br><br><b>Move</b> the slider to change the buffer distance.</div>"
+        content: "<div style='width:200px; padding:10px; background-color: #242424cc'><b>Click</b> the buttons to <b>draw</b> your area of interest. For lines and polygons, <b>double click</b> to finish drawing. <br><br><b>Move</b> the slider to change the buffer distance.</div>"
     });
 
     view.ui.add(instructionsExpand, "top-left");
@@ -233,6 +233,10 @@ require([
 
 
         updateBufferGraphic(bufferSize);
+
+        // Update geometry stats
+        updateQueryGeomSize(sketchGeometry, bufferSize);
+
         // calculate area of each zoning type, then update the zoning area chart & area figures
         calculateAreaByZoning();
 
@@ -361,17 +365,37 @@ require([
             } else {
                 bufferLayer.graphics.getItemAt(0).geometry = bufferGeometry;
             }
-
-            // Calculate buffer size
-            var bufferGeodesicArea = geometryEngine.geodesicArea(bufferGeometry, "square-meters");
-
-            // Format the size and update the value
-            document.getElementById("query-geometry-size-ha").innerHTML = parseFloat((bufferGeodesicArea * 1e-4).toPrecision(3));
-            document.getElementById("query-geometry-size-sqkm").innerHTML = parseFloat((bufferGeodesicArea * 1e-7).toPrecision(3));
-
         } else {
             bufferLayer.removeAll();
         }
+    }
+
+    function updateQueryGeomSize(queryGeom, buffer) {
+
+        var queryGeomGeodesicArea = 0;
+
+        // if buffer > 0, compute buffer geom
+        if (buffer > 0) {
+            var bufferGeometry = geometryEngine.geodesicBuffer(
+                queryGeom,
+                buffer,
+                "meters"
+            );
+
+            // Calculate buffer size
+            queryGeomGeodesicArea = geometryEngine.geodesicArea(bufferGeometry, "square-meters");
+
+        // else if query geometry is a polygon, get the size of it (line and point must size area of 0)
+        } else if (queryGeom.type === "polygon") {
+
+            queryGeomGeodesicArea = geometryEngine.geodesicArea(queryGeom, "square-meters");
+
+        }
+
+        // Format the size and update the value
+        document.getElementById("query-geometry-size-ha").innerHTML = parseFloat((queryGeomGeodesicArea * 1e-4).toPrecision(3));
+        document.getElementById("query-geometry-size-sqkm").innerHTML = parseFloat((queryGeomGeodesicArea * 1e-7).toPrecision(3));
+
     }
 
 
@@ -386,11 +410,16 @@ require([
     // TODO: to improve, find ways to clip FeatureLayer by Graphics, GeometryEngine seems only works with grahpics
     async function getZoningAreaInBuffer(bufferLength, zoning) {
 
+        console.log("sketchGeometry: ", sketchGeometry);
+        console.log("bufferLength == 0:", bufferLength == 0);
+        console.log("bufferLength === 0:", bufferLength === 0);
+
         // TODO: test if Only execute function when buffer has actual size?
+        // TODO: write unit test
 
         // Sanity Check to ensure the query is not point or line (i.e. query geom has 0 area)
         // return 0 (or should be null)?
-        if (bufferLength === 0 && sketchGeometry !== "polygon") {
+        if (bufferLength === 0 && sketchGeometry.type !== "polygon") {
           console.log("The query geometry is a point/line. Returning area of 0.");
           return 0;
         }
@@ -449,7 +478,7 @@ require([
             // console.log("intersect function performed");
 
             areaInBuffer = await geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters");
-            console.log("area calculated");
+            console.log("getZoningAreaInBuffer(): area calculated");
 
             console.log(areaInBuffer);
 
