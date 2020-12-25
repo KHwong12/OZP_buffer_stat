@@ -11,10 +11,8 @@ require([
     "esri/Graphic",
     "esri/core/promiseUtils",
     "esri/tasks/support/AreasAndLengthsParameters",
-    "esri/widgets/Expand",
-    "esri/tasks/QueryTask",
-    "esri/tasks/support/Query"
-], function (
+    "esri/widgets/Expand"
+], function(
     WebMap,
     MapView,
     FeatureLayer,
@@ -27,9 +25,7 @@ require([
     Graphic,
     promiseUtils,
     AreasAndLengthsParameters,
-    Expand,
-    QueryTask,
-    Query
+    Expand
 ) {
     // Load webmap and display it in a MapView
     const webmap = new WebMap({
@@ -46,8 +42,9 @@ require([
         zoom: 14,
         center: [114.172, 22.281], // lon, lat
         constraints: {
-          maxScale: 0,
-          minScale: 200000
+            maxScale: 0,
+            minScale: 200000,
+            rotationEnabled: false
         }
     });
 
@@ -63,8 +60,8 @@ require([
     let bufferSize = 0;
 
     // Assign web layer once webmap is loaded and initialize UI
-    webmap.load().then(function () {
-        webLayer = webmap.layers.find(function (layer) {
+    webmap.load().then(function() {
+        webLayer = webmap.layers.find(function(layer) {
             // title of layer, not name of the webmap
             return layer.title === "OZP_Nov2019_Sim";
         });
@@ -72,7 +69,7 @@ require([
         // https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-FeatureLayer.html#outFields
         webLayer.outFields = ["*"];
 
-        view.whenLayerView(webLayer).then(function (layerView) {
+        view.whenLayerView(webLayer).then(function(layerView) {
             webLayerView = layerView;
             queryDiv.style.display = "block";
         });
@@ -83,7 +80,7 @@ require([
     });
 
     view.ui.add([queryDiv], "bottom-left");
-/*    view.ui.add([resultDiv], "top-right");*/
+    /*    view.ui.add([resultDiv], "top-right");*/
 
     // https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-Expand.html
     // https://developers.arcgis.com/javascript/latest/sample-code/layers-imagery-clientside/index.html
@@ -92,14 +89,13 @@ require([
         expandTooltip: "How to use this application",
         view: view,
         expanded: true,
-        content:
-            "<div style='width:200px; padding:10px'><b>Click</b> the buttons to <b>draw</b> your area of interest. For lines and polygons, double click to finish drawing. <br><br><b>Move</b> the slider to change the buffer distance.</div>"
+        content: "<div style='width:200px; padding:10px; background-color: #242424cc'><b>Click</b> the buttons to <b>draw</b> your area of interest. For lines and polygons, double click to finish drawing. <br><br><b>Move</b> the slider to change the buffer distance.</div>"
     });
 
     view.ui.add(instructionsExpand, "top-left");
 
     // Close the 'help' popup when view is focused
-    view.watch("focused", function (isFocused) {
+    view.watch("focused", function(isFocused) {
         if (isFocused) {
             instructionsExpand.expanded = false;
         }
@@ -123,13 +119,13 @@ require([
             font: {
                 size: 24,
                 family: "CalciteWebCoreIcons"
-                }
-            },
+            }
+        },
         polylineSymbol: {
-                type: "simple-line",
-                color: [51, 51, 204, 0.5],
-                width: "4px"
-            },
+            type: "simple-line",
+            color: [51, 51, 204, 0.5],
+            width: "4px"
+        },
         polygonSymbol: {
             type: "simple-fill", // autocasts as new SimpleFillSymbol()
             color: [51, 51, 204, 0.4],
@@ -140,18 +136,20 @@ require([
             }
         },
         view: view,
-        defaultCreateOptions: { hasZ: false }
+        defaultCreateOptions: {
+            hasZ: false
+        }
     });
 
     // query the OZP layer when geometry is created or updated
-    sketchViewModel.on("create", function (event) {
+    sketchViewModel.on("create", function(event) {
         if (event.state === "complete") {
             sketchGeometry = event.graphic.geometry;
             runQuery();
         }
     });
 
-    sketchViewModel.on("update", function (event) {
+    sketchViewModel.on("update", function(event) {
         if (event.state === "complete") {
             sketchGeometry = event.graphics[0].geometry;
             runQuery();
@@ -186,7 +184,7 @@ require([
             labels: true
         },
         precision: 0,
-        labelFormatFunction: function (value, type) {
+        labelFormatFunction: function(value, type) {
             return value.toString() + "m";
         },
         values: [0]
@@ -197,9 +195,9 @@ require([
         ["thumb-change", "thumb-drag"],
         bufferVariablesChanged
     );
+
     function bufferVariablesChanged(event) {
         bufferSize = event.value;
-
         runQuery();
     }
 
@@ -224,7 +222,7 @@ require([
     }
 
     // set the geometry query on the visible webLayerView
-    var debouncedRunQuery = promiseUtils.debounce(function () {
+    var debouncedRunQuery = promiseUtils.debounce(function() {
         if (!sketchGeometry) {
             return;
         }
@@ -255,15 +253,15 @@ require([
     async function calculateAreaByZoning() {
         // getAreaInBufferByZoning(bufferSize);
 
-        var selectedZoningAreas = []
+        var selectedZoningAreas = [];
 
-        const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C"]
+        const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C"];
         // const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C", "MRDJ"]
 
         // TODO: improve efficiency with async + map array
         // https://flaviocopes.com/javascript-async-await-array-map/
 
-        for (zoning of selectedZonings) {
+        for (var zoning of selectedZonings) {
             selectedZoningAreas.push(await getAreaInBuffer(zoning, bufferSize));
         }
 
@@ -275,36 +273,37 @@ require([
         updateChart(zoningAreaChart, selectedZoningAreas.map(Math.round));
 
 
-/*        var selectedZoningsArea = await selectedZonings.map(
-            async function (x) { return await getAreaInBuffer(x, bufferSize); }
-        );
+        /*        var selectedZoningsArea = await selectedZonings.map(
+                    async function (x) { return await getAreaInBuffer(x, bufferSize); }
+                );
 
 
-/*        console.log(getAreaInBuffer("R(A)", bufferSize));*//*
+        /*        console.log(getAreaInBuffer("R(A)", bufferSize));*/
+        /*
 
-        const test1 = Promise.all(selectedZoningsArea).then(x => {
-            console.log(selectedZoningsArea, "inside all promise");
-                    console.log(getAreaInBuffer("R(A)", bufferSize), "inside all promise");
-            areaByZoning = selectedZonings.reduce((acc, key, index) => ({ ...acc, [key]: selectedZoningsArea[index] }), {})
+                const test1 = Promise.all(selectedZoningsArea).then(x => {
+                    console.log(selectedZoningsArea, "inside all promise");
+                            console.log(getAreaInBuffer("R(A)", bufferSize), "inside all promise");
+                    areaByZoning = selectedZonings.reduce((acc, key, index) => ({ ...acc, [key]: selectedZoningsArea[index] }), {})
 
-            console.log(areaByZoning["R(A)"]);
+                    console.log(areaByZoning["R(A)"]);
 
-            alert(areaByZoning["R(A)"]);
-        });
+                    alert(areaByZoning["R(A)"]);
+                });
 
-        const test = async () => {
-            const a = await test1;
-            console.log(a);
-            alert("async here");
-        };*/
+                const test = async () => {
+                    const a = await test1;
+                    console.log(a);
+                    alert("async here");
+                };*/
 
-    /*        Promise.all(selectedZoningsArea).then(function () {
-                console.log(selectedZoningsArea);
-            });*/
+        /*        Promise.all(selectedZoningsArea).then(function () {
+                    console.log(selectedZoningsArea);
+                });*/
 
-    /*        console.log(selectedZonings.map(
-                function (x) { return getAreaInBuffer(x, bufferSize); }
-            ));*/
+        /*        console.log(selectedZonings.map(
+                    function (x) { return getAreaInBuffer(x, bufferSize); }
+                ));*/
     }
 
     const OZPLayer = new FeatureLayer({
@@ -314,7 +313,7 @@ require([
 
     function clipOZP() {
         // TODO
-        geometryEngine.intersect(bufferGeometry, OZPLayer)
+        geometryEngine.intersect(bufferGeometry, OZPLayer);
     }
 
     // update the graphic with buffer
@@ -393,11 +392,14 @@ require([
         // Check if any features intersect with the buffer
         // If no, length of results will be 0, i.e. area in buffer = 0
         if (results.features.length > 0) {
-            // TODO
-            var selectedOZPGeoms = []
 
-            results.features.forEach(function (item) {
-                selectedOZPGeoms.push(item.geometry)
+            //
+            var selectedOZPGeoms = [];
+
+            // results is a query, but only gemoetry of the queried is needed
+            // Get the geometry value inside the object
+            results.features.forEach(function(item) {
+                selectedOZPGeoms.push(item.geometry);
             });
 
             // console.log(selectedOZPGeoms);
@@ -409,58 +411,57 @@ require([
                 "meters"
             );
 
-            var unionGeoms = await geometryEngine.union(selectedOZPGeoms)
-            // console.log(unionGeoms);
-            console.log("union function performed");
+            var unionGeoms = await geometryEngine.union(selectedOZPGeoms);
+            // console.log("union function performed");
 
             var bufferOZPIntersect = await geometryEngine.intersect(bufferGeometry, unionGeoms);
-            console.log("intersect function performed");
+            // console.log("intersect function performed");
 
             areaInBuffer = await geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters");
             console.log("area calculated");
 
             console.log(areaInBuffer);
 
-        // }
+            // }
 
-        return areaInBuffer;
+            return areaInBuffer;
 
-/*            return webLayerView.queryFeatures(query).then(function (results) {
+            /*            return webLayerView.queryFeatures(query).then(function (results) {
 
-                
-                console.log(results);
-                console.info(results);
-                console.info(results.features);
 
-                console.log(zoning, "in queryFeatures");
+                            console.log(results);
+                            console.info(results);
+                            console.info(results.features);
 
-                if (results.features.length > 0) {
-                    // TODO
-                    var selectedOZPGeoms = []
+                            console.log(zoning, "in queryFeatures");
 
-                    results.features.forEach(function (item) {
-                        selectedOZPGeoms.push(item.geometry)
-                    });
-                    
-                    // console.log(selectedOZPGeoms);
+                            if (results.features.length > 0) {
+                                // TODO
+                                var selectedOZPGeoms = []
 
-                    var unionGeoms = geometryEngine.union(selectedOZPGeoms)
-                    // console.log(unionGeoms);
-                    console.log("union function performed");
+                                results.features.forEach(function (item) {
+                                    selectedOZPGeoms.push(item.geometry)
+                                });
 
-                    var bufferOZPIntersect = geometryEngine.intersect(bufferGeometry, unionGeoms);
-                    console.log("intersect function performed");
+                                // console.log(selectedOZPGeoms);
 
-                    areaInBuffer = geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters");
-                    console.log("area calculated");
+                                var unionGeoms = geometryEngine.union(selectedOZPGeoms)
+                                // console.log(unionGeoms);
+                                console.log("union function performed");
 
-                    console.log(areaInBuffer);
+                                var bufferOZPIntersect = geometryEngine.intersect(bufferGeometry, unionGeoms);
+                                console.log("intersect function performed");
 
-                }
+                                areaInBuffer = geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters");
+                                console.log("area calculated");
 
-                console.log(areaInBuffer, "Outside query");
-                return areaInBuffer;
-            });*/
+                                console.log(areaInBuffer);
+
+                            }
+
+                            console.log(areaInBuffer, "Outside query");
+                            return areaInBuffer;
+                        });*/
 
 
         }
@@ -470,15 +471,15 @@ require([
     // Calculate geodesic area of a graphic layer (multiple features possible)
     // https://community.esri.com/t5/arcgis-api-for-javascript/calculate-geodesic-area-of-polygon/td-p/367598
     function calculateGeodesicArea(graphicsLayer) {
-      // TODO
+        // TODO
 
-      // var GeodesicArea = 0
-      //
-      // graphicsLayer.graphics.map(function (grap) {
-      //   GeodesicArea = geometryEngine.geodesicArea(grap.geometry, "square-meters");
-      // });
-      //
-      // return GeodesicArea;
+        // var GeodesicArea = 0
+        //
+        // graphicsLayer.graphics.map(function (grap) {
+        //   GeodesicArea = geometryEngine.geodesicArea(grap.geometry, "square-meters");
+        // });
+        //
+        // return GeodesicArea;
     }
 
 
@@ -520,40 +521,33 @@ require([
         // return webLayerView.queryObjectIds(query).then(highlightGeometries);
     }
 
-    const statDefinitions = [
-        {
-            onStatisticField:
-                "CASE WHEN ZONE_MAS = 'R(A)' THEN 1 ELSE 0 END",
+    const statDefinitions = [{
+            onStatisticField: "CASE WHEN ZONE_MAS = 'R(A)' THEN 1 ELSE 0 END",
             outStatisticFieldName: "zone_RA",
             statisticType: "sum"
         },
         {
-            onStatisticField:
-                "CASE WHEN ZONE_MAS = 'R(B)' THEN 1 ELSE 0 END",
+            onStatisticField: "CASE WHEN ZONE_MAS = 'R(B)' THEN 1 ELSE 0 END",
             outStatisticFieldName: "zone_RB",
             statisticType: "sum"
         },
         {
-            onStatisticField:
-                "CASE WHEN ZONE_MAS = 'R(C)' THEN 1 ELSE 0 END",
+            onStatisticField: "CASE WHEN ZONE_MAS = 'R(C)' THEN 1 ELSE 0 END",
             outStatisticFieldName: "zone_RC",
             statisticType: "sum"
         },
         {
-            onStatisticField:
-                "CASE WHEN ZONE_MAS = 'G/IC' THEN 1 ELSE 0 END",
+            onStatisticField: "CASE WHEN ZONE_MAS = 'G/IC' THEN 1 ELSE 0 END",
             outStatisticFieldName: "zone_GIC",
             statisticType: "sum"
         },
         {
-            onStatisticField:
-                "CASE WHEN ZONE_MAS = 'O' THEN 1 ELSE 0 END",
+            onStatisticField: "CASE WHEN ZONE_MAS = 'O' THEN 1 ELSE 0 END",
             outStatisticFieldName: "zone_O",
             statisticType: "sum"
         },
         {
-            onStatisticField:
-                "CASE WHEN ZONE_MAS = 'C' THEN 1 ELSE 0 END",
+            onStatisticField: "CASE WHEN ZONE_MAS = 'C' THEN 1 ELSE 0 END",
             outStatisticFieldName: "zone_C",
             statisticType: "sum"
         }
@@ -568,7 +562,7 @@ require([
         query.distance = bufferSize;
         query.outStatistics = statDefinitions;
 
-        return webLayerView.queryFeatures(query).then(function (result) {
+        return webLayerView.queryFeatures(query).then(function(result) {
 
             // console.log(result);
 

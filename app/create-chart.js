@@ -1,5 +1,23 @@
 /// *** Create Charts *** ///
 
+var zoningLabels = [
+    "R(A)",
+    "R(B)",
+    "R(C)",
+    "G/IC",
+    "O",
+    "C"
+];
+
+var zoningColors = [
+    '#a1291f',
+    '#c27428',
+    '#e6b831',
+    '#bee1e6',
+    '#7eb827',
+    '#eb5b60'
+];
+
 function createzoningNumberChart() {
 
     const zoningNumberCanvas = document.getElementById("zoning-number-chart");
@@ -7,29 +25,13 @@ function createzoningNumberChart() {
     zoningNumberChart = new Chart(zoningNumberCanvas.getContext("2d"), {
         type: "horizontalBar",
         data: {
-            labels: [
-                "R(A)",
-                "R(B)",
-                "R(C)",
-                "G/IC",
-                "O",
-                "C"
-            ],
-            datasets: [
-                {
-                    label: "Zoning",
-                    backgroundColor: [
-                      '#a1291f',
-                      '#c27428',
-                      '#e6b831',
-                      '#bee1e6',
-                      '#7eb827',
-                      '#eb5b60'
-                    ],
-                    stack: "Stack 0",
-                    data: [0, 0, 0, 0, 0, 0]
-                }
-            ]
+            labels: zoningLabels,
+            datasets: [{
+                label: "Zoning",
+                backgroundColor: zoningColors,
+                stack: "Stack 0",
+                data: [0, 0, 0, 0, 0, 0]
+            }]
         },
         options: {
             responsive: false,
@@ -41,20 +43,16 @@ function createzoningNumberChart() {
                 text: "Zoning"
             },
             scales: {
-                xAxes: [
-                    {
-                        stacked: true,
-                        ticks: {
-                            beginAtZero: true,
-                            precision: 0
-                        }
+                xAxes: [{
+                    stacked: true,
+                    ticks: {
+                        beginAtZero: true,
+                        precision: 0
                     }
-                ],
-                yAxes: [
-                    {
-                        stacked: true
-                    }
-                ]
+                }],
+                yAxes: [{
+                    stacked: true
+                }]
             }
         }
     });
@@ -67,29 +65,13 @@ function createzoningAreaChart() {
     zoningAreaChart = new Chart(zoningAreaCanvas.getContext("2d"), {
         type: "horizontalBar",
         data: {
-            labels: [
-                "R(A)",
-                "R(B)",
-                "R(C)",
-                "G/IC",
-                "O",
-                "C"
-            ],
-            datasets: [
-                {
-                    label: "Area (sq.m.)",
-                    backgroundColor: [
-                        '#a1291f',
-                        '#c27428',
-                        '#e6b831',
-                        '#bee1e6',
-                        '#7eb827',
-                        '#eb5b60'
-                    ],
-                    stack: "Stack 0",
-                    data: [0, 0, 0, 0, 0, 0]
-                }
-            ]
+            labels: zoningLabels,
+            datasets: [{
+                label: "Area (sq.m.)",
+                backgroundColor: zoningColors,
+                stack: "Stack 0",
+                data: [0, 0, 0, 0, 0, 0]
+            }]
         },
         options: {
             responsive: false,
@@ -101,20 +83,16 @@ function createzoningAreaChart() {
                 text: "Zoning Area"
             },
             scales: {
-                xAxes: [
-                    {
-                        stacked: true,
-                        ticks: {
-                            beginAtZero: true,
-                            precision: 0
-                        }
+                xAxes: [{
+                    stacked: true,
+                    ticks: {
+                        beginAtZero: true,
+                        precision: 0
                     }
-                ],
-                yAxes: [
-                    {
-                        stacked: true
-                    }
-                ]
+                }],
+                yAxes: [{
+                    stacked: true
+                }]
             }
         }
     });
