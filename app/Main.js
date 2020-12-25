@@ -268,6 +268,11 @@ require([
         var totalAreaInOZP = await getAreaInBuffer(bufferSize);
         console.log("totalAreaInOZP: ", totalAreaInOZP);
 
+        // Format the size and update the value
+        document.getElementById("OZP-size-ha").innerHTML = parseFloat((totalAreaInOZP * 1e-4).toPrecision(3));
+        document.getElementById("OZP-size-sqkm").innerHTML = parseFloat((totalAreaInOZP * 1e-7).toPrecision(3));
+
+
         // https://stackoverflow.com/questions/1230233/how-to-find-the-sum-of-an-array-of-numbers
         majorZoningsTotalArea = selectedZoningAreas.reduce((partial_sum, a) => partial_sum + a, 0);
 
