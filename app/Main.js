@@ -578,18 +578,25 @@ require([
             onStatisticField: "CASE WHEN ZONE_MAS = 'C' THEN 1 ELSE 0 END",
             outStatisticFieldName: "zone_C",
             statisticType: "sum"
+        },
+        {
+            onStatisticField: "CASE WHEN ZONE_MAS NOT IN ('R(A)', 'R(B)', 'R(C)', 'G/IC', 'O', 'C') THEN 1 ELSE 0 END",
+            outStatisticFieldName: "zone_OTHERS",
+            statisticType: "sum"
         }
     ];
 
 
     function queryStatistics() {
 
+        // https://developers.arcgis.com/javascript/latest/api-reference/esri-tasks-support-Query.html
         const query = webLayerView.createQuery();
 
         query.geometry = sketchGeometry;
         query.distance = bufferSize;
         query.outStatistics = statDefinitions;
 
+        // with outStatistics returned result is a "table" with geometry of null
         return webLayerView.queryFeatures(query).then(function(result) {
 
             // console.log(result);
@@ -603,6 +610,7 @@ require([
                 allStats.zone_GIC,
                 allStats.zone_O,
                 allStats.zone_C,
+                allStats.zone_OTHERS
             ]);
         }, console.error);
     }

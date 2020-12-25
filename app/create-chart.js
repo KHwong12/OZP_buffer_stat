@@ -29,7 +29,7 @@ function createzoningNumberChart() {
         data: {
             labels: zoningLabels,
             datasets: [{
-                label: "Zoning",
+                label: "Number of pieces",
                 backgroundColor: zoningColors,
                 stack: "Stack 0",
                 data: [0, 0, 0, 0, 0, 0, 0]
@@ -42,7 +42,7 @@ function createzoningNumberChart() {
             },
             title: {
                 display: true,
-                text: "Zoning"
+                text: "Zoning Pieces"
             },
             scales: {
                 xAxes: [{
