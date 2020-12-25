@@ -145,6 +145,7 @@ require([
     sketchViewModel.on("create", function(event) {
         if (event.state === "complete") {
             sketchGeometry = event.graphic.geometry;
+            console.log(sketchGeometry)
             runQuery();
         }
     });
@@ -152,6 +153,7 @@ require([
     sketchViewModel.on("update", function(event) {
         if (event.state === "complete") {
             sketchGeometry = event.graphics[0].geometry;
+            console.log(sketchGeometry)
             runQuery();
         }
     });
@@ -170,7 +172,7 @@ require([
 
     function geometryButtonsClickHandler(event) {
         const geometryType = event.target.value;
-        clearGeometry();
+        clearResults();
         sketchViewModel.create(geometryType);
     }
 
@@ -201,14 +203,14 @@ require([
         runQuery();
     }
 
-    // Listener of "Clear Geometry" Button
+    // Listener of "Clear Results" Button
     document
-        .getElementById("clearGeometry")
-        .addEventListener("click", clearGeometry);
+        .getElementById("clearResults")
+        .addEventListener("click", clearResults);
 
     // Clear the geometry and set the default renderer
     // Reset all to default
-    function clearGeometry() {
+    function clearResults() {
         sketchGeometry = null;
         sketchViewModel.cancel();
         sketchLayer.removeAll();
@@ -218,6 +220,8 @@ require([
 
         document.getElementById("buffer-size-ha").innerHTML = 0;
         document.getElementById("buffer-size-sqkm").innerHTML = 0;
+        document.getElementById("OZP-size-ha").innerHTML = 0;
+        document.getElementById("OZP-size-sqkm").innerHTML = 0;
         // resultDiv.style.display = "none";
     }
 

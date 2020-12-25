@@ -6,7 +6,8 @@ var zoningLabels = [
     "R(C)",
     "G/IC",
     "O",
-    "C"
+    "C",
+    "Others"
 ];
 
 var zoningColors = [
@@ -15,7 +16,8 @@ var zoningColors = [
     '#e6b831',
     '#bee1e6',
     '#7eb827',
-    '#eb5b60'
+    '#eb5b60',
+    '#cccccc'
 ];
 
 function createzoningNumberChart() {
@@ -30,7 +32,7 @@ function createzoningNumberChart() {
                 label: "Zoning",
                 backgroundColor: zoningColors,
                 stack: "Stack 0",
-                data: [0, 0, 0, 0, 0, 0]
+                data: [0, 0, 0, 0, 0, 0, 0]
             }]
         },
         options: {
@@ -70,7 +72,7 @@ function createzoningAreaChart() {
                 label: "Area (sq.m.)",
                 backgroundColor: zoningColors,
                 borderWidth: 0,
-                data: [0, 0, 0, 0, 0, 0]
+                data: [0, 0, 0, 0, 0, 0, 0]
             }]
         },
         options: {
@@ -80,7 +82,7 @@ function createzoningAreaChart() {
             },
             title: {
                 display: true,
-                text: "Zoning Area"
+                text: "Distribution of zoning areas (sq.m.)"
             }
         }
     });
@@ -93,7 +95,7 @@ function updateChart(chart, dataValues) {
 }
 
 function clearCharts() {
-    updateChart(zoningNumberChart, [0, 0, 0, 0, 0, 0]);
-    updateChart(zoningAreaChart, [0, 0, 0, 0, 0, 0]);
+    updateChart(zoningNumberChart, [0, 0, 0, 0, 0, 0, 0]);
+    updateChart(zoningAreaChart, [0, 0, 0, 0, 0, 0, 0]);
     document.getElementById("count").innerHTML = 0;
 }
