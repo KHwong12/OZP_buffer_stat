@@ -33,6 +33,8 @@ TODO
 - add basemap widget
 - control transparency of OZP layer
 
+- Change contentDiv width for mobile use
+
 ## Possible performance improvements
 
 - drop async/await

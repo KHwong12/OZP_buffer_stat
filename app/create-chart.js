@@ -63,13 +63,13 @@ function createzoningAreaChart() {
     const zoningAreaCanvas = document.getElementById("zoning-area-chart");
 
     zoningAreaChart = new Chart(zoningAreaCanvas.getContext("2d"), {
-        type: "horizontalBar",
+        type: "doughnut",
         data: {
             labels: zoningLabels,
             datasets: [{
                 label: "Area (sq.m.)",
                 backgroundColor: zoningColors,
-                stack: "Stack 0",
+                borderWidth: 0,
                 data: [0, 0, 0, 0, 0, 0]
             }]
         },
@@ -81,18 +81,6 @@ function createzoningAreaChart() {
             title: {
                 display: true,
                 text: "Zoning Area"
-            },
-            scales: {
-                xAxes: [{
-                    stacked: true,
-                    ticks: {
-                        beginAtZero: true,
-                        precision: 0
-                    }
-                }],
-                yAxes: [{
-                    stacked: true
-                }]
             }
         }
     });

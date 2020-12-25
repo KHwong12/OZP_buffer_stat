@@ -72,6 +72,10 @@ body {
     display: inline-block;
 }
 
+.charts canvas {
+    margin: 25px auto;
+}
+
 footer {
     font-size: 0.8em;
     line-height: 1.3em;
