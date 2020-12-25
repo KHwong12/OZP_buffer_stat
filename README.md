@@ -27,9 +27,6 @@ TODO
 
 ## Features TODO
 
-- Use stacked bar chart to show total
-- Calculate area of "other" category (by total - main categories)
-- add point north widgets
 - add basemap widget
 - control transparency of OZP layer
 
@@ -38,3 +35,7 @@ TODO
 ## Possible performance improvements
 
 - drop async/await
+
+## Caveats
+
+Only zonings **on land** are shown and included in the calculation of OZP area. Zonings on water like *Marine Basin* (in H24), *Typhoon Shelter* (in H15, K20, I-CC, etc.), *Vessel Anchorage / Sea Channel* (in I-SKC), *River Channel* (in ST, I-TOTC, etc.), *Nullah* (in K15, etc.), *Inlet* (in I-NEL) are excluded.

@@ -7,11 +7,11 @@ require([
     "esri/widgets/Slider",
     "esri/geometry/Polygon",
     "esri/geometry/geometryEngine",
-    "esri/tasks/GeometryService",
     "esri/Graphic",
     "esri/core/promiseUtils",
     "esri/tasks/support/AreasAndLengthsParameters",
-    "esri/widgets/Expand"
+    "esri/widgets/Expand",
+    "esri/widgets/BasemapGallery"
 ], function(
     WebMap,
     MapView,
@@ -21,11 +21,11 @@ require([
     Slider,
     Polygon,
     geometryEngine,
-    GeometryService,
     Graphic,
     promiseUtils,
     AreasAndLengthsParameters,
-    Expand
+    Expand,
+    BasemapGallery
 ) {
     // Load webmap and display it in a MapView
     const webmap = new WebMap({
@@ -100,6 +100,43 @@ require([
             instructionsExpand.expanded = false;
         }
     });
+
+    // Create a BasemapGallery widget instance and set
+    // its container to a div element
+    // https://developers.arcgis.com/javascript/latest/sample-code/widgets-expand/index.html
+
+    var basemapGallery = new BasemapGallery({
+      view: view,
+      container: document.createElement("div")
+    });
+
+    // Create an Expand instance and set the content
+    // property to the DOM node of the basemap gallery widget
+    // Use an Esri icon font to represent the content inside
+    // of the Expand widget
+
+    var bgExpand = new Expand({
+      view: view,
+      content: basemapGallery,
+      expandTooltip: "Change Basemap"
+    });
+
+    // close the expand whenever a basemap is selected
+    basemapGallery.watch("activeBasemap", function () {
+      var mobileSize =
+        view.heightBreakpoint === "xsmall" ||
+        view.widthBreakpoint === "xsmall";
+
+      if (mobileSize) {
+        bgExpand.collapse();
+      }
+    });
+
+    // Add the expand instance to the ui
+    view.ui.add(bgExpand, "top-left");
+
+    //////////////////////////////////////////
+    // web map now initialised
 
     // use SketchViewModel to draw polygons for spatial query
     let sketchGeometry = null;
