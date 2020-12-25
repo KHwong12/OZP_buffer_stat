@@ -145,7 +145,6 @@ require([
     sketchViewModel.on("create", function(event) {
         if (event.state === "complete") {
             sketchGeometry = event.graphic.geometry;
-            console.log(sketchGeometry)
             runQuery();
         }
     });
@@ -153,7 +152,6 @@ require([
     sketchViewModel.on("update", function(event) {
         if (event.state === "complete") {
             sketchGeometry = event.graphics[0].geometry;
-            console.log(sketchGeometry)
             runQuery();
         }
     });
@@ -255,7 +253,7 @@ require([
     }
 
     async function calculateAreaByZoning() {
-        // getAreaInBufferByZoning(bufferSize);
+        // getZoningAreaInBufferByZoning(bufferSize);
 
         var selectedZoningAreas = [];
 
@@ -266,10 +264,10 @@ require([
         // https://flaviocopes.com/javascript-async-await-array-map/
 
         for (var zoning of selectedZonings) {
-            selectedZoningAreas.push(await getAreaInBuffer(bufferSize, zoning));
+            selectedZoningAreas.push(await getZoningAreaInBuffer(bufferSize, zoning));
         }
 
-        var totalAreaInOZP = await getAreaInBuffer(bufferSize);
+        var totalAreaInOZP = await getZoningAreaInBuffer(bufferSize);
         console.log("totalAreaInOZP: ", totalAreaInOZP);
 
         // Format the size and update the value
@@ -292,16 +290,16 @@ require([
 
 
         /*        var selectedZoningsArea = await selectedZonings.map(
-                    async function (x) { return await getAreaInBuffer(x, bufferSize); }
+                    async function (x) { return await getZoningAreaInBuffer(x, bufferSize); }
                 );
 
 
-        /*        console.log(getAreaInBuffer("R(A)", bufferSize));*/
+        /*        console.log(getZoningAreaInBuffer("R(A)", bufferSize));*/
         /*
 
                 const test1 = Promise.all(selectedZoningsArea).then(x => {
                     console.log(selectedZoningsArea, "inside all promise");
-                            console.log(getAreaInBuffer("R(A)", bufferSize), "inside all promise");
+                            console.log(getZoningAreaInBuffer("R(A)", bufferSize), "inside all promise");
                     areaByZoning = selectedZonings.reduce((acc, key, index) => ({ ...acc, [key]: selectedZoningsArea[index] }), {})
 
                     console.log(areaByZoning["R(A)"]);
@@ -320,7 +318,7 @@ require([
                 });*/
 
         /*        console.log(selectedZonings.map(
-                    function (x) { return getAreaInBuffer(x, bufferSize); }
+                    function (x) { return getZoningAreaInBuffer(x, bufferSize); }
                 ));*/
     }
 
@@ -386,18 +384,24 @@ require([
     // -> use buffer to intersect (act as cookie cutter) to cut the result geoms -> calculate geom area
 
     // TODO: to improve, find ways to clip FeatureLayer by Graphics, GeometryEngine seems only works with grahpics
-    async function getAreaInBuffer(buffer, zoning) {
+    async function getZoningAreaInBuffer(bufferLength, zoning) {
 
         // TODO: test if Only execute function when buffer has actual size?
 
-        var geometryService = new GeometryService("https://utility.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
+        // Sanity Check to ensure the query is not point or line (i.e. query geom has 0 area)
+        // return 0 (or should be null)?
+        if (bufferLength === 0 && sketchGeometry !== "polygon") {
+          console.log("The query geometry is a point/line. Returning area of 0.");
+          return 0;
+        }
 
         var areaInBuffer = 0;
 
         let query = webLayerView.createQuery();
 
         query.geometry = sketchGeometry;
-        query.distance = bufferSize;
+        query.distance = bufferLength;
+
 
         // If zoning params is provided
         // https://stackoverflow.com/questions/13019640/how-to-test-if-a-parameter-is-provided-to-a-function
@@ -407,6 +411,7 @@ require([
         }
 
         query.spatialRelationship = "intersects";
+
 
         // console.log(zoning, "outside queryFeatures");
 
@@ -433,7 +438,7 @@ require([
             // bufferGeometry is required for intersecting OZP
             var bufferGeometry = geometryEngine.geodesicBuffer(
                 sketchGeometry,
-                buffer,
+                bufferLength,
                 "meters"
             );
 
