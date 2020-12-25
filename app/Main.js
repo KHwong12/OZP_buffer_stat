@@ -262,8 +262,17 @@ require([
         // https://flaviocopes.com/javascript-async-await-array-map/
 
         for (var zoning of selectedZonings) {
-            selectedZoningAreas.push(await getAreaInBuffer(zoning, bufferSize));
+            selectedZoningAreas.push(await getAreaInBuffer(bufferSize, zoning));
         }
+
+        var totalAreaInOZP = await getAreaInBuffer(bufferSize);
+        console.log("totalAreaInOZP: ", totalAreaInOZP);
+
+        // https://stackoverflow.com/questions/1230233/how-to-find-the-sum-of-an-array-of-numbers
+        majorZoningsTotalArea = selectedZoningAreas.reduce((partial_sum, a) => partial_sum + a, 0);
+
+        // Get total area of other zonings
+        selectedZoningAreas.push(totalAreaInOZP - majorZoningsTotalArea);
 
         console.log(selectedZoningAreas);
 
@@ -359,7 +368,8 @@ require([
     }
 
 
-    // Get total zoning area within the buffer of one specific zoning
+    // Get total zoning area within the buffer
+    // if zoning is provided, get total area of that specific zoning
     // async function, will wait until query process finished, not suitable for large dataset
 
     // Steps: query OZP in featurelayer intersect with buffer (select by location) and in that zoning (select by attributes)
@@ -367,7 +377,7 @@ require([
     // -> use buffer to intersect (act as cookie cutter) to cut the result geoms -> calculate geom area
 
     // TODO: to improve, find ways to clip FeatureLayer by Graphics, GeometryEngine seems only works with grahpics
-    async function getAreaInBuffer(zoning, buffer) {
+    async function getAreaInBuffer(buffer, zoning) {
 
         // TODO: test if Only execute function when buffer has actual size?
 
@@ -379,14 +389,21 @@ require([
 
         query.geometry = sketchGeometry;
         query.distance = bufferSize;
-        query.where = "ZONE_MAS = '" + zoning + "'";
+
+        // If zoning params is provided
+        // https://stackoverflow.com/questions/13019640/how-to-test-if-a-parameter-is-provided-to-a-function
+        if (zoning !== undefined) {
+            query.where = "ZONE_MAS = '" + zoning + "'";
+            console.log("Will query zoning of " + zoning + " intersects with buffer");
+        }
+
         query.spatialRelationship = "intersects";
 
         // console.log(zoning, "outside queryFeatures");
 
         let results = await webLayerView.queryFeatures(query);
 
-        console.log("Queried zoning of " + zoning + " intersects with buffer");
+        console.log("Queried zoning intersects with buffer");
         console.log(results);
 
         // Check if any features intersect with the buffer
@@ -422,51 +439,48 @@ require([
 
             console.log(areaInBuffer);
 
-            // }
-
-            return areaInBuffer;
-
-            /*            return webLayerView.queryFeatures(query).then(function (results) {
-
-
-                            console.log(results);
-                            console.info(results);
-                            console.info(results.features);
-
-                            console.log(zoning, "in queryFeatures");
-
-                            if (results.features.length > 0) {
-                                // TODO
-                                var selectedOZPGeoms = []
-
-                                results.features.forEach(function (item) {
-                                    selectedOZPGeoms.push(item.geometry)
-                                });
-
-                                // console.log(selectedOZPGeoms);
-
-                                var unionGeoms = geometryEngine.union(selectedOZPGeoms)
-                                // console.log(unionGeoms);
-                                console.log("union function performed");
-
-                                var bufferOZPIntersect = geometryEngine.intersect(bufferGeometry, unionGeoms);
-                                console.log("intersect function performed");
-
-                                areaInBuffer = geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters");
-                                console.log("area calculated");
-
-                                console.log(areaInBuffer);
-
-                            }
-
-                            console.log(areaInBuffer, "Outside query");
-                            return areaInBuffer;
-                        });*/
-
-
         }
 
+        return areaInBuffer;
     }
+
+    /*            return webLayerView.queryFeatures(query).then(function (results) {
+
+
+                    console.log(results);
+                    console.info(results);
+                    console.info(results.features);
+
+                    console.log(zoning, "in queryFeatures");
+
+                    if (results.features.length > 0) {
+                        // TODO
+                        var selectedOZPGeoms = []
+
+                        results.features.forEach(function (item) {
+                            selectedOZPGeoms.push(item.geometry)
+                        });
+
+                        // console.log(selectedOZPGeoms);
+
+                        var unionGeoms = geometryEngine.union(selectedOZPGeoms)
+                        // console.log(unionGeoms);
+                        console.log("union function performed");
+
+                        var bufferOZPIntersect = geometryEngine.intersect(bufferGeometry, unionGeoms);
+                        console.log("intersect function performed");
+
+                        areaInBuffer = geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters");
+                        console.log("area calculated");
+
+                        console.log(areaInBuffer);
+
+                    }
+
+                    console.log(areaInBuffer, "Outside query");
+                    return areaInBuffer;
+                });*/
+
 
     // Calculate geodesic area of a graphic layer (multiple features possible)
     // https://community.esri.com/t5/arcgis-api-for-javascript/calculate-geodesic-area-of-polygon/td-p/367598
