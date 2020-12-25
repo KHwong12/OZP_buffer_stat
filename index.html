@@ -3,13 +3,8 @@
     <meta charset="utf-8" />
     <meta name="viewport"
           content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-    <!--
-    ArcGIS API for JavaScript, https://js.arcgis.com
-    For more information about the layers-scenelayerview-query-stats sample, read the original sample description at developers.arcgis.com.
-    https://developers.arcgis.com/javascript/latest/sample-code/layers-scenelayerview-query-stats/index.html
-    -->
     <title>
-        Query land use zonings by geometries | A Sample Web Map Application
+        Zone In - Query land use zonings by geometries
     </title>
     <link rel="stylesheet" href="styles/main.css">
     <!-- Load the Chart.js library -->
@@ -54,11 +49,11 @@
 
 <!--    <div id="resultDiv" class="esri-widget">
         <div class="query-stat-num">
-            <div class="buffer-size">
+            <div class="query-geometry-size">
                 <h3>Buffer size:</h3>
-                <div class="buffer-size-ha" id="buffer-size-ha">0</div>
+                <div class="query-geometry-size-ha" id="query-geometry-size-ha">0</div>
                 (ha) |
-                <div class="buffer-size-sqkm" id="buffer-size-sqkm">0</div>
+                <div class="query-geometry-size-sqkm" id="query-geometry-size-sqkm">0</div>
                 (sq.km.)
             </div>
             <br />
@@ -76,16 +71,16 @@
 
     <div id="contentDiv" class="esri-widget">
         <h1>Zone In</h1>
-        <b>NOTE: This application is best viewed on laptop/tablet with minimum width of 800px. Mobile version of this app is ongoing development.</b>
+        <b>NOTE: This application is best viewed on laptop/tablet with minimum width of 1000px. Mobile version of this app is ongoing development.</b>
         <p>
-          This is a web map application for users to interactively explore the land use zonings in Hong Kong. You can investigate the distribution of zonings in the proximity in any areas.
+          This is a web map application for users to interactively explore the land use zonings in Hong Kong. You can investigate the distribution of zonings in the proximity of any areas.
         </p>
-        <div class="query-stat-num">
-            <div class="buffer-size">
-                <h3>Buffer size:</h3>
-                <div class="buffer-size-ha" id="buffer-size-ha">0</div>
+        <div class="query-stats">
+            <div class="query-geometry-size">
+                <h3>Query geometry size:</h3>
+                <div class="query-geometry-size-ha" id="query-geometry-size-ha">0</div>
                 (ha) |
-                <div class="buffer-size-sqkm" id="buffer-size-sqkm">0</div>
+                <div class="query-geometry-size-sqkm" id="query-geometry-size-sqkm">0</div>
                 (sq.km.)
             </div>
             <br />

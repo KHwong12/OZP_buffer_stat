@@ -65,10 +65,8 @@ body {
     margin: 2.5em auto 0;
 }
 
-.query-stat-num div {
+.query-stats div {
     white-space: nowrap;
-    font-size: 14px;
-    font-weight: bold;
     display: inline-block;
 }
 

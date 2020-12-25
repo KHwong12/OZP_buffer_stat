@@ -216,8 +216,8 @@ require([
         // clearHighlighting();
         clearCharts();
 
-        document.getElementById("buffer-size-ha").innerHTML = 0;
-        document.getElementById("buffer-size-sqkm").innerHTML = 0;
+        document.getElementById("query-geometry-size-ha").innerHTML = 0;
+        document.getElementById("query-geometry-size-sqkm").innerHTML = 0;
         document.getElementById("OZP-size-ha").innerHTML = 0;
         document.getElementById("OZP-size-sqkm").innerHTML = 0;
         // resultDiv.style.display = "none";
@@ -231,10 +231,10 @@ require([
 
         // resultDiv.style.display = "block";
 
+
         updateBufferGraphic(bufferSize);
+        // calculate area of each zoning type, then update the zoning area chart & area figures
         calculateAreaByZoning();
-
-
 
         return promiseUtils.eachAlways([
             queryStatistics(),
@@ -332,7 +332,7 @@ require([
         geometryEngine.intersect(bufferGeometry, OZPLayer);
     }
 
-    // update the graphic with buffer
+    // update graphic and size figure of buffer
     function updateBufferGraphic(buffer) {
         // add a polygon graphic for the buffer
         if (buffer > 0) {
@@ -366,8 +366,8 @@ require([
             var bufferGeodesicArea = geometryEngine.geodesicArea(bufferGeometry, "square-meters");
 
             // Format the size and update the value
-            document.getElementById("buffer-size-ha").innerHTML = parseFloat((bufferGeodesicArea * 1e-4).toPrecision(3));
-            document.getElementById("buffer-size-sqkm").innerHTML = parseFloat((bufferGeodesicArea * 1e-7).toPrecision(3));
+            document.getElementById("query-geometry-size-ha").innerHTML = parseFloat((bufferGeodesicArea * 1e-4).toPrecision(3));
+            document.getElementById("query-geometry-size-sqkm").innerHTML = parseFloat((bufferGeodesicArea * 1e-7).toPrecision(3));
 
         } else {
             bufferLayer.removeAll();
