@@ -11,7 +11,8 @@ require([
     "esri/core/promiseUtils",
     "esri/tasks/support/AreasAndLengthsParameters",
     "esri/widgets/Expand",
-    "esri/widgets/BasemapGallery"
+    "esri/widgets/BasemapGallery",
+    "esri/widgets/ScaleBar"
 ], function(
     WebMap,
     MapView,
@@ -25,7 +26,8 @@ require([
     promiseUtils,
     AreasAndLengthsParameters,
     Expand,
-    BasemapGallery
+    BasemapGallery,
+    ScaleBar
 ) {
     // Load webmap and display it in a MapView
     const webmap = new WebMap({
@@ -58,6 +60,15 @@ require([
     let webLayer = null;
     let webLayerView = null;
     let bufferSize = 0;
+
+    // https://developers.arcgis.com/javascript/latest/sample-code/widgets-scalebar/index.html
+    var scaleBar = new ScaleBar({
+          view: view,
+          unit: "metric"
+        });
+
+    // Add the widget to the bottom left corner of the view
+    view.ui.add(scaleBar, {position: "bottom-right"});
 
     // Assign web layer once webmap is loaded and initialize UI
     webmap.load().then(function() {
@@ -260,6 +271,9 @@ require([
         // resultDiv.style.display = "none";
     }
 
+    const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C"];
+    // const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C", "MRDJ"]
+
     // set the geometry query on the visible webLayerView
     var debouncedRunQuery = promiseUtils.debounce(function() {
         if (!sketchGeometry) {
@@ -298,12 +312,10 @@ require([
 
         var selectedZoningAreas = [];
 
-        const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C"];
-        // const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C", "MRDJ"]
-
         // TODO: improve efficiency with async + map array
         // https://flaviocopes.com/javascript-async-await-array-map/
 
+        // Get area of each selected zoning to the selectedZoningAreas array
         for (var zoning of selectedZonings) {
             selectedZoningAreas.push(await getZoningAreaInBuffer(bufferSize, zoning));
         }
@@ -438,7 +450,8 @@ require([
 
     // Get total zoning area within the buffer
     // if zoning is provided, get total area of that specific zoning
-    // async function, will wait until query process finished, not suitable for large dataset
+    // async function as the queryFeatures() process is a promise
+    // Will wait until query process finished, not suitable for large dataset
 
     // Steps: query OZP in featurelayer intersect with buffer (select by location) and in that zoning (select by attributes)
     // -> union all "selected" zoning (needed?)
@@ -467,6 +480,7 @@ require([
 
         query.geometry = sketchGeometry;
         query.distance = bufferLength;
+        query.spatialRelationship = "intersects";
 
 
         // If zoning params is provided
@@ -475,11 +489,6 @@ require([
             query.where = "ZONE_MAS = '" + zoning + "'";
             console.log("Will query zoning of " + zoning + " intersects with buffer");
         }
-
-        query.spatialRelationship = "intersects";
-
-
-        // console.log(zoning, "outside queryFeatures");
 
         let results = await webLayerView.queryFeatures(query);
 
