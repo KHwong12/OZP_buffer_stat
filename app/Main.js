@@ -74,7 +74,7 @@ require([
     webmap.load().then(function() {
         webLayer = webmap.layers.find(function(layer) {
             // title of layer, not name of the webmap
-            return layer.title === "OZP_Nov2019_Sim";
+            return layer.title === "OZP_NonSea_Nov2019";
         });
         // Fetch all fields
         // https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-FeatureLayer.html#outFields

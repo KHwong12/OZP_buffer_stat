@@ -27,7 +27,6 @@ TODO
 
 ## Features TODO
 
-- add basemap widget
 - control transparency of OZP layer
 
 - Change contentDiv width for mobile use
