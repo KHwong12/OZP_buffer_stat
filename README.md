@@ -38,4 +38,11 @@ TODO
 
 ## Caveats
 
-Only zonings **on land** are shown and included in the calculation of OZP area. Zonings on water like *Marine Basin* (in H24), *Typhoon Shelter* (in H15, K20, I-CC, etc.), *Vessel Anchorage / Sea Channel* (in I-SKC), *River Channel* (in ST, I-TOTC, etc.), *Nullah* (in K15, etc.), *Inlet* (in I-NEL) are excluded.
+Only zonings **on land** are shown and included in the calculation of OZP area. Zonings on water like following are excluded:
+
+- *Marine Basin* (in H24)
+- *Typhoon Shelter* (in H15, K20, I-CC, etc.)
+- *Vessel Anchorage / Sea Channel* (in I-SKC)
+- *River Channel* (in ST, I-TOTC, etc.)
+- *Nullah* (in K15, etc.)
+- *Inlet* (in I-NEL)
