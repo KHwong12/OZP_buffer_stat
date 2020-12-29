@@ -8,6 +8,7 @@
 
 - Draw **any** geometries for any area of interested/study areas
 - Instantly compute the amount of land uses within buffer
+- Immediate summary data visualidation
 
 ## Overview
 
@@ -19,17 +20,20 @@
 
 ## Issues
 
-## Possible New Features
-
 ## Licensing
 
 TODO
 
 ## Features TODO
 
-- control transparency of OZP layer
-
 - Change contentDiv width for mobile use
+- Add historical OZP to show temporal changes
+
+## UI TODO
+
+- allow users to control transparency of OZP layer
+- use "reverse-clip" to disable/decrease opacity of the zones outside query geometry
+
 
 ## Possible performance improvements
 

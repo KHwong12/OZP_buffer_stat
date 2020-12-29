@@ -84,12 +84,27 @@ function createzoningAreaChart() {
                 display: true,
                 text: "Distribution of zoning areas"
             },
-            // Add thousand separator
+            // Add thousand separator & wihtout title
             // https://josephfitzsimmons.com/adding-a-thousands-separator-to-chartjss-y-axis-and-tooltips/
             tooltips: {
-                callbacks: {
+/*                callbacks: {
                     label: function (tooltipItems, data) {
                         return data.labels[tooltipItems.index] + ": " + data.datasets[0].data[tooltipItems.index].toLocaleString() + " sq.m.";
+                    }
+                },*/
+                // Add percentages
+                // https://stackoverflow.com/questions/37257034/chart-js-2-0-doughnut-tooltip-percentages/49717859#49717859
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        var dataset = data.datasets[tooltipItem.datasetIndex];
+                        var meta = dataset._meta[Object.keys(dataset._meta)[0]];
+                        var total = meta.total;
+                        var currentValue = dataset.data[tooltipItem.index];
+                        var percentage = parseFloat((currentValue / total * 100).toFixed(1));
+                        return ' ' + currentValue.toLocaleString() + ' sq.m.' + ' (' + percentage + '%)';
+                    },
+                    title: function (tooltipItem, data) {
+                        return data.labels[tooltipItem[0].index];
                     }
                 }
             }
