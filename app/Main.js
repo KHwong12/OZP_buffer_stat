@@ -30,7 +30,7 @@ require([
     ScaleBar
 ) {
     // Load webmap and display it in a MapView
-    const webmap = new WebMap({
+        const webmap = new WebMap({
         portalItem: { // autocasts as new PortalItem()
             id: "01807d9d7e954671bcfbcbe64290ac92"
         },

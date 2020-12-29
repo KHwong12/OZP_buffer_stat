@@ -42,7 +42,7 @@ function createzoningNumberChart() {
             },
             title: {
                 display: true,
-                text: "Zoning Pieces"
+                text: "Zoning pieces"
             },
             scales: {
                 xAxes: [{
@@ -82,7 +82,16 @@ function createzoningAreaChart() {
             },
             title: {
                 display: true,
-                text: "Distribution of zoning areas (sq.m.)"
+                text: "Distribution of zoning areas"
+            },
+            // Add thousand separator
+            // https://josephfitzsimmons.com/adding-a-thousands-separator-to-chartjss-y-axis-and-tooltips/
+            tooltips: {
+                callbacks: {
+                    label: function (tooltipItems, data) {
+                        return data.labels[tooltipItems.index] + ": " + data.datasets[0].data[tooltipItems.index].toLocaleString() + " sq.m.";
+                    }
+                }
             }
         }
     });
