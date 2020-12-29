@@ -30,7 +30,7 @@ require([
     ScaleBar
 ) {
     // Load webmap and display it in a MapView
-    const webmap = new WebMap({
+        const webmap = new WebMap({
         portalItem: { // autocasts as new PortalItem()
             id: "01807d9d7e954671bcfbcbe64290ac92"
         },
@@ -324,8 +324,8 @@ require([
         console.log("totalAreaInOZP: ", totalAreaInOZP);
 
         // Format the size and update the value
-        document.getElementById("OZP-size-ha").innerHTML = parseFloat((totalAreaInOZP * 1e-4).toPrecision(3));
-        document.getElementById("OZP-size-sqkm").innerHTML = parseFloat((totalAreaInOZP * 1e-7).toPrecision(3));
+        document.getElementById("OZP-size-ha").innerHTML = (totalAreaInOZP * 1e-4).toLocaleString();
+        document.getElementById("OZP-size-sqkm").innerHTML = (totalAreaInOZP * 1e-6).toLocaleString();
 
 
         // https://stackoverflow.com/questions/1230233/how-to-find-the-sum-of-an-array-of-numbers
@@ -442,8 +442,8 @@ require([
         }
 
         // Format the size and update the value
-        document.getElementById("query-geometry-size-ha").innerHTML = parseFloat((queryGeomGeodesicArea * 1e-4).toPrecision(3));
-        document.getElementById("query-geometry-size-sqkm").innerHTML = parseFloat((queryGeomGeodesicArea * 1e-7).toPrecision(3));
+        document.getElementById("query-geometry-size-ha").innerHTML = (queryGeomGeodesicArea * 1e-4).toLocaleString();
+        document.getElementById("query-geometry-size-sqkm").innerHTML = (queryGeomGeodesicArea * 1e-6).toLocaleString();
 
     }
 
@@ -461,7 +461,6 @@ require([
     async function getZoningAreaInBuffer(bufferLength, zoning) {
 
         console.log("sketchGeometry: ", sketchGeometry);
-        console.log("bufferLength == 0:", bufferLength == 0);
         console.log("bufferLength === 0:", bufferLength === 0);
 
         // TODO: test if Only execute function when buffer has actual size?
