@@ -31,8 +31,9 @@ require([
 ) {
     // Load webmap and display it in a MapView
         const webmap = new WebMap({
-        portalItem: { // autocasts as new PortalItem()
-            id: "01807d9d7e954671bcfbcbe64290ac92"
+            portalItem: { // autocasts as new PortalItem()
+            // https://foa-hku.maps.arcgis.com/home/item.html?id=01807d9d7e954671bcfbcbe64290ac92
+            id: "ae69499b5942429b95a88e3a5bdd97c1"
         },
         basemap: "dark-gray-vector"
     });
@@ -74,7 +75,7 @@ require([
     webmap.load().then(function() {
         webLayer = webmap.layers.find(function(layer) {
             // title of layer, not name of the webmap
-            return layer.title === "OZP_NonSea_Nov2019";
+            return layer.title === "ZONE_nonSea_planAttr_MASTER_30DEC2020";
         });
         // Fetch all fields
         // https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-FeatureLayer.html#outFields
@@ -469,8 +470,8 @@ require([
         // Sanity Check to ensure the query is not point or line (i.e. query geom has 0 area)
         // return 0 (or should be null)?
         if (bufferLength === 0 && sketchGeometry.type !== "polygon") {
-          console.log("The query geometry is a point/line. Returning area of 0.");
-          return 0;
+            console.log("The query geometry is a point/line. Returning area of 0.");
+            return 0;
         }
 
         var areaInBuffer = 0;
