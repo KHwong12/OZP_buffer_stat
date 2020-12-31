@@ -68,7 +68,7 @@ require([
           unit: "metric"
         });
 
-    // Add the widget to the bottom left corner of the view
+    // Add the widget to the bottom left corner of the view 
     view.ui.add(scaleBar, {position: "bottom-right"});
 
     // Assign web layer once webmap is loaded and initialize UI
@@ -146,6 +146,35 @@ require([
 
     // Add the expand instance to the ui
     view.ui.add(bgExpand, "top-left");
+
+    view.ui.add([infoDiv], "top-left");
+
+    // Get reference to div elements
+    const switchButton = document.getElementById("switch-btn");
+    const labelText = document.getElementById("labelText");
+
+    // Listen for when toggle is changed, call toggleFeatureTable function
+    switchButton.onchange = function () {
+        toggleFeatureTable();
+    };
+
+    function toggleFeatureTable() {
+        // Check if the table is displayed, if so, toggle off. If not, display.
+
+        var contentDiv = document.getElementById("contentDiv");
+        var viewDiv = document.getElementById("viewDiv");
+
+        if (!checkboxEle.checked) {
+            
+            contentDiv.style.display = "none";
+            viewDiv.style.left = 0;
+            labelText.innerHTML = "Show Feature Table";
+        } else {
+            contentDiv.style.display = "block";
+            viewDiv.style.left = "30%";
+            labelText.innerHTML = "Hide Feature Table";
+        }
+    }
 
     //////////////////////////////////////////
     // web map now initialised

@@ -19,6 +19,12 @@
 
 <body>
     <div id="viewDiv"></div>
+    <div id="infoDiv">
+        <button class="esri-widget--button esri-icon-menu"
+                id="switch-btn"
+                value="menu"
+                title="Query by polygon"></button>
+    </div>
     <div id="queryDiv" class="esri-widget">
         <h2>Query by geometry</h2>
         Draw a geometry to query zones:
@@ -47,27 +53,27 @@
         </button>
     </div>
 
-<!--    <div id="resultDiv" class="esri-widget">
-        <div class="query-stat-num">
-            <div class="query-geometry-size">
-                <h3>Buffer size:</h3>
-                <div class="query-geometry-size-ha" id="query-geometry-size-ha">0</div>
-                (ha) |
-                <div class="query-geometry-size-sqkm" id="query-geometry-size-sqkm">0</div>
-                (sq.km.)
+    <!--    <div id="resultDiv" class="esri-widget">
+            <div class="query-stat-num">
+                <div class="query-geometry-size">
+                    <h3>Buffer size:</h3>
+                    <div class="query-geometry-size-ha" id="query-geometry-size-ha">0</div>
+                    (ha) |
+                    <div class="query-geometry-size-sqkm" id="query-geometry-size-sqkm">0</div>
+                    (sq.km.)
+                </div>
+                <br />
+                <div class="selected-area">
+                    <h3>OZP-covered area:</h3>
+                    <div class="selected-area" id="selected-area">TODO</div>
+                </div>
+                <br />
+                <div class="count">
+                    <h3>No. of zoning pieces:</h3>
+                    <div class="count" id="count">0</div>
+                </div>
             </div>
-            <br />
-            <div class="selected-area">
-                <h3>OZP-covered area:</h3>
-                <div class="selected-area" id="selected-area">TODO</div>
-            </div>
-            <br />
-            <div class="count">
-                <h3>No. of zoning pieces:</h3>
-                <div class="count" id="count">0</div>
-            </div>
-        </div>
-    </div>-->
+        </div>-->
 
     <div id="contentDiv" class="esri-widget">
         <h1>Zone In</h1>
