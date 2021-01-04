@@ -15,15 +15,12 @@
     <script src="https://js.arcgis.com/4.18/"></script>
     <script src="app/Main.js"></script>
     <script src="app/create-chart.js"></script>
+    <script src="app/ui.js"></script>
 </head>
 
 <body>
-    <div id="viewDiv"></div>
-    <div id="infoDiv">
-        <button class="esri-widget--button esri-icon-menu"
-                id="switch-btn"
-                value="menu"
-                title="Query by polygon"></button>
+    <div id="viewDiv" class="viewDiv">
+        <button class="fold-button esri-icon-dock-left" title="Show details"></button>
     </div>
     <div id="queryDiv" class="esri-widget">
         <h2>Query by geometry</h2>
@@ -75,7 +72,7 @@
             </div>
         </div>-->
 
-    <div id="contentDiv" class="esri-widget">
+    <div id="contentDiv" class="esri-widget contentDiv">
         <h1>Zone In</h1>
         <h2>Query land use zonings by geometries</h2>
         <p>
