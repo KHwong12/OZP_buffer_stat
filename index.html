@@ -1,56 +1,46 @@
 ﻿<html>
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport"
-          content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-    <title>
-        Zone In - Query land use zonings by geometries
-    </title>
-    <link rel="stylesheet" href="styles/main.css">
-    <!-- Load the Chart.js library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
 
-    <link rel="stylesheet"
-          href="https://js.arcgis.com/4.18/esri/themes/dark-blue/main.css" />
-    <script src="https://js.arcgis.com/4.18/"></script>
-    <script src="app/Main.js"></script>
-    <script src="app/create-chart.js"></script>
-    <script src="app/ui.js"></script>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>
+    Zone In - Query land use zonings by geometries
+  </title>
+  <link rel="stylesheet" href="styles/main.css">
+  <!-- Load the Chart.js library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/dark-blue/main.css" />
+  <script src="https://js.arcgis.com/4.18/"></script>
+  <script src="app/Main.js"></script>
+  <script src="app/create-chart.js"></script>
+  <script src="app/ui.js"></script>
 </head>
 
 <body>
-    <div id="viewDiv" class="viewDiv">
-        <button class="fold-button esri-widget--button esri-icon-dock-left" title="Show details"></button>
+  <div id="viewDiv" class="viewDiv">
+    <button class="fold-button esri-widget--button esri-icon-dock-left" title="Show details"></button>
+  </div>
+  <div id="queryDiv" class="esri-widget">
+    <h2>Query by geometry</h2>
+    Draw a geometry to query zones:
+    <div class="geometry-options">
+      <button class="esri-widget--button esri-icon-map-pin geometry-button" id="point-geometry-button" value="point" title="Query by point"></button>
+      <button class="esri-widget--button esri-icon-polyline geometry-button" id="line-geometry-button" value="polyline" title="Query by line"></button>
+      <button class="esri-widget--button esri-icon-polygon geometry-button" id="polygon-geometry-button" value="polygon" title="Query by polygon"></button>
     </div>
-    <div id="queryDiv" class="esri-widget">
-        <h2>Query by geometry</h2>
-        Draw a geometry to query zones:
-        <div class="geometry-options">
-            <button class="esri-widget--button esri-icon-map-pin geometry-button"
-                    id="point-geometry-button"
-                    value="point"
-                    title="Query by point"></button>
-            <button class="esri-widget--button esri-icon-polyline geometry-button"
-                    id="line-geometry-button"
-                    value="polyline"
-                    title="Query by line"></button>
-            <button class="esri-widget--button esri-icon-polygon geometry-button"
-                    id="polygon-geometry-button"
-                    value="polygon"
-                    title="Query by polygon"></button>
-        </div>
-        <br />
-        <div class="tooltip">
-            <label for="bufferNum">Distance (buffer size):</label>
-            <div id="bufferNum"></div>
-        </div>
-        <br />
-        <button class="esri-button" id="clearResults" type="button">
-            Clear
-        </button>
+    <br />
+    <div class="tooltip">
+      <label for="bufferNum">Distance (buffer size):</label>
+      <div id="bufferNum"></div>
     </div>
+    <br />
+    <button class="esri-button" id="clearResults" type="button">
+      Clear
+    </button>
+  </div>
 
-    <!--    <div id="resultDiv" class="esri-widget">
+  <!--    <div id="resultDiv" class="esri-widget">
             <div class="query-stat-num">
                 <div class="query-geometry-size">
                     <h3>Buffer size:</h3>
@@ -72,71 +62,72 @@
             </div>
         </div>-->
 
-    <div id="contentDiv" class="esri-widget contentDiv">
-        <h1>Zone In</h1>
-        <h2>Query land use zonings by geometries</h2>
-        <p>
-            <b>NOTE: This application is still under development.</b>
-        </p>
-        <p>
-            This is a web map application for users to interactively explore the land use zonings in Hong Kong.
-            You can investigate the distribution of zonings in the proximity of any areas.
-        <p>
-            To start, go to any area of interest, draw a geometry and select the desired buffer distance to query the zoning "pieces" lying within the area.
-            The application will then compute the area of each selected zoning type and visualise the proportions in the chart below.
-        </p>
-        <p>
-            If you are viewing this application on mobile, please click the <span class="font-size-3 esri-icon-dock-left" aria-label="dock-left icon"></span> icon on the right first to close this panel and view the full map.
-        </p>
-        <p>
-            It will take some time for the application to render the zoning map.
-        </p>
-        <div class="query-stats">
-            <div class="query-geometry-size">
-                <h3>Query geometry size:</h3>
-                <div class="query-geometry-size-ha" id="query-geometry-size-ha">0</div>
-                (ha) |
-                <div class="query-geometry-size-sqkm" id="query-geometry-size-sqkm">0</div>
-                (sq.km.)
-            </div>
-            <br />
-            <div class="selected-area">
-                <h3>OZP-covered area:</h3>
-                <div class="OZP-size-ha" id="OZP-size-ha">0</div>
-                (ha) |
-                <div class="OZP-size-sqkm" id="OZP-size-sqkm">0</div>
-                (sq.km.)
-            </div>
-            <br />
-            <div class="count">
-                <h3>Number of zoning "pieces":</h3>
-                <div class="count" id="count">0</div>
-            </div>
+  <div id="contentDiv" class="esri-widget contentDiv">
+    <h1>Zone In</h1>
+    <h2>Query land use zonings by geometries</h2>
+    <p>
+      <b>NOTE: This application is still under development.</b>
+    </p>
+    <p>
+      This is a web map application for users to interactively explore the land use zonings in Hong Kong.
+      You can investigate the distribution of zonings in the proximity of any areas.
+      <p>
+        To start, go to any area of interest, draw a geometry and select the desired buffer distance to query the zoning "pieces" lying within the area.
+        The application will then compute the area of each selected zoning type and visualise the proportions in the chart below.
+      </p>
+      <p>
+        If you are viewing this application on mobile, please click the <span class="font-size-3 esri-icon-dock-left" aria-label="dock-left icon"></span> icon on the right first to close this panel and view the full map.
+      </p>
+      <p>
+        It will take some time for the application to render the zoning map.
+      </p>
+      <div class="query-stats">
+        <div class="query-geometry-size">
+          <h3>Query geometry size:</h3>
+          <div class="query-geometry-size-ha" id="query-geometry-size-ha">0</div>
+          (ha) |
+          <div class="query-geometry-size-sqkm" id="query-geometry-size-sqkm">0</div>
+          (sq.km.)
         </div>
-        <div class="charts">
-            <div>
-                <canvas id="zoning-number-chart" width="250" height="300" />
-            </div>
+        <br />
+        <div class="selected-area">
+          <h3>OZP-covered area:</h3>
+          <div class="OZP-size-ha" id="OZP-size-ha">0</div>
+          (ha) |
+          <div class="OZP-size-sqkm" id="OZP-size-sqkm">0</div>
+          (sq.km.)
         </div>
-        <div class="charts">
-            <div>
-                <canvas id="zoning-area-chart" width="250" height="300" />
-            </div>
+        <br />
+        <div class="count">
+          <h3>Number of zoning "pieces":</h3>
+          <div class="count" id="count">0</div>
         </div>
+      </div>
+      <div class="charts">
+        <div>
+          <canvas id="zoning-number-chart" width="250" height="300" />
+        </div>
+      </div>
+      <div class="charts">
+        <div>
+          <canvas id="zoning-area-chart" width="250" height="300" />
+        </div>
+      </div>
 
-        <footer>
-            Created by <a href="https://twitter.com/Kenneth_KHW" target="_blank">Kenneth Wong</a>.
-            <br />
-            Last modified on <span id="lastModified"></span>.
-            <br />
-            This application is for coding practice and testing demonstration only. Accuracy of data and results are not guaranteed.
-            <br />
-            Made and developed with
-            <a href="https://pro.arcgis.com/en/pro-app/" target="_blank">ArcGIS Pro</a>,
-            <a href="https://developers.arcgis.com/javascript/" target="_blank">ArcGIS API for JavaScript</a>
-            and ☕.
-        </footer>
-    </div>
+      <footer>
+        Created by <a href="https://twitter.com/Kenneth_KHW" target="_blank">Kenneth Wong</a>.
+        <br />
+        Last modified on <span id="lastModified"></span>.
+        <br />
+        This application is for coding practice and testing demonstration only. Accuracy of data and results are not guaranteed.
+        <br />
+        Made and developed with
+        <a href="https://pro.arcgis.com/en/pro-app/" target="_blank">ArcGIS Pro</a>,
+        <a href="https://developers.arcgis.com/javascript/" target="_blank">ArcGIS API for JavaScript</a>
+        and ☕.
+      </footer>
+  </div>
 
 </body>
+
 </html>
