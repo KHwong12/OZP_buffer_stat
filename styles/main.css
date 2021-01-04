@@ -14,7 +14,8 @@ body {
 .viewDiv {
     position: absolute;
     right: 0;
-    left: 30%;
+    /* min-width of contentDiv or current width of contentDiv */
+    left: max(300px, 30%);
     top: 0;
     bottom: 0;
     height: 100%;
@@ -24,6 +25,21 @@ body {
     left: 0;
 }
 
+.contentDiv {
+    position: absolute;
+    left: 0;
+    height: 100%;
+    width: 30%;
+    min-width: 300px;
+    overflow: scroll;
+    padding: 10px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.contentDiv_fold {
+    display: none;
+}
 
 #queryDiv,
 #resultDiv {
@@ -33,23 +49,6 @@ body {
     display: none;
     overflow-y: auto;
     overflow-x: hidden;
-}
-
-.contentDiv {
-    display: block;
-    position: absolute;
-    left: 0;
-    height: 100%;
-    width: 30%;
-    /* min-width: 300px; */
-    overflow: scroll;
-    padding: 10px;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
-.contentDiv_fold {
-    display: none;
 }
 
 .geometry-options {
