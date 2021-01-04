@@ -30,8 +30,8 @@ require([
     ScaleBar
 ) {
     // Load webmap and display it in a MapView
-        const webmap = new WebMap({
-            portalItem: { // autocasts as new PortalItem()
+    const webmap = new WebMap({
+        portalItem: { // autocasts as new PortalItem()
             // https://foa-hku.maps.arcgis.com/home/item.html?id=01807d9d7e954671bcfbcbe64290ac92
             id: "ae69499b5942429b95a88e3a5bdd97c1"
         },
@@ -64,12 +64,14 @@ require([
 
     // https://developers.arcgis.com/javascript/latest/sample-code/widgets-scalebar/index.html
     var scaleBar = new ScaleBar({
-          view: view,
-          unit: "metric"
-        });
+        view: view,
+        unit: "metric"
+    });
 
     // Add the widget to the bottom left corner of the view
-    view.ui.add(scaleBar, {position: "bottom-right"});
+    view.ui.add(scaleBar, {
+        position: "bottom-right"
+    });
 
     // Assign web layer once webmap is loaded and initialize UI
     webmap.load().then(function() {
@@ -118,8 +120,8 @@ require([
     // https://developers.arcgis.com/javascript/latest/sample-code/widgets-expand/index.html
 
     var basemapGallery = new BasemapGallery({
-      view: view,
-      container: document.createElement("div")
+        view: view,
+        container: document.createElement("div")
     });
 
     // Create an Expand instance and set the content
@@ -128,20 +130,20 @@ require([
     // of the Expand widget
 
     var bgExpand = new Expand({
-      view: view,
-      content: basemapGallery,
-      expandTooltip: "Change Basemap"
+        view: view,
+        content: basemapGallery,
+        expandTooltip: "Change Basemap"
     });
 
     // close the expand whenever a basemap is selected
-    basemapGallery.watch("activeBasemap", function () {
-      var mobileSize =
-        view.heightBreakpoint === "xsmall" ||
-        view.widthBreakpoint === "xsmall";
+    basemapGallery.watch("activeBasemap", function() {
+        var mobileSize =
+            view.heightBreakpoint === "xsmall" ||
+            view.widthBreakpoint === "xsmall";
 
-      if (mobileSize) {
-        bgExpand.collapse();
-      }
+        if (mobileSize) {
+            bgExpand.collapse();
+        }
     });
 
     // Add the expand instance to the ui
@@ -435,7 +437,7 @@ require([
             // Calculate buffer size
             queryGeomGeodesicArea = geometryEngine.geodesicArea(bufferGeometry, "square-meters");
 
-        // else if query geometry is a polygon, get the size of it (line and point must size area of 0)
+            // else if query geometry is a polygon, get the size of it (line and point must size area of 0)
         } else if (queryGeom.type === "polygon") {
 
             queryGeomGeodesicArea = geometryEngine.geodesicArea(queryGeom, "square-meters");

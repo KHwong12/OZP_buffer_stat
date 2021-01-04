@@ -1,104 +1,103 @@
 html,
 body {
-    padding: 0;
-    margin: 0;
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
 }
 
 .esri-ui-top-right {
-    max-height: 100%;
+  max-height: 100%;
 }
 
 .viewDiv {
-    position: absolute;
-    right: 0;
-    /* min-width of contentDiv or current width of contentDiv */
-    left: max(300px, 30%);
-    top: 0;
-    bottom: 0;
-    height: 100%;
+  position: absolute;
+  right: 0;
+  /* min-width of contentDiv or current width of contentDiv */
+  left: max(300px, 30%);
+  top: 0;
+  bottom: 0;
+  height: 100%;
 }
 
 .viewDiv_large {
-    left: 0;
+  left: 0;
 }
 
 .contentDiv {
-    position: absolute;
-    left: 0;
-    height: 100%;
-    width: 30%;
-    min-width: 300px;
-    overflow: scroll;
-    padding: 10px;
-    overflow-y: auto;
-    overflow-x: hidden;
+  position: absolute;
+  left: 0;
+  height: 100%;
+  width: 30%;
+  min-width: 300px;
+  overflow: scroll;
+  padding: 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .contentDiv_fold {
-    display: none;
+  display: none;
 }
 
 #queryDiv {
-    min-width: 250px;
-    font-size: 14px;
-    padding: 10px;
-    display: none;
-    overflow-y: auto;
-    overflow-x: hidden;
+  min-width: 250px;
+  font-size: 14px;
+  padding: 10px;
+  display: none;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .geometry-options {
-    display: flex;
-    flex-direction: row;
+  display: flex;
+  flex-direction: row;
 }
 
 .geometry-button {
-    flex: 1;
-    border-style: solid;
-    border-width: 1px;
-    border-image: none;
+  flex: 1;
+  border-style: solid;
+  border-width: 1px;
+  border-image: none;
 }
 
 .geometry-button-selected {
-    background: #4c4c4c;
-    color: #fff;
+  background: #4c4c4c;
+  color: #fff;
 }
 
 #bufferNum {
-    width: 90%;
-    margin: 2.5em auto 0;
+  width: 90%;
+  margin: 2.5em auto 0;
 }
 
 .query-stats div {
-    white-space: nowrap;
-    display: inline-block;
+  white-space: nowrap;
+  display: inline-block;
 }
 
 .charts canvas {
-    margin: 25px auto;
+  margin: 25px auto;
 }
 
 footer {
-    font-size: 0.8em;
-    line-height: 1.3em;
-    border-top: 1px solid;
-    padding-top: 2em;
-    margin-top: 2em;
+  font-size: 0.8em;
+  line-height: 1.3em;
+  border-top: 1px solid;
+  padding-top: 2em;
+  margin-top: 2em;
 }
 
 a {
-    text-decoration: none;
-    border-bottom: 1px dashed #fff;
-    color: #fff;
+  text-decoration: none;
+  border-bottom: 1px dashed #fff;
+  color: #fff;
 }
 
 a:hover {
-    border-bottom: 1px solid #fff;
+  border-bottom: 1px solid #fff;
 }
-
 
 .fold-button {
   position: absolute;
@@ -107,7 +106,7 @@ a:hover {
   height: 40px !important;
   width: 40px !important;
   /* border-radius: 50%; */
-  box-shadow: 1px 1px 4px 1px rgba(0 ,0, 0, .3);
+  box-shadow: 1px 1px 4px 1px rgba(0, 0, 0, .3);
   left: 0%;
   top: 50%;
   /* transform: translateX(-50%); */
