@@ -1,4 +1,5 @@
-
+// UI function for fold/unfold side panel
+// https://codepen.io/DeolaJ/pen/xvjbKY
 
 document.addEventListener("DOMContentLoaded", function() {
 
@@ -10,5 +11,6 @@ document.addEventListener("DOMContentLoaded", function() {
     sidebar.classList.toggle('contentDiv_fold');
     mainContent.classList.toggle('viewDiv_large');
 
-  }
+  };
+
 });

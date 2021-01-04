@@ -20,7 +20,7 @@
 
 <body>
     <div id="viewDiv" class="viewDiv">
-        <button class="fold-button esri-icon-dock-left" title="Show details"></button>
+        <button class="fold-button esri-widget--button esri-icon-dock-left" title="Show details"></button>
     </div>
     <div id="queryDiv" class="esri-widget">
         <h2>Query by geometry</h2>
@@ -79,9 +79,6 @@
             <b>NOTE: This application is still under development.</b>
         </p>
         <p>
-            <b>NOTE: This application is best viewed on laptop/tablet with minimum width of 1000px. Mobile version of this app is ongoing development.</b>
-        </p>
-        <p>
             This is a web map application for users to interactively explore the land use zonings in Hong Kong.
             You can investigate the distribution of zonings in the proximity of any areas.
         <p>
@@ -89,7 +86,10 @@
             The application will then compute the area of each selected zoning type and visualise the proportions in the chart below.
         </p>
         <p>
-            Because of high spatial resolution level of zoning data, it will take some time for the application to render the zonings.
+            If you are viewing this application on mobile, please click the <span class="font-size-3 esri-icon-dock-left" aria-label="dock-left icon"></span> icon on the right first to close this panel and view the full map.
+        </p>
+        <p>
+            It will take some time for the application to render the zoning map.
         </p>
         <div class="query-stats">
             <div class="query-geometry-size">

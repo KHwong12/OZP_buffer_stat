@@ -41,8 +41,7 @@ body {
     display: none;
 }
 
-#queryDiv,
-#resultDiv {
+#queryDiv {
     min-width: 250px;
     font-size: 14px;
     padding: 10px;
@@ -104,10 +103,11 @@ a:hover {
 .fold-button {
   position: absolute;
   border: none;
-  height: 40px;
-  width: 40px;
+  /* override esri css settings */
+  height: 40px !important;
+  width: 40px !important;
   /* border-radius: 50%; */
-  box-shadow: 0px 1px 4px 1px rgba(0 ,0, 0, .3);
+  box-shadow: 1px 1px 4px 1px rgba(0 ,0, 0, .3);
   left: 0%;
   top: 50%;
   /* transform: translateX(-50%); */
