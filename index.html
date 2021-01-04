@@ -15,10 +15,13 @@
     <script src="https://js.arcgis.com/4.18/"></script>
     <script src="app/Main.js"></script>
     <script src="app/create-chart.js"></script>
+    <script src="app/ui.js"></script>
 </head>
 
 <body>
-    <div id="viewDiv"></div>
+    <div id="viewDiv" class="viewDiv">
+        <button class="fold-button esri-widget--button esri-icon-dock-left" title="Show details"></button>
+    </div>
     <div id="queryDiv" class="esri-widget">
         <h2>Query by geometry</h2>
         Draw a geometry to query zones:
@@ -47,36 +50,33 @@
         </button>
     </div>
 
-<!--    <div id="resultDiv" class="esri-widget">
-        <div class="query-stat-num">
-            <div class="query-geometry-size">
-                <h3>Buffer size:</h3>
-                <div class="query-geometry-size-ha" id="query-geometry-size-ha">0</div>
-                (ha) |
-                <div class="query-geometry-size-sqkm" id="query-geometry-size-sqkm">0</div>
-                (sq.km.)
+    <!--    <div id="resultDiv" class="esri-widget">
+            <div class="query-stat-num">
+                <div class="query-geometry-size">
+                    <h3>Buffer size:</h3>
+                    <div class="query-geometry-size-ha" id="query-geometry-size-ha">0</div>
+                    (ha) |
+                    <div class="query-geometry-size-sqkm" id="query-geometry-size-sqkm">0</div>
+                    (sq.km.)
+                </div>
+                <br />
+                <div class="selected-area">
+                    <h3>OZP-covered area:</h3>
+                    <div class="selected-area" id="selected-area">TODO</div>
+                </div>
+                <br />
+                <div class="count">
+                    <h3>No. of zoning pieces:</h3>
+                    <div class="count" id="count">0</div>
+                </div>
             </div>
-            <br />
-            <div class="selected-area">
-                <h3>OZP-covered area:</h3>
-                <div class="selected-area" id="selected-area">TODO</div>
-            </div>
-            <br />
-            <div class="count">
-                <h3>No. of zoning pieces:</h3>
-                <div class="count" id="count">0</div>
-            </div>
-        </div>
-    </div>-->
+        </div>-->
 
-    <div id="contentDiv" class="esri-widget">
+    <div id="contentDiv" class="esri-widget contentDiv">
         <h1>Zone In</h1>
         <h2>Query land use zonings by geometries</h2>
         <p>
             <b>NOTE: This application is still under development.</b>
-        </p>
-        <p>
-            <b>NOTE: This application is best viewed on laptop/tablet with minimum width of 1000px. Mobile version of this app is ongoing development.</b>
         </p>
         <p>
             This is a web map application for users to interactively explore the land use zonings in Hong Kong.
@@ -86,7 +86,10 @@
             The application will then compute the area of each selected zoning type and visualise the proportions in the chart below.
         </p>
         <p>
-            Because of high spatial resolution level of zoning data, it will take some time for the application to render the zonings.
+            If you are viewing this application on mobile, please click the <span class="font-size-3 esri-icon-dock-left" aria-label="dock-left icon"></span> icon on the right first to close this panel and view the full map.
+        </p>
+        <p>
+            It will take some time for the application to render the zoning map.
         </p>
         <div class="query-stats">
             <div class="query-geometry-size">
