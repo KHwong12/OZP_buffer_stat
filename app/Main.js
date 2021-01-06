@@ -196,6 +196,7 @@ require([
     sketchViewModel.on("create", function(event) {
         if (event.state === "complete") {
             sketchGeometry = event.graphic.geometry;
+            showSidePanel();
             runQuery();
         }
     });
@@ -203,6 +204,7 @@ require([
     sketchViewModel.on("update", function(event) {
         if (event.state === "complete") {
             sketchGeometry = event.graphics[0].geometry;
+            showSidePanel();
             runQuery();
         }
     });
@@ -257,6 +259,18 @@ require([
         .getElementById("clearResults")
         .addEventListener("click", clearResults);
 
+
+    // Show the contentDiv again (by "clicking" the panel button) if folded
+    // do not use it when users are changing buffer variables only
+    function showSidePanel() {
+        
+        const sidebar = document.querySelector(".contentDiv");
+
+        if (sidebar.classList.contains('contentDiv_fold')) {
+            document.querySelector('.fold-button').click();
+        }
+    }
+
     // Clear the geometry and set the default renderer
     // Reset all to default
     function clearResults() {
@@ -283,9 +297,6 @@ require([
             return;
         }
 
-        // resultDiv.style.display = "block";
-
-
         updateBufferGraphic(bufferSize);
 
         // Update geometry stats
@@ -308,6 +319,10 @@ require([
 
             console.error(error);
         });
+
+        // scroll to the results
+        var elmnt = document.querySelector(".query-stats");
+        elmnt.scrollIntoView({ behavior: 'smooth' });
     }
 
     async function calculateAreaByZoning() {
