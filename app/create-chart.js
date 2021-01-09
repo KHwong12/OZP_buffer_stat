@@ -7,6 +7,7 @@ var zoningLabels = [
     "G/IC",
     "O",
     "C",
+    "MRDJ",
     "Others"
 ];
 
@@ -17,8 +18,12 @@ var zoningColors = [
     '#bee1e6',
     '#7eb827',
     '#eb5b60',
+    '#FCE0BD',
     '#cccccc'
 ];
+
+// An array of 0 with the same length of zoningLabels
+var zeroArray = [...Array(zoningLabels.length)].map(() => 0);
 
 function createzoningNumberChart() {
 
@@ -32,7 +37,7 @@ function createzoningNumberChart() {
                 label: "Number of pieces",
                 backgroundColor: zoningColors,
                 stack: "Stack 0",
-                data: [0, 0, 0, 0, 0, 0, 0]
+                data: zeroArray
             }]
         },
         options: {
@@ -72,7 +77,7 @@ function createzoningAreaChart() {
                 label: "Area (sq.m.)",
                 backgroundColor: zoningColors,
                 borderWidth: 0,
-                data: [0, 0, 0, 0, 0, 0, 0]
+                data: zeroArray
             }]
         },
         options: {
@@ -87,11 +92,6 @@ function createzoningAreaChart() {
             // Add thousand separator & wihtout title
             // https://josephfitzsimmons.com/adding-a-thousands-separator-to-chartjss-y-axis-and-tooltips/
             tooltips: {
-/*                callbacks: {
-                    label: function (tooltipItems, data) {
-                        return data.labels[tooltipItems.index] + ": " + data.datasets[0].data[tooltipItems.index].toLocaleString() + " sq.m.";
-                    }
-                },*/
                 // Add percentages
                 // https://stackoverflow.com/questions/37257034/chart-js-2-0-doughnut-tooltip-percentages/49717859#49717859
                 callbacks: {
@@ -119,7 +119,6 @@ function updateChart(chart, dataValues) {
 }
 
 function clearCharts() {
-    updateChart(zoningNumberChart, [0, 0, 0, 0, 0, 0, 0]);
-    updateChart(zoningAreaChart, [0, 0, 0, 0, 0, 0, 0]);
-    document.getElementById("count").innerHTML = 0;
+    updateChart(zoningNumberChart, zeroArray);
+    updateChart(zoningAreaChart, zeroArray);
 }

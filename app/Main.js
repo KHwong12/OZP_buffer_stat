@@ -281,15 +281,15 @@ require([
         // clearHighlighting();
         clearCharts();
 
+        // Clear numbers 
+        document.getElementById("count").innerHTML = 0;
         document.getElementById("query-geometry-size-ha").innerHTML = 0;
         document.getElementById("query-geometry-size-sqkm").innerHTML = 0;
         document.getElementById("OZP-size-ha").innerHTML = 0;
         document.getElementById("OZP-size-sqkm").innerHTML = 0;
-        // resultDiv.style.display = "none";
     }
 
-    const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C"];
-    // const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C", "MRDJ"]
+    const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C", "MRDJ"]
 
     // set the geometry query on the visible webLayerView
     var debouncedRunQuery = promiseUtils.debounce(function() {
@@ -338,6 +338,7 @@ require([
             selectedZoningAreas.push(await getZoningAreaInBuffer(bufferSize, zoning));
         }
 
+        // cannot directly add up selectedZoningAreas since it only includes values of SELECTED zonings
         var totalAreaInOZP = await getZoningAreaInBuffer(bufferSize);
         console.log("totalAreaInOZP: ", totalAreaInOZP);
 
@@ -350,7 +351,7 @@ require([
         // https://stackoverflow.com/questions/1230233/how-to-find-the-sum-of-an-array-of-numbers
         majorZoningsTotalArea = selectedZoningAreas.reduce((partial_sum, a) => partial_sum + a, 0);
 
-        // Get total area of other zonings
+        // Add total area of other zonings at the end of the zoning area array
         selectedZoningAreas.push(totalAreaInOZP - majorZoningsTotalArea);
 
         console.log("selectedZoningAreas", selectedZoningAreas);
@@ -393,11 +394,6 @@ require([
                     function (x) { return getZoningAreaInBuffer(x, bufferSize); }
                 ));*/
     }
-
-    const OZPLayer = new FeatureLayer({
-        // URL to the service
-        url: "https://services5.arcgis.com/xH8UmTNerx1qYfXM/arcgis/rest/services/OZP_Nov2019_Sim/FeatureServer"
-    });
 
     // update graphic and size figure of buffer
     function updateBufferGraphic(buffer) {
@@ -629,7 +625,12 @@ require([
             statisticType: "sum"
         },
         {
-            onStatisticField: "CASE WHEN ZONE_MAS NOT IN ('R(A)', 'R(B)', 'R(C)', 'G/IC', 'O', 'C') THEN 1 ELSE 0 END",
+            onStatisticField: "CASE WHEN ZONE_MAS = 'MRDJ' THEN 1 ELSE 0 END",
+            outStatisticFieldName: "zone_MRDJ",
+            statisticType: "sum"
+        },
+        {
+            onStatisticField: "CASE WHEN ZONE_MAS NOT IN ('R(A)', 'R(B)', 'R(C)', 'G/IC', 'O', 'C', 'MRDJ') THEN 1 ELSE 0 END",
             outStatisticFieldName: "zone_OTHERS",
             statisticType: "sum"
         }
@@ -659,6 +660,7 @@ require([
                 allStats.zone_GIC,
                 allStats.zone_O,
                 allStats.zone_C,
+                allStats.zone_MRDJ,
                 allStats.zone_OTHERS
             ]);
         }, console.error);
