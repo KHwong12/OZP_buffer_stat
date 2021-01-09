@@ -467,7 +467,7 @@ require([
     // -> union all "selected" zoning (needed?)
     // -> use buffer to intersect (act as cookie cutter) to cut the result geoms -> calculate geom area
 
-    // TODO: to improve, find ways to clip FeatureLayer by Graphics, GeometryEngine seems only works with grahpics
+    // TODO: to improve, find ways to clip FeatureLayer by Graphics, GeometryEngine seems only works with graphics
     async function getZoningAreaInBuffer(bufferLength, zoning) {
 
         console.log("sketchGeometry: ", sketchGeometry);
@@ -492,7 +492,7 @@ require([
         query.spatialRelationship = "intersects";
 
 
-        // If zoning params is provided
+        // Select by zoning attributes if zoning params is provided
         // https://stackoverflow.com/questions/13019640/how-to-test-if-a-parameter-is-provided-to-a-function
         if (zoning !== undefined) {
             query.where = "ZONE_MAS = '" + zoning + "'";
@@ -533,7 +533,7 @@ require([
             areaInBuffer = await geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters");
             console.log("getZoningAreaInBuffer(): area calculated");
 
-            console.log(areaInBuffer);
+            console.log("areaInBuffer: ", areaInBuffer);
 
         }
 

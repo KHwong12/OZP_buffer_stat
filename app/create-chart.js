@@ -11,6 +11,17 @@ var zoningLabels = [
     "Others"
 ];
 
+var zoningLabelsFull = [
+    "Residential (Group A)",
+    "Residential (Group B)",
+    "Residential (Group C)",
+    "Government, Institution or Community",
+    "Open Space",
+    "Commercial",
+    "Major Road and Junction",
+    "Others"
+]
+
 var zoningColors = [
     '#a1291f',
     '#c27428',
@@ -72,7 +83,7 @@ function createzoningAreaChart() {
     zoningAreaChart = new Chart(zoningAreaCanvas.getContext("2d"), {
         type: "doughnut",
         data: {
-            labels: zoningLabels,
+            labels: zoningLabelsFull,
             datasets: [{
                 label: "Area (sq.m.)",
                 backgroundColor: zoningColors,
