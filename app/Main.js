@@ -83,6 +83,7 @@ require([
         // https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-FeatureLayer.html#outFields
         webLayer.outFields = ["*"];
 
+        // Show query UI only after the map is loaded
         view.whenLayerView(webLayer).then(function(layerView) {
             webLayerView = layerView;
             queryDiv.style.display = "block";
@@ -94,7 +95,6 @@ require([
     });
 
     view.ui.add([queryDiv], "bottom-left");
-    /*    view.ui.add([resultDiv], "top-right");*/
 
     // https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-Expand.html
     // https://developers.arcgis.com/javascript/latest/sample-code/layers-imagery-clientside/index.html
@@ -281,15 +281,15 @@ require([
         // clearHighlighting();
         clearCharts();
 
+        // Clear numbers 
+        document.getElementById("count").innerHTML = 0;
         document.getElementById("query-geometry-size-ha").innerHTML = 0;
         document.getElementById("query-geometry-size-sqkm").innerHTML = 0;
         document.getElementById("OZP-size-ha").innerHTML = 0;
         document.getElementById("OZP-size-sqkm").innerHTML = 0;
-        // resultDiv.style.display = "none";
     }
 
-    const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C"];
-    // const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C", "MRDJ"]
+    const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C", "MRDJ"]
 
     // set the geometry query on the visible webLayerView
     var debouncedRunQuery = promiseUtils.debounce(function() {
@@ -338,6 +338,7 @@ require([
             selectedZoningAreas.push(await getZoningAreaInBuffer(bufferSize, zoning));
         }
 
+        // cannot directly add up selectedZoningAreas since it only includes values of SELECTED zonings
         var totalAreaInOZP = await getZoningAreaInBuffer(bufferSize);
         console.log("totalAreaInOZP: ", totalAreaInOZP);
 
@@ -346,13 +347,14 @@ require([
         document.getElementById("OZP-size-sqkm").innerHTML = (totalAreaInOZP * 1e-6).toLocaleString();
 
 
+        // Get total area of all zoning types
         // https://stackoverflow.com/questions/1230233/how-to-find-the-sum-of-an-array-of-numbers
         majorZoningsTotalArea = selectedZoningAreas.reduce((partial_sum, a) => partial_sum + a, 0);
 
-        // Get total area of other zonings
+        // Add total area of other zonings at the end of the zoning area array
         selectedZoningAreas.push(totalAreaInOZP - majorZoningsTotalArea);
 
-        console.log(selectedZoningAreas);
+        console.log("selectedZoningAreas", selectedZoningAreas);
 
         console.log("updating zoning area chart!");
 
@@ -391,16 +393,6 @@ require([
         /*        console.log(selectedZonings.map(
                     function (x) { return getZoningAreaInBuffer(x, bufferSize); }
                 ));*/
-    }
-
-    const OZPLayer = new FeatureLayer({
-        // URL to the service
-        url: "https://services5.arcgis.com/xH8UmTNerx1qYfXM/arcgis/rest/services/OZP_Nov2019_Sim/FeatureServer"
-    });
-
-    function clipOZP() {
-        // TODO
-        geometryEngine.intersect(bufferGeometry, OZPLayer);
     }
 
     // update graphic and size figure of buffer
@@ -475,7 +467,7 @@ require([
     // -> union all "selected" zoning (needed?)
     // -> use buffer to intersect (act as cookie cutter) to cut the result geoms -> calculate geom area
 
-    // TODO: to improve, find ways to clip FeatureLayer by Graphics, GeometryEngine seems only works with grahpics
+    // TODO: to improve, find ways to clip FeatureLayer by Graphics, GeometryEngine seems only works with graphics
     async function getZoningAreaInBuffer(bufferLength, zoning) {
 
         console.log("sketchGeometry: ", sketchGeometry);
@@ -500,7 +492,7 @@ require([
         query.spatialRelationship = "intersects";
 
 
-        // If zoning params is provided
+        // Select by zoning attributes if zoning params is provided
         // https://stackoverflow.com/questions/13019640/how-to-test-if-a-parameter-is-provided-to-a-function
         if (zoning !== undefined) {
             query.where = "ZONE_MAS = '" + zoning + "'";
@@ -525,8 +517,6 @@ require([
                 selectedOZPGeoms.push(item.geometry);
             });
 
-            // console.log(selectedOZPGeoms);
-
             // bufferGeometry is required for intersecting OZP
             var bufferGeometry = geometryEngine.geodesicBuffer(
                 sketchGeometry,
@@ -543,49 +533,12 @@ require([
             areaInBuffer = await geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters");
             console.log("getZoningAreaInBuffer(): area calculated");
 
-            console.log(areaInBuffer);
+            console.log("areaInBuffer: ", areaInBuffer);
 
         }
 
         return areaInBuffer;
     }
-
-    /*            return webLayerView.queryFeatures(query).then(function (results) {
-
-
-                    console.log(results);
-                    console.info(results);
-                    console.info(results.features);
-
-                    console.log(zoning, "in queryFeatures");
-
-                    if (results.features.length > 0) {
-                        // TODO
-                        var selectedOZPGeoms = []
-
-                        results.features.forEach(function (item) {
-                            selectedOZPGeoms.push(item.geometry)
-                        });
-
-                        // console.log(selectedOZPGeoms);
-
-                        var unionGeoms = geometryEngine.union(selectedOZPGeoms)
-                        // console.log(unionGeoms);
-                        console.log("union function performed");
-
-                        var bufferOZPIntersect = geometryEngine.intersect(bufferGeometry, unionGeoms);
-                        console.log("intersect function performed");
-
-                        areaInBuffer = geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters");
-                        console.log("area calculated");
-
-                        console.log(areaInBuffer);
-
-                    }
-
-                    console.log(areaInBuffer, "Outside query");
-                    return areaInBuffer;
-                });*/
 
 
     // Calculate geodesic area of a graphic layer (multiple features possible)
@@ -672,7 +625,12 @@ require([
             statisticType: "sum"
         },
         {
-            onStatisticField: "CASE WHEN ZONE_MAS NOT IN ('R(A)', 'R(B)', 'R(C)', 'G/IC', 'O', 'C') THEN 1 ELSE 0 END",
+            onStatisticField: "CASE WHEN ZONE_MAS = 'MRDJ' THEN 1 ELSE 0 END",
+            outStatisticFieldName: "zone_MRDJ",
+            statisticType: "sum"
+        },
+        {
+            onStatisticField: "CASE WHEN ZONE_MAS NOT IN ('R(A)', 'R(B)', 'R(C)', 'G/IC', 'O', 'C', 'MRDJ') THEN 1 ELSE 0 END",
             outStatisticFieldName: "zone_OTHERS",
             statisticType: "sum"
         }
@@ -702,6 +660,7 @@ require([
                 allStats.zone_GIC,
                 allStats.zone_O,
                 allStats.zone_C,
+                allStats.zone_MRDJ,
                 allStats.zone_OTHERS
             ]);
         }, console.error);
@@ -709,6 +668,4 @@ require([
 
     createzoningNumberChart();
     createzoningAreaChart();
-
-    document.getElementById("lastModified").innerHTML = document.lastModified;
 });
