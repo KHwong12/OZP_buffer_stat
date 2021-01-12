@@ -56,15 +56,18 @@
       <b>NOTE: This application is still under development.</b>
     </p>
     <p>
-      This is a web map application for users to interactively explore the land use zonings in Hong Kong.
-      You can investigate the distribution of zonings in the proximity of any areas.
+      This is a web map application to interactively explore the land use zonings in Hong Kong.
+      You can investigate the distribution of zonings in any area of interest, as well as their proximities.
     </p>
     <p>
-      To start, go to any area of interest, draw a geometry and select the desired buffer distance to query the zoning "pieces" lying within the area.
+      To start, go to any area you would like to investigate, draw a geometry and select the desired buffer distance to query the zoning "pieces" lying inside.
       The application will then compute the area of each selected zoning type and visualise the proportions in the chart below.
     </p>
     <p>
       If you are viewing this application on mobile, please click the <span class="font-size-3 esri-icon-dock-left" aria-label="dock-left icon"></span> icon on the right first to close this panel and view the full map.
+    </p>
+    <p>
+      By clicking on the zoning pieces, you could also check their details including <b>full zoning name, respective plan number and gazette date</b>.
     </p>
     <p>
       It will take some time for the application to render the zoning map.
@@ -72,17 +75,17 @@
     <div class="query-stats">
       <div class="query-geometry-size">
         <h3>Query geometry size:</h3>
-        <span class="query-geometry-size-ha" id="query-geometry-size-ha">0</span>
+        <span id="query-geometry-size-ha">0</span>
         ha |
-        <span class="query-geometry-size-sqkm" id="query-geometry-size-sqkm">0</span>
+        <span id="query-geometry-size-sqkm">0</span>
         sq.km.
       </div>
       <br />
       <div class="selected-area">
         <h3>OZP-covered area:</h3>
-        <span class="OZP-size-ha" id="OZP-size-ha">0</span>
+        <span id="OZP-size-ha">0</span>
         ha |
-        <span class="OZP-size-sqkm" id="OZP-size-sqkm">0</span>
+        <span id="OZP-size-sqkm">0</span>
         sq.km.
       </div>
       <br />
@@ -107,7 +110,7 @@
       <br />
       Last modified on <span id="lastModified"></span>.
       <br />
-      This application is for coding practice and testing demonstration only. Accuracy of data and results are not guaranteed.
+      This application is made for practice and demonstration use. Accuracy of data and results are not guaranteed.
       <br />
       Made and developed with
       <a href="https://pro.arcgis.com/en/pro-app/" target="_blank">ArcGIS Pro</a>,
