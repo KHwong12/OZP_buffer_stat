@@ -151,6 +151,7 @@ require([
 
     //////////////////////////////////////////
     // web map now initialised
+    //////////////////////////////////////////
 
     // use SketchViewModel to draw polygons for spatial query
     let sketchGeometry = null;
@@ -326,17 +327,33 @@ require([
     }
 
     async function calculateAreaByZoning() {
-        // getZoningAreaInBufferByZoning(bufferSize);
 
-        var selectedZoningAreas = [];
+        // // Get area of each selected zoning to the selectedZoningAreas array
+        // console.time('test_sequential');
 
-        // TODO: improve efficiency with async + map array
-        // https://flaviocopes.com/javascript-async-await-array-map/
+        // selectedZoningAreas_seq = [];
+        // for (var zoning of selectedZonings) {
+        //     selectedZoningAreas_seq.push(await getZoningAreaInBuffer(bufferSize, zoning));
+        // }
 
-        // Get area of each selected zoning to the selectedZoningAreas array
-        for (var zoning of selectedZonings) {
-            selectedZoningAreas.push(await getZoningAreaInBuffer(bufferSize, zoning));
+        // console.timeEnd('test_sequential');
+
+        console.time('test_parallel');
+
+        // map to get land area of each zoning type (parallelly await)
+        // faster then the above method (sequentially await) with .push(await)
+        // https://stackoverflow.com/questions/45285129/any-difference-between-await-promise-all-and-multiple-await
+        try {
+            var selectedZoningAreas = await Promise.all(
+                selectedZonings.map(zoning => getZoningAreaInBuffer(bufferSize, zoning))
+                )
+                
+            console.log(selectedZoningAreas);          
+        } catch (error) {
+            console.error('error: ', error);
         }
+
+        console.timeEnd('test_parallel');
 
         // cannot directly add up selectedZoningAreas since it only includes values of SELECTED zonings
         var totalAreaInOZP = await getZoningAreaInBuffer(bufferSize);
@@ -470,8 +487,8 @@ require([
     // TODO: to improve, find ways to clip FeatureLayer by Graphics, GeometryEngine seems only works with graphics
     async function getZoningAreaInBuffer(bufferLength, zoning) {
 
-        console.log("sketchGeometry: ", sketchGeometry);
-        console.log("bufferLength === 0:", bufferLength === 0);
+        // console.log("sketchGeometry: ", sketchGeometry);
+        // console.log("bufferLength === 0:", bufferLength === 0);
 
         // TODO: test if Only execute function when buffer has actual size?
         // TODO: write unit test
@@ -495,14 +512,14 @@ require([
         // Select by zoning attributes if zoning params is provided
         // https://stackoverflow.com/questions/13019640/how-to-test-if-a-parameter-is-provided-to-a-function
         if (zoning !== undefined) {
-            query.where = "ZONE_MAS = '" + zoning + "'";
-            console.log("Will query zoning of " + zoning + " intersects with buffer");
+            query.where = `ZONE_MAS = '${zoning}'`;
+            console.log(`Query zoning of ${zoning} intersects with buffer`);
         }
 
         let results = await webLayerView.queryFeatures(query);
 
-        console.log("Queried zoning intersects with buffer");
-        console.log(results);
+        // console.log("Queried zoning intersects with buffer");
+        // console.log(results);
 
         // Check if any features intersect with the buffer
         // If no, length of results will be 0, i.e. area in buffer = 0
@@ -523,7 +540,8 @@ require([
                 bufferLength,
                 "meters"
             );
-
+            
+            // "Union" to merge the selected OZP zones into one single layer for intersect use
             var unionGeoms = await geometryEngine.union(selectedOZPGeoms);
             // console.log("union function performed");
 
@@ -531,9 +549,8 @@ require([
             // console.log("intersect function performed");
 
             areaInBuffer = await geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters");
-            console.log("getZoningAreaInBuffer(): area calculated");
-
-            console.log("areaInBuffer: ", areaInBuffer);
+            // console.log("getZoningAreaInBuffer(): area calculated");
+            // console.log("areaInBuffer: ", areaInBuffer);
 
         }
 
