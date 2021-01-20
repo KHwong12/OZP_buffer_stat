@@ -1,5 +1,11 @@
 /// *** Create Charts *** ///
 
+// https://www.chartjs.org/docs/latest/general/fonts.html
+// White text colour and font same as esri theme css
+Chart.defaults.global.defaultFontColor = "rgba(255,255,255,1)";
+Chart.defaults.global.defaultFontFamily = "'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif";
+Chart.defaults.global.defaultFontSize = 12;
+
 var zoningLabels = [
     "R(A)",
     "R(B)",
@@ -58,18 +64,29 @@ function createzoningNumberChart() {
             },
             title: {
                 display: true,
+                fontSize: 16,
                 text: "Zoning pieces"
             },
             scales: {
                 xAxes: [{
                     stacked: true,
+                    // remove grid lines
+                    gridLines: {
+                        display: false,
+                        color: "#FFFFFF33"
+                      },
                     ticks: {
                         beginAtZero: true,
                         precision: 0
                     }
                 }],
                 yAxes: [{
-                    stacked: true
+                    stacked: true,
+                    // yAxes is zoning category, no need lines
+                    gridLines: {
+                        display: false,
+                        color: "#FFFFFF"
+                      }
                 }]
             }
         }
@@ -98,6 +115,7 @@ function createzoningAreaChart() {
             },
             title: {
                 display: true,
+                fontSize: 16,
                 text: "Distribution of zoning areas"
             },
             // Add thousand separator & wihtout title
