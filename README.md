@@ -1,15 +1,22 @@
 # Zone In: Query zonings within neighbourhood
 
-[CHECK THE WEB APPLICATION](https://khwong12.github.io/OZP_buffer_stat/)
+## [CHECK THE WEB APPLICATION](https://khwong12.github.io/OZP_buffer_stat/)
 
 ![](fig/overview.png)
 
 **Zone In** is a web map application for users to interactively explore the land use zonings in Hong Kong and investigate the distribution of zonings in the proximity in any areas.
 
+**Zone in** is useful to you when:
+
+- You would like to do a quick exploratory analysis about the land use composition of a specific project site
+- You want to check the percentage of land zoned as residential within certain distance (say, 400 m) away from a building
+- You want to check the gazette date of a zone
+- ... and more
+
 ## Feature Highlights
 
 - Draw **any** geometries for any area of interested/study areas
-- Instantly compute the amount of land uses within buffer
+- Instantly compute the total area and percentage of total of various land uses within given distance
 - Immediate summary data visualidation
 
 ## Overview
