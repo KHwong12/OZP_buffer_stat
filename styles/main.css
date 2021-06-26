@@ -92,12 +92,12 @@ footer {
 
 a {
   text-decoration: none;
-  border-bottom: 1px dashed #fff;
-  color: #fff;
+  border-bottom: 1px dashed #232323;
+  color: #232323;
 }
 
 a:hover {
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid #232323;
 }
 
 .fold-button {
@@ -112,4 +112,10 @@ a:hover {
   top: 50%;
   /* transform: translateX(-50%); */
   cursor: pointer;
+}
+
+.expand-widget {
+  width: 200px;
+  padding: 10px;
+  background-color: #ffffff;
 }
