@@ -4,7 +4,8 @@
   "description": "Query land use zoning statistics by drawing geometries on map",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint app/**/*.js"
   },
   "repository": {
     "type": "git",
@@ -18,5 +19,12 @@
   "bugs": {
     "url": "https://github.com/KHwong12/OZP_buffer_stat/issues"
   },
-  "homepage": "https://github.com/KHwong12/OZP_buffer_stat#readme"
+  "homepage": "https://github.com/KHwong12/OZP_buffer_stat#readme",
+  "devDependencies": {
+    "eslint": "^7.29.0",
+    "eslint-config-standard": "^16.0.3",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^5.1.0"
+  }
 }
