@@ -1,6 +1,8 @@
 # Zone In: Query zonings within neighbourhood
 
-## [CHECK THE WEB APPLICATION](https://khwong12.github.io/OZP_buffer_stat/)
+<p style='font-size:20px;align:center;'>
+  <a href='https://khwong12.github.io/OZP_buffer_stat/'>CHECK THE WEB APPLICATION</a>
+</p>
 
 ![](fig/overview.png)
 
@@ -10,7 +12,7 @@
 
 - You would like to do a quick exploratory analysis about the land use composition of a specific project site
 - You want to check the percentage of land zoned as residential within certain distance (say, 400 m) away from a building
-- You want to check the gazette date of a zone
+- You want to check the gazette date of a specific piece of zoning
 - ... and more
 
 ## Feature Highlights
@@ -25,7 +27,17 @@
 
 ## How to Use
 
-## Motivation
+### Check zonings within specific area
+
+1. Go to any area you would like to investigate
+1. Draw a geometry
+1. Select the desired buffer distance
+1. The application will then compute the area of each selected zoning type and visualise the proportions as charts
+
+### Query zonings
+
+1. Clicking on any zoning piece
+1. A pop-up will show on the map, including details of that zone like full zoning name, respective plan number and gazette date
 
 ## Issues
 
@@ -33,19 +45,12 @@
 
 TODO
 
-## Features TODO
+## TODO
 
-- Add historical OZP to show temporal changes
-
-## UI TODO
-
-- allow users to control transparency of OZP layer
-- use "reverse-clip" to disable/decrease opacity of the zones outside query geometry
-
-
-## Possible performance improvements
-
-- drop async/await
+- Features: Add historical OZP to show temporal changes
+- UI: allow users to control transparency of OZP layer
+- UI: use "reverse-clip" to disable/decrease opacity of the zones outside query geometry
+- performance: drop async/await
 
 ## Caveats
 
