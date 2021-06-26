@@ -2,7 +2,7 @@
 
 // https://www.chartjs.org/docs/latest/general/fonts.html
 // White text colour and font same as esri theme css
-Chart.defaults.global.defaultFontColor = 'rgba(255,255,255,1)'
+Chart.defaults.global.defaultFontColor = '#232323'
 Chart.defaults.global.defaultFontFamily = "'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif"
 Chart.defaults.global.defaultFontSize = 12
 
@@ -84,7 +84,7 @@ function createzoningNumberChart () {
           // yAxes is zoning category, no need lines
           gridLines: {
             display: false,
-            color: '#FFFFFF'
+            color: '#232323'
           }
         }]
       }
