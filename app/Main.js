@@ -103,7 +103,7 @@ require([
     expandTooltip: 'How to use',
     view: view,
     expanded: true,
-    content: "<div style='width:200px; padding:10px; background-color: #242424cc'><b>Click</b> the buttons to <b>draw</b> your area of interest. For lines and polygons, <b>double click</b> to finish drawing. <br><br><b>Move</b> the slider to change the buffer distance.</div>"
+    content: "<div class='expand-widget'><b>Click</b> the buttons to <b>draw</b> your area of interest. For lines and polygons, <b>double click</b> to finish drawing. <br><br><b>Move</b> the slider to change the buffer distance.</div>"
   })
 
   view.ui.add(instructionsExpand, 'top-left')
