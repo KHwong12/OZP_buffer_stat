@@ -1,0 +1,22 @@
+{
+  "name": "ozp_buffer_stat",
+  "version": "0.1.0",
+  "description": "Query land use zoning statistics by drawing geometries on map",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KHwong12/OZP_buffer_stat.git"
+  },
+  "keywords": [
+    "arcgis-js-api"
+  ],
+  "author": "Kenneth Wong",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KHwong12/OZP_buffer_stat/issues"
+  },
+  "homepage": "https://github.com/KHwong12/OZP_buffer_stat#readme"
+}
