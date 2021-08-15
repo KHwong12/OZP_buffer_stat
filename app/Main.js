@@ -35,7 +35,7 @@ require([
       // https://foa-hku.maps.arcgis.com/home/item.html?id=01807d9d7e954671bcfbcbe64290ac92
       id: 'ae69499b5942429b95a88e3a5bdd97c1'
     },
-    basemap: 'dark-gray-vector'
+    basemap: 'gray-vector'
   })
 
   // create the MapView
