@@ -26,20 +26,20 @@ body {
 }
 
 .contentDiv {
-  display: block;
   position: absolute;
   left: 0;
   height: 100%;
-  width: 30%;
-  min-width: 300px;
+  width: max(30%, 300px);
   overflow: scroll;
   padding: 10px;
   overflow-y: auto;
   overflow-x: hidden;
+  transition: all 0.5s ease;
 }
 
 .contentDiv_fold {
-  display: none;
+  width: 0;
+  padding: 0;
 }
 
 #queryDiv {
