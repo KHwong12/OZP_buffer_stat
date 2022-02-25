@@ -1,3 +1,6 @@
+import { foldSidePanel } from "./ui";
+import { zoningNumberChart, zoningAreaChart, updateChart, clearCharts } from "./create-chart";
+
 require([
   'esri/WebMap',
   'esri/views/MapView',
@@ -336,15 +339,19 @@ require([
 
     console.time('test_parallel')
 
+    // Need to access var outside the try loop, therefore need to declare the variable first
+    // https://stackoverflow.com/questions/40925094/javascript-set-const-variable-inside-of-a-try-block
+    let selectedZoningAreas
+
     // map to get land area of each zoning type (parallelly await)
     // faster then the above method (sequentially await) with .push(await)
     // https://stackoverflow.com/questions/45285129/any-difference-between-await-promise-all-and-multiple-await
     try {
-      var selectedZoningAreas = await Promise.all(
+      selectedZoningAreas = await Promise.all(
         selectedZonings.map(zoning => getZoningAreaInBuffer(bufferSize, zoning))
       )
 
-      console.log(selectedZoningAreas)
+      console.log('selectedZoningAreas: ', selectedZoningAreas)
     } catch (error) {
       console.error('error: ', error)
     }
@@ -361,7 +368,7 @@ require([
 
     // Get total area of all zoning types
     // https://stackoverflow.com/questions/1230233/how-to-find-the-sum-of-an-array-of-numbers
-    majorZoningsTotalArea = selectedZoningAreas.reduce((partialSum, a) => partialSum + a, 0)
+    const majorZoningsTotalArea = selectedZoningAreas.reduce((partialSum, a) => partialSum + a, 0)
 
     // Add total area of other zonings at the end of the zoning area array
     selectedZoningAreas.push(totalAreaInOZP - majorZoningsTotalArea)
@@ -661,7 +668,4 @@ require([
       ])
     }, console.error)
   }
-
-  createzoningNumberChart()
-  createzoningAreaChart()
 })

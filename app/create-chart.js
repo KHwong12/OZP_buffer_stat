@@ -42,110 +42,108 @@ const zoningColors = [
 // An array of 0 with the same length of zoningLabels
 const zeroArray = [...Array(zoningLabels.length)].map(() => 0)
 
-function createzoningNumberChart () {
-  const zoningNumberCanvas = document.getElementById('zoning-number-chart')
+const zoningNumberCanvas = document.getElementById('zoning-number-chart')
 
-  zoningNumberChart = new Chart(zoningNumberCanvas.getContext('2d'), {
-    type: 'horizontalBar',
-    data: {
-      labels: zoningLabels,
-      datasets: [{
-        label: 'Number of pieces',
-        backgroundColor: zoningColors,
-        stack: 'Stack 0',
-        data: zeroArray
-      }]
+// Create the "number of zoning pieces" chart
+export const zoningNumberChart = new Chart(zoningNumberCanvas.getContext('2d'), {
+  type: 'horizontalBar',
+  data: {
+    labels: zoningLabels,
+    datasets: [{
+      label: 'Number of pieces',
+      backgroundColor: zoningColors,
+      stack: 'Stack 0',
+      data: zeroArray
+    }]
+  },
+  options: {
+    responsive: false,
+    legend: {
+      display: false
     },
-    options: {
-      responsive: false,
-      legend: {
-        display: false
-      },
-      title: {
-        display: true,
-        fontSize: 16,
-        text: 'Zoning pieces'
-      },
-      scales: {
-        xAxes: [{
-          stacked: true,
-          // remove grid lines
-          gridLines: {
-            display: false,
-            color: '#FFFFFF33'
-          },
-          ticks: {
-            beginAtZero: true,
-            precision: 0
-          }
-        }],
-        yAxes: [{
-          stacked: true,
-          // yAxes is zoning category, no need lines
-          gridLines: {
-            display: false,
-            color: '#232323'
-          }
-        }]
-      }
+    title: {
+      display: true,
+      fontSize: 16,
+      text: 'Zoning pieces'
+    },
+    scales: {
+      xAxes: [{
+        stacked: true,
+        // remove grid lines
+        gridLines: {
+          display: false,
+          color: '#FFFFFF33'
+        },
+        ticks: {
+          beginAtZero: true,
+          precision: 0
+        }
+      }],
+      yAxes: [{
+        stacked: true,
+        // yAxes is zoning category, no need lines
+        gridLines: {
+          display: false,
+          color: '#232323'
+        }
+      }]
     }
-  })
-}
+  }
+})
 
-function createzoningAreaChart () {
-  const zoningAreaCanvas = document.getElementById('zoning-area-chart')
+const zoningAreaCanvas = document.getElementById('zoning-area-chart')
 
-  zoningAreaChart = new Chart(zoningAreaCanvas.getContext('2d'), {
-    type: 'doughnut',
-    data: {
-      labels: zoningLabelsFull,
-      datasets: [{
-        label: 'Area (sq.m.)',
-        backgroundColor: zoningColors,
-        borderWidth: 0,
-        data: zeroArray
-      }]
+// Create the "area by zoning" chart
+export const zoningAreaChart = new Chart(zoningAreaCanvas.getContext('2d'), {
+  type: 'doughnut',
+  data: {
+    labels: zoningLabelsFull,
+    datasets: [{
+      label: 'Area (sq.m.)',
+      backgroundColor: zoningColors,
+      borderWidth: 0,
+      data: zeroArray
+    }]
+  },
+  options: {
+    responsive: false,
+    legend: {
+      display: false
     },
-    options: {
-      responsive: false,
-      legend: {
-        display: false
-      },
-      title: {
-        display: true,
-        fontSize: 16,
-        text: 'Distribution of zoning areas'
-      },
-      // Add thousand separator & wihtout title
-      // https://josephfitzsimmons.com/adding-a-thousands-separator-to-chartjss-y-axis-and-tooltips/
-      tooltips: {
-        // Add percentages
-        // https://stackoverflow.com/questions/37257034/chart-js-2-0-doughnut-tooltip-percentages/49717859#49717859
-        callbacks: {
-          label: function (tooltipItem, data) {
-            const dataset = data.datasets[tooltipItem.datasetIndex]
-            const meta = dataset._meta[Object.keys(dataset._meta)[0]]
-            const total = meta.total
-            const currentValue = dataset.data[tooltipItem.index]
-            const percentage = parseFloat((currentValue / total * 100).toFixed(1))
-            return ' ' + currentValue.toLocaleString() + ' sq.m.' + ' (' + percentage + '%)'
-          },
-          title: function (tooltipItem, data) {
-            return data.labels[tooltipItem[0].index]
-          }
+    title: {
+      display: true,
+      fontSize: 16,
+      text: 'Distribution of zoning areas'
+    },
+    // Add thousand separator & wihtout title
+    // https://josephfitzsimmons.com/adding-a-thousands-separator-to-chartjss-y-axis-and-tooltips/
+    tooltips: {
+      // Add percentages
+      // https://stackoverflow.com/questions/37257034/chart-js-2-0-doughnut-tooltip-percentages/49717859#49717859
+      callbacks: {
+        label: function (tooltipItem, data) {
+          const dataset = data.datasets[tooltipItem.datasetIndex]
+          const meta = dataset._meta[Object.keys(dataset._meta)[0]]
+          const total = meta.total
+          const currentValue = dataset.data[tooltipItem.index]
+          const percentage = parseFloat((currentValue / total * 100).toFixed(1))
+          return ' ' + currentValue.toLocaleString() + ' sq.m.' + ' (' + percentage + '%)'
+        },
+        title: function (tooltipItem, data) {
+          return data.labels[tooltipItem[0].index]
         }
       }
     }
-  })
-}
+  }
+})
 
 // Updates the given chart with new data
-function updateChart (chart, dataValues) {
+export function updateChart (chart, dataValues) {
   chart.data.datasets[0].data = dataValues
   chart.update()
 }
 
-function clearCharts () {
+export function clearCharts () {
   updateChart(zoningNumberChart, zeroArray)
   updateChart(zoningAreaChart, zeroArray)
 }

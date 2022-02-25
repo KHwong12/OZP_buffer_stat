@@ -1,7 +1,7 @@
 // UI function for fold/unfold side panel
 // https://codepen.io/DeolaJ/pen/xvjbKY
 
-document.addEventListener('DOMContentLoaded', function () {
+export const foldSidePanel = document.addEventListener('DOMContentLoaded', function () {
   const sidebar = document.querySelector('.contentDiv')
   const mainContent = document.querySelector('.viewDiv')
 
