@@ -1,3 +1,6 @@
+import { foldSidePanel } from "./ui";
+import { zoningNumberChart, zoningAreaChart, updateChart, clearCharts } from "./create-chart";
+
 require([
   'esri/WebMap',
   'esri/views/MapView',
@@ -324,27 +327,21 @@ require([
   }
 
   async function calculateAreaByZoning () {
-    // // Get area of each selected zoning to the selectedZoningAreas array
-    // console.time('test_sequential');
-
-    // selectedZoningAreas_seq = [];
-    // for (var zoning of selectedZonings) {
-    //     selectedZoningAreas_seq.push(await getZoningAreaInBuffer(bufferSize, zoning));
-    // }
-
-    // console.timeEnd('test_sequential');
-
     console.time('test_parallel')
+
+    // Need to access var outside the try loop, therefore need to declare the variable first
+    // https://stackoverflow.com/questions/40925094/javascript-set-const-variable-inside-of-a-try-block
+    let selectedZoningAreas
 
     // map to get land area of each zoning type (parallelly await)
     // faster then the above method (sequentially await) with .push(await)
     // https://stackoverflow.com/questions/45285129/any-difference-between-await-promise-all-and-multiple-await
     try {
-      var selectedZoningAreas = await Promise.all(
+      selectedZoningAreas = await Promise.all(
         selectedZonings.map(zoning => getZoningAreaInBuffer(bufferSize, zoning))
       )
 
-      console.log(selectedZoningAreas)
+      console.log('selectedZoningAreas: ', selectedZoningAreas)
     } catch (error) {
       console.error('error: ', error)
     }
@@ -361,7 +358,7 @@ require([
 
     // Get total area of all zoning types
     // https://stackoverflow.com/questions/1230233/how-to-find-the-sum-of-an-array-of-numbers
-    majorZoningsTotalArea = selectedZoningAreas.reduce((partialSum, a) => partialSum + a, 0)
+    const majorZoningsTotalArea = selectedZoningAreas.reduce((partialSum, a) => partialSum + a, 0)
 
     // Add total area of other zonings at the end of the zoning area array
     selectedZoningAreas.push(totalAreaInOZP - majorZoningsTotalArea)
@@ -372,37 +369,6 @@ require([
 
     // Round to nearest integer for readability
     updateChart(zoningAreaChart, selectedZoningAreas.map(Math.round))
-
-    /*        var selectedZoningsArea = await selectedZonings.map(
-                    async function (x) { return await getZoningAreaInBuffer(x, bufferSize); }
-                );
-
-        /*        console.log(getZoningAreaInBuffer("R(A)", bufferSize)); */
-    /*
-
-                const test1 = Promise.all(selectedZoningsArea).then(x => {
-                    console.log(selectedZoningsArea, "inside all promise");
-                            console.log(getZoningAreaInBuffer("R(A)", bufferSize), "inside all promise");
-                    areaByZoning = selectedZonings.reduce((acc, key, index) => ({ ...acc, [key]: selectedZoningsArea[index] }), {})
-
-                    console.log(areaByZoning["R(A)"]);
-
-                    alert(areaByZoning["R(A)"]);
-                });
-
-                const test = async () => {
-                    const a = await test1;
-                    console.log(a);
-                    alert("async here");
-                }; */
-
-    /*        Promise.all(selectedZoningsArea).then(function () {
-                    console.log(selectedZoningsArea);
-                }); */
-
-    /*        console.log(selectedZonings.map(
-                    function (x) { return getZoningAreaInBuffer(x, bufferSize); }
-                )); */
   }
 
   // update graphic and size figure of buffer
@@ -661,7 +627,4 @@ require([
       ])
     }, console.error)
   }
-
-  createzoningNumberChart()
-  createzoningAreaChart()
 })
