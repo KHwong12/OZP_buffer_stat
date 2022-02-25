@@ -327,16 +327,6 @@ require([
   }
 
   async function calculateAreaByZoning () {
-    // // Get area of each selected zoning to the selectedZoningAreas array
-    // console.time('test_sequential');
-
-    // selectedZoningAreas_seq = [];
-    // for (var zoning of selectedZonings) {
-    //     selectedZoningAreas_seq.push(await getZoningAreaInBuffer(bufferSize, zoning));
-    // }
-
-    // console.timeEnd('test_sequential');
-
     console.time('test_parallel')
 
     // Need to access var outside the try loop, therefore need to declare the variable first
@@ -379,37 +369,6 @@ require([
 
     // Round to nearest integer for readability
     updateChart(zoningAreaChart, selectedZoningAreas.map(Math.round))
-
-    /*        var selectedZoningsArea = await selectedZonings.map(
-                    async function (x) { return await getZoningAreaInBuffer(x, bufferSize); }
-                );
-
-        /*        console.log(getZoningAreaInBuffer("R(A)", bufferSize)); */
-    /*
-
-                const test1 = Promise.all(selectedZoningsArea).then(x => {
-                    console.log(selectedZoningsArea, "inside all promise");
-                            console.log(getZoningAreaInBuffer("R(A)", bufferSize), "inside all promise");
-                    areaByZoning = selectedZonings.reduce((acc, key, index) => ({ ...acc, [key]: selectedZoningsArea[index] }), {})
-
-                    console.log(areaByZoning["R(A)"]);
-
-                    alert(areaByZoning["R(A)"]);
-                });
-
-                const test = async () => {
-                    const a = await test1;
-                    console.log(a);
-                    alert("async here");
-                }; */
-
-    /*        Promise.all(selectedZoningsArea).then(function () {
-                    console.log(selectedZoningsArea);
-                }); */
-
-    /*        console.log(selectedZonings.map(
-                    function (x) { return getZoningAreaInBuffer(x, bufferSize); }
-                )); */
   }
 
   // update graphic and size figure of buffer
