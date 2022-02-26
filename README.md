@@ -73,12 +73,15 @@ To locally build and preview this website, follow the steps below.
     ```sh
     git clone https://github.com/KHwong12/OZP_buffer_stat.git
     ```
+
 2. Make sure **npm** and **node.js** are installed in your machine
+
 3. At project root folder, install the npm dependencies
     ```sh
     npm install
     ```
+
 4. Run this project on local server
    ```sh
-   npm run dev-server
+   npm run dev
    ```
