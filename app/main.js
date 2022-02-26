@@ -23,7 +23,7 @@ const webmap = new WebMap({
     id: "ae69499b5942429b95a88e3a5bdd97c1"
   },
   basemap: "gray-vector"
-})
+});
 
 // create the MapView
 const view = new MapView({
@@ -36,52 +36,52 @@ const view = new MapView({
     minScale: 200000,
     rotationEnabled: false
   }
-})
+});
 
-window.view = view
+window.view = view;
 
 // add a GraphicsLayer for the sketches and the buffer
-const sketchLayer = new GraphicsLayer()
-const bufferLayer = new GraphicsLayer()
-view.map.addMany([bufferLayer, sketchLayer])
+const sketchLayer = new GraphicsLayer();
+const bufferLayer = new GraphicsLayer();
+view.map.addMany([bufferLayer, sketchLayer]);
 
-let webLayer = null
-let webLayerView = null
-let bufferSize = 0
+let webLayer = null;
+let webLayerView = null;
+let bufferSize = 0;
 
 // https://developers.arcgis.com/javascript/latest/sample-code/widgets-scalebar/index.html
 const scaleBar = new ScaleBar({
   view: view,
   unit: "metric"
-})
+});
 
 // Add the widget to the bottom left corner of the view
 view.ui.add(scaleBar, {
   position: "bottom-right"
-})
+});
 
 // Assign web layer once webmap is loaded and initialize UI
 webmap.load().then(function () {
   webLayer = webmap.layers.find(function (layer) {
     // title of layer, not name of the webmap
-    return layer.title === "ZONE_nonSea_planAttr_MASTER_30DEC2020"
-  })
+    return layer.title === "ZONE_nonSea_planAttr_MASTER_30DEC2020";
+  });
   // Fetch all fields
   // https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-FeatureLayer.html#outFields
-  webLayer.outFields = ["*"]
+  webLayer.outFields = ["*"];
 
   // Show query UI only after the map is loaded
   view.whenLayerView(webLayer).then(function (layerView) {
-    webLayerView = layerView
-    queryDiv.style.display = "block"
-  })
+    webLayerView = layerView;
+    queryDiv.style.display = "block";
+  });
 
   // Put OZP zoning feature layer to the bottom, otherwise query geoms will be hided by the OZP polygons
   // https://developers.arcgis.com/javascript/latest/api-reference/esri-Map.html#reorder
-  webmap.reorder(webLayer, 0)
-})
+  webmap.reorder(webLayer, 0);
+});
 
-view.ui.add([queryDiv], "bottom-left")
+view.ui.add([queryDiv], "bottom-left");
 
 // https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-Expand.html
 // https://developers.arcgis.com/javascript/latest/sample-code/layers-imagery-clientside/index.html
@@ -91,16 +91,16 @@ const instructionsExpand = new Expand({
   view: view,
   expanded: true,
   content: "<div class='expand-widget'><b>Click</b> the buttons to <b>draw</b> your area of interest. For lines and polygons, <b>double click</b> to finish drawing. <br><br><b>Move</b> the slider to change the buffer distance.</div>"
-})
+});
 
-view.ui.add(instructionsExpand, "top-left")
+view.ui.add(instructionsExpand, "top-left");
 
 // Close the 'help' popup when view is focused
 view.watch("focused", function (isFocused) {
   if (isFocused) {
-    instructionsExpand.expanded = false
+    instructionsExpand.expanded = false;
   }
-})
+});
 
 // Create a BasemapGallery widget instance and set
 // its container to a div element
@@ -109,7 +109,7 @@ view.watch("focused", function (isFocused) {
 const basemapGallery = new BasemapGallery({
   view: view,
   container: document.createElement("div")
-})
+});
 
 // Create an Expand instance and set the content
 // property to the DOM node of the basemap gallery widget
@@ -120,28 +120,28 @@ const bgExpand = new Expand({
   view: view,
   content: basemapGallery,
   expandTooltip: "Change Basemap"
-})
+});
 
 // close the expand whenever a basemap is selected
 basemapGallery.watch("activeBasemap", function () {
   const mobileSize =
           view.heightBreakpoint === "xsmall" ||
-          view.widthBreakpoint === "xsmall"
+          view.widthBreakpoint === "xsmall";
 
   if (mobileSize) {
-    bgExpand.collapse()
+    bgExpand.collapse();
   }
-})
+});
 
 // Add the expand instance to the ui
-view.ui.add(bgExpand, "top-left")
+view.ui.add(bgExpand, "top-left");
 
 /// ///////////////////////////////////////
 // web map now initialised
 /// ///////////////////////////////////////
 
 // use SketchViewModel to draw polygons for spatial query
-let sketchGeometry = null
+let sketchGeometry = null;
 
 const sketchViewModel = new SketchViewModel({
   layer: sketchLayer,
@@ -178,41 +178,41 @@ const sketchViewModel = new SketchViewModel({
   defaultCreateOptions: {
     hasZ: false
   }
-})
+});
 
 // query the OZP layer when geometry is created or updated
 sketchViewModel.on("create", function (event) {
   if (event.state === "complete") {
-    sketchGeometry = event.graphic.geometry
-    showSidePanel()
-    runQuery()
+    sketchGeometry = event.graphic.geometry;
+    showSidePanel();
+    runQuery();
   }
-})
+});
 
 sketchViewModel.on("update", function (event) {
   if (event.state === "complete") {
-    sketchGeometry = event.graphics[0].geometry
-    showSidePanel()
-    runQuery()
+    sketchGeometry = event.graphics[0].geometry;
+    showSidePanel();
+    runQuery();
   }
-})
+});
 
 // draw geometry buttons - use the selected geometry to sketch
 
 document
   .getElementById("point-geometry-button")
-  .addEventListener("click", geometryButtonsClickHandler)
+  .addEventListener("click", geometryButtonsClickHandler);
 document
   .getElementById("line-geometry-button")
-  .addEventListener("click", geometryButtonsClickHandler)
+  .addEventListener("click", geometryButtonsClickHandler);
 document
   .getElementById("polygon-geometry-button")
-  .addEventListener("click", geometryButtonsClickHandler)
+  .addEventListener("click", geometryButtonsClickHandler);
 
 function geometryButtonsClickHandler (event) {
-  const geometryType = event.target.value
-  clearResults()
-  sketchViewModel.create(geometryType)
+  const geometryType = event.target.value;
+  clearResults();
+  sketchViewModel.create(geometryType);
 }
 
 const bufferNumSlider = new Slider({
@@ -225,97 +225,97 @@ const bufferNumSlider = new Slider({
   },
   precision: 0,
   labelFormatFunction: function (value, type) {
-    return value.toString() + "m"
+    return value.toString() + "m";
   },
   values: [0]
-})
+});
 
 // get user entered values for buffer
 bufferNumSlider.on(
   ["thumb-change", "thumb-drag"],
   bufferVariablesChanged
-)
+);
 
 function bufferVariablesChanged (event) {
-  bufferSize = event.value
-  runQuery()
+  bufferSize = event.value;
+  runQuery();
 }
 
 // Listener of "Clear Results" Button
 document
   .getElementById("clearResults")
-  .addEventListener("click", clearResults)
+  .addEventListener("click", clearResults);
 
 // Show the contentDiv again (by "clicking" the panel button) if folded
 // do not use it when users are changing buffer variables only
 function showSidePanel () {
-  const sidebar = document.querySelector(".contentDiv")
+  const sidebar = document.querySelector(".contentDiv");
 
   if (sidebar.classList.contains("contentDiv_fold")) {
-    document.querySelector(".fold-button").click()
+    document.querySelector(".fold-button").click();
   }
 }
 
 // Clear the geometry and set the default renderer
 // Reset all to default
 function clearResults () {
-  sketchGeometry = null
-  sketchViewModel.cancel()
-  sketchLayer.removeAll()
-  bufferLayer.removeAll()
+  sketchGeometry = null;
+  sketchViewModel.cancel();
+  sketchLayer.removeAll();
+  bufferLayer.removeAll();
   // clearHighlighting();
-  clearCharts()
+  clearCharts();
 
   // Clear numbers
-  document.getElementById("count").innerHTML = 0
-  document.getElementById("query-geometry-size-ha").innerHTML = 0
-  document.getElementById("query-geometry-size-sqkm").innerHTML = 0
-  document.getElementById("OZP-size-ha").innerHTML = 0
-  document.getElementById("OZP-size-sqkm").innerHTML = 0
+  document.getElementById("count").innerHTML = 0;
+  document.getElementById("query-geometry-size-ha").innerHTML = 0;
+  document.getElementById("query-geometry-size-sqkm").innerHTML = 0;
+  document.getElementById("OZP-size-ha").innerHTML = 0;
+  document.getElementById("OZP-size-sqkm").innerHTML = 0;
 }
 
-const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C", "MRDJ"]
+const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C", "MRDJ"];
 
 // set the geometry query on the visible webLayerView
 const debouncedRunQuery = promiseUtils.debounce(function () {
   if (!sketchGeometry) {
-    return
+    return;
   }
 
-  updateBufferGraphic(bufferSize)
+  updateBufferGraphic(bufferSize);
 
   // Update geometry stats
-  updateQueryGeomSize(sketchGeometry, bufferSize)
+  updateQueryGeomSize(sketchGeometry, bufferSize);
 
   // calculate area of each zoning type, then update the zoning area chart & area figures
-  calculateAreaByZoning()
+  calculateAreaByZoning();
 
   return promiseUtils.eachAlways([
     queryStatistics(),
     updateMapLayer()
-  ])
-})
+  ]);
+});
 
 function runQuery () {
   debouncedRunQuery().catch((error) => {
     if (error.name === "AbortError") {
-      return
+      return;
     }
 
-    console.error(error)
-  })
+    console.error(error);
+  });
 
   // scroll to the results
-  const elmnt = document.querySelector(".query-stats")
-  elmnt.scrollIntoView({ behavior: "smooth" })
+  const elmnt = document.querySelector(".query-stats");
+  elmnt.scrollIntoView({ behavior: "smooth" });
 }
 
 async function calculateAreaByZoning () {
-  console.time("test_parallel")
+  console.time("test_parallel");
 
   // Need to access var outside the try loop, therefore need to declare the variable first
   // https://stackoverflow.com/questions/40925094/javascript-set-const-variable-inside-of-a-try-block
-  let selectedZoningAreas
+  let selectedZoningAreas;
 
   // map to get land area of each zoning type (parallelly await)
   // faster then the above method (sequentially await) with .push(await)
@@ -323,36 +323,36 @@ async function calculateAreaByZoning () {
   try {
     selectedZoningAreas = await Promise.all(
       selectedZonings.map(zoning => getZoningAreaInBuffer(bufferSize, zoning))
-    )
+    );
 
-    console.log("selectedZoningAreas: ", selectedZoningAreas)
+    console.log("selectedZoningAreas: ", selectedZoningAreas);
   } catch (error) {
-    console.error("error: ", error)
+    console.error("error: ", error);
   }
 
-  console.timeEnd("test_parallel")
+  console.timeEnd("test_parallel");
 
   // cannot directly add up selectedZoningAreas since it only includes values of SELECTED zonings
-  const totalAreaInOZP = await getZoningAreaInBuffer(bufferSize)
-  console.log("totalAreaInOZP: ", totalAreaInOZP)
+  const totalAreaInOZP = await getZoningAreaInBuffer(bufferSize);
+  console.log("totalAreaInOZP: ", totalAreaInOZP);
 
   // Format the size and update the value
-  document.getElementById("OZP-size-ha").innerHTML = (totalAreaInOZP * 1e-4).toLocaleString()
-  document.getElementById("OZP-size-sqkm").innerHTML = (totalAreaInOZP * 1e-6).toLocaleString()
+  document.getElementById("OZP-size-ha").innerHTML = (totalAreaInOZP * 1e-4).toLocaleString();
+  document.getElementById("OZP-size-sqkm").innerHTML = (totalAreaInOZP * 1e-6).toLocaleString();
 
   // Get total area of all zoning types
   // https://stackoverflow.com/questions/1230233/how-to-find-the-sum-of-an-array-of-numbers
-  const majorZoningsTotalArea = selectedZoningAreas.reduce((partialSum, a) => partialSum + a, 0)
+  const majorZoningsTotalArea = selectedZoningAreas.reduce((partialSum, a) => partialSum + a, 0);
 
   // Add total area of other zonings at the end of the zoning area array
-  selectedZoningAreas.push(totalAreaInOZP - majorZoningsTotalArea)
+  selectedZoningAreas.push(totalAreaInOZP - majorZoningsTotalArea);
 
-  console.log("selectedZoningAreas", selectedZoningAreas)
+  console.log("selectedZoningAreas", selectedZoningAreas);
 
-  console.log("updating zoning area chart!")
+  console.log("updating zoning area chart!");
 
   // Round to nearest integer for readability
-  updateChart(zoningAreaChart, selectedZoningAreas.map(Math.round))
+  updateChart(zoningAreaChart, selectedZoningAreas.map(Math.round));
 }
 
 // update graphic and size figure of buffer
@@ -363,7 +363,7 @@ function updateBufferGraphic (buffer) {
       sketchGeometry,
       buffer,
       "meters"
-    )
+    );
     // graphic layer can contain multiple features (i.e. length > 1)
     if (bufferLayer.graphics.length === 0) {
       bufferLayer.add(
@@ -380,17 +380,17 @@ function updateBufferGraphic (buffer) {
             }
           }
         })
-      )
+      );
     } else {
-      bufferLayer.graphics.getItemAt(0).geometry = bufferGeometry
+      bufferLayer.graphics.getItemAt(0).geometry = bufferGeometry;
     }
   } else {
-    bufferLayer.removeAll()
+    bufferLayer.removeAll();
   }
 }
 
 function updateQueryGeomSize (queryGeom, buffer) {
-  let queryGeomGeodesicArea = 0
+  let queryGeomGeodesicArea = 0;
 
   // if buffer > 0, compute buffer geom
   if (buffer > 0) {
@@ -398,19 +398,19 @@ function updateQueryGeomSize (queryGeom, buffer) {
       queryGeom,
       buffer,
       "meters"
-    )
+    );
 
     // Calculate buffer size
-    queryGeomGeodesicArea = geometryEngine.geodesicArea(bufferGeometry, "square-meters")
+    queryGeomGeodesicArea = geometryEngine.geodesicArea(bufferGeometry, "square-meters");
 
     // else if query geometry is a polygon, get the size of it (line and point must size area of 0)
   } else if (queryGeom.type === "polygon") {
-    queryGeomGeodesicArea = geometryEngine.geodesicArea(queryGeom, "square-meters")
+    queryGeomGeodesicArea = geometryEngine.geodesicArea(queryGeom, "square-meters");
   }
 
   // Format the size and update the value
-  document.getElementById("query-geometry-size-ha").innerHTML = (queryGeomGeodesicArea * 1e-4).toLocaleString()
-  document.getElementById("query-geometry-size-sqkm").innerHTML = (queryGeomGeodesicArea * 1e-6).toLocaleString()
+  document.getElementById("query-geometry-size-ha").innerHTML = (queryGeomGeodesicArea * 1e-4).toLocaleString();
+  document.getElementById("query-geometry-size-sqkm").innerHTML = (queryGeomGeodesicArea * 1e-6).toLocaleString();
 }
 
 // Get total zoning area within the buffer
@@ -433,26 +433,26 @@ async function getZoningAreaInBuffer (bufferLength, zoning) {
   // Sanity Check to ensure the query is not point or line (i.e. query geom has 0 area)
   // return 0 (or should be null)?
   if (bufferLength === 0 && sketchGeometry.type !== "polygon") {
-    console.log("The query geometry is a point/line. Returning area of 0.")
-    return 0
+    console.log("The query geometry is a point/line. Returning area of 0.");
+    return 0;
   }
 
-  let areaInBuffer = 0
+  let areaInBuffer = 0;
 
-  const query = webLayerView.createQuery()
+  const query = webLayerView.createQuery();
 
-  query.geometry = sketchGeometry
-  query.distance = bufferLength
-  query.spatialRelationship = "intersects"
+  query.geometry = sketchGeometry;
+  query.distance = bufferLength;
+  query.spatialRelationship = "intersects";
 
   // Select by zoning attributes if zoning params is provided
   // https://stackoverflow.com/questions/13019640/how-to-test-if-a-parameter-is-provided-to-a-function
   if (zoning !== undefined) {
-    query.where = `ZONE_MAS = '${zoning}'`
-    console.log(`Query zoning of ${zoning} intersects with buffer`)
+    query.where = `ZONE_MAS = '${zoning}'`;
+    console.log(`Query zoning of ${zoning} intersects with buffer`);
   }
 
-  const results = await webLayerView.queryFeatures(query)
+  const results = await webLayerView.queryFeatures(query);
 
   // console.log("Queried zoning intersects with buffer");
   // console.log(results);
@@ -461,34 +461,34 @@ async function getZoningAreaInBuffer (bufferLength, zoning) {
   // If no, length of results will be 0, i.e. area in buffer = 0
   if (results.features.length > 0) {
     //
-    const selectedOZPGeoms = []
+    const selectedOZPGeoms = [];
 
     // results is a query, but only gemoetry of the queried is needed
     // Get the geometry value inside the object
     results.features.forEach(function (item) {
-      selectedOZPGeoms.push(item.geometry)
-    })
+      selectedOZPGeoms.push(item.geometry);
+    });
 
     // bufferGeometry is required for intersecting OZP
     const bufferGeometry = geometryEngine.geodesicBuffer(
       sketchGeometry,
       bufferLength,
       "meters"
-    )
+    );
 
     // "Union" to merge the selected OZP zones into one single layer for intersect use
-    const unionGeoms = await geometryEngine.union(selectedOZPGeoms)
+    const unionGeoms = await geometryEngine.union(selectedOZPGeoms);
     // console.log("union function performed");
 
-    const bufferOZPIntersect = await geometryEngine.intersect(bufferGeometry, unionGeoms)
+    const bufferOZPIntersect = await geometryEngine.intersect(bufferGeometry, unionGeoms);
     // console.log("intersect function performed");
 
-    areaInBuffer = await geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters")
+    areaInBuffer = await geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters");
     // console.log("getZoningAreaInBuffer(): area calculated");
     // console.log("areaInBuffer: ", areaInBuffer);
   }
 
-  return areaInBuffer
+  return areaInBuffer;
 }
 
 // Calculate geodesic area of a graphic layer (multiple features possible)
@@ -508,38 +508,38 @@ function calculateGeodesicArea (graphicsLayer) {
 // Highlight feautres within buffer area
 // Not used now
 
-let highlightHandle = null
+let highlightHandle = null;
 
 function clearHighlighting () {
   if (highlightHandle) {
-    highlightHandle.remove()
-    highlightHandle = null
+    highlightHandle.remove();
+    highlightHandle = null;
   }
 }
 
 // Highlight (i.e. select) the geometries selected in the OZP layer
 function highlightGeometries (objectIds) {
   // Remove any previous highlighting
-  clearHighlighting()
+  clearHighlighting();
 
-  const objectIdField = webLayer.objectIdField
-  document.getElementById("count").innerHTML = objectIds.length
+  const objectIdField = webLayer.objectIdField;
+  document.getElementById("count").innerHTML = objectIds.length;
 
-  highlightHandle = webLayerView.highlight(objectIds)
+  highlightHandle = webLayerView.highlight(objectIds);
 }
 
 // Change count of features within buffer
 function changeFeatureCount (objectIds) {
-  document.getElementById("count").innerHTML = objectIds.length
+  document.getElementById("count").innerHTML = objectIds.length;
 }
 
 function updateMapLayer () {
-  const query = webLayerView.createQuery()
+  const query = webLayerView.createQuery();
 
-  query.geometry = sketchGeometry
-  query.distance = bufferSize
+  query.geometry = sketchGeometry;
+  query.distance = bufferSize;
 
-  return webLayerView.queryObjectIds(query).then(changeFeatureCount)
+  return webLayerView.queryObjectIds(query).then(changeFeatureCount);
   // return webLayerView.queryObjectIds(query).then(highlightGeometries);
 }
 
@@ -583,21 +583,21 @@ const statDefinitions = [{
   outStatisticFieldName: "zone_OTHERS",
   statisticType: "sum"
 }
-]
+];
 
 function queryStatistics () {
   // https://developers.arcgis.com/javascript/latest/api-reference/esri-tasks-support-Query.html
-  const query = webLayerView.createQuery()
+  const query = webLayerView.createQuery();
 
-  query.geometry = sketchGeometry
-  query.distance = bufferSize
-  query.outStatistics = statDefinitions
+  query.geometry = sketchGeometry;
+  query.distance = bufferSize;
+  query.outStatistics = statDefinitions;
 
   // with outStatistics returned result is a "table" with geometry of null
   return webLayerView.queryFeatures(query).then(function (result) {
     // console.log(result);
 
-    const allStats = result.features[0].attributes
+    const allStats = result.features[0].attributes;
 
     updateChart(zoningNumberChart, [
       allStats.zone_RA,
@@ -608,6 +608,6 @@ function queryStatistics () {
       allStats.zone_C,
       allStats.zone_MRDJ,
       allStats.zone_OTHERS
-    ])
-  }, console.error)
+    ]);
+  }, console.error);
 }

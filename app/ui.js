@@ -2,13 +2,13 @@
 // https://codepen.io/DeolaJ/pen/xvjbKY
 
 export const foldSidePanel = document.addEventListener("DOMContentLoaded", function () {
-  const sidebar = document.querySelector(".contentDiv")
-  const mainContent = document.querySelector(".viewDiv")
+  const sidebar = document.querySelector(".contentDiv");
+  const mainContent = document.querySelector(".viewDiv");
 
   document.querySelector(".fold-button").onclick = function () {
-    sidebar.classList.toggle("contentDiv_fold")
-    mainContent.classList.toggle("viewDiv_large")
-  }
+    sidebar.classList.toggle("contentDiv_fold");
+    mainContent.classList.toggle("viewDiv_large");
+  };
 
-  document.getElementById("lastModified").innerHTML = document.lastModified
-})
+  document.getElementById("lastModified").innerHTML = document.lastModified;
+});

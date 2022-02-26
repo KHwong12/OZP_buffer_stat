@@ -2,9 +2,9 @@
 
 // https://www.chartjs.org/docs/latest/general/fonts.html
 // White text colour and font same as esri theme css
-Chart.defaults.global.defaultFontColor = "#232323"
-Chart.defaults.global.defaultFontFamily = "'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif"
-Chart.defaults.global.defaultFontSize = 12
+Chart.defaults.global.defaultFontColor = "#232323";
+Chart.defaults.global.defaultFontFamily = "'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif";
+Chart.defaults.global.defaultFontSize = 12;
 
 const zoningLabels = [
   "R(A)",
@@ -15,7 +15,7 @@ const zoningLabels = [
   "C",
   "MRDJ",
   "Others"
-]
+];
 
 const zoningLabelsFull = [
   "Residential (Group A)",
@@ -26,7 +26,7 @@ const zoningLabelsFull = [
   "Commercial",
   "Major Road and Junction",
   "Others"
-]
+];
 
 const zoningColors = [
   "#a1291f",
@@ -37,12 +37,12 @@ const zoningColors = [
   "#eb5b60",
   "#FCE0BD",
   "#cccccc"
-]
+];
 
 // An array of 0 with the same length of zoningLabels
-const zeroArray = [...Array(zoningLabels.length)].map(() => 0)
+const zeroArray = [...Array(zoningLabels.length)].map(() => 0);
 
-const zoningNumberCanvas = document.getElementById("zoning-number-chart")
+const zoningNumberCanvas = document.getElementById("zoning-number-chart");
 
 // Create the "number of zoning pieces" chart
 export const zoningNumberChart = new Chart(zoningNumberCanvas.getContext("2d"), {
@@ -89,9 +89,9 @@ export const zoningNumberChart = new Chart(zoningNumberCanvas.getContext("2d"), 
       }]
     }
   }
-})
+});
 
-const zoningAreaCanvas = document.getElementById("zoning-area-chart")
+const zoningAreaCanvas = document.getElementById("zoning-area-chart");
 
 // Create the "area by zoning" chart
 export const zoningAreaChart = new Chart(zoningAreaCanvas.getContext("2d"), {
@@ -122,28 +122,28 @@ export const zoningAreaChart = new Chart(zoningAreaCanvas.getContext("2d"), {
       // https://stackoverflow.com/questions/37257034/chart-js-2-0-doughnut-tooltip-percentages/49717859#49717859
       callbacks: {
         label: function (tooltipItem, data) {
-          const dataset = data.datasets[tooltipItem.datasetIndex]
-          const meta = dataset._meta[Object.keys(dataset._meta)[0]]
-          const total = meta.total
-          const currentValue = dataset.data[tooltipItem.index]
-          const percentage = parseFloat((currentValue / total * 100).toFixed(1))
-          return " " + currentValue.toLocaleString() + " sq.m." + " (" + percentage + "%)"
+          const dataset = data.datasets[tooltipItem.datasetIndex];
+          const meta = dataset._meta[Object.keys(dataset._meta)[0]];
+          const total = meta.total;
+          const currentValue = dataset.data[tooltipItem.index];
+          const percentage = parseFloat((currentValue / total * 100).toFixed(1));
+          return " " + currentValue.toLocaleString() + " sq.m." + " (" + percentage + "%)";
         },
         title: function (tooltipItem, data) {
-          return data.labels[tooltipItem[0].index]
+          return data.labels[tooltipItem[0].index];
         }
       }
     }
   }
-})
+});
 
 // Updates the given chart with new data
 export function updateChart (chart, dataValues) {
-  chart.data.datasets[0].data = dataValues
-  chart.update()
+  chart.data.datasets[0].data = dataValues;
+  chart.update();
 }
 
 export function clearCharts () {
-  updateChart(zoningNumberChart, zeroArray)
-  updateChart(zoningAreaChart, zeroArray)
+  updateChart(zoningNumberChart, zeroArray);
+  updateChart(zoningAreaChart, zeroArray);
 }
