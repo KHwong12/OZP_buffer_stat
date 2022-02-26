@@ -20,14 +20,14 @@ import ScaleBar from "@arcgis/core/widgets/ScaleBar";
 const webmap = new WebMap({
   portalItem: { // autocasts as new PortalItem()
     // https://foa-hku.maps.arcgis.com/home/item.html?id=01807d9d7e954671bcfbcbe64290ac92
-    id: 'ae69499b5942429b95a88e3a5bdd97c1'
+    id: "ae69499b5942429b95a88e3a5bdd97c1"
   },
-  basemap: 'gray-vector'
+  basemap: "gray-vector"
 })
 
 // create the MapView
 const view = new MapView({
-  container: 'viewDiv',
+  container: "viewDiv",
   map: webmap,
   zoom: 14,
   center: [114.172, 22.281], // lon, lat
@@ -52,28 +52,28 @@ let bufferSize = 0
 // https://developers.arcgis.com/javascript/latest/sample-code/widgets-scalebar/index.html
 const scaleBar = new ScaleBar({
   view: view,
-  unit: 'metric'
+  unit: "metric"
 })
 
 // Add the widget to the bottom left corner of the view
 view.ui.add(scaleBar, {
-  position: 'bottom-right'
+  position: "bottom-right"
 })
 
 // Assign web layer once webmap is loaded and initialize UI
 webmap.load().then(function () {
   webLayer = webmap.layers.find(function (layer) {
     // title of layer, not name of the webmap
-    return layer.title === 'ZONE_nonSea_planAttr_MASTER_30DEC2020'
+    return layer.title === "ZONE_nonSea_planAttr_MASTER_30DEC2020"
   })
   // Fetch all fields
   // https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-FeatureLayer.html#outFields
-  webLayer.outFields = ['*']
+  webLayer.outFields = ["*"]
 
   // Show query UI only after the map is loaded
   view.whenLayerView(webLayer).then(function (layerView) {
     webLayerView = layerView
-    queryDiv.style.display = 'block'
+    queryDiv.style.display = "block"
   })
 
   // Put OZP zoning feature layer to the bottom, otherwise query geoms will be hided by the OZP polygons
@@ -81,22 +81,22 @@ webmap.load().then(function () {
   webmap.reorder(webLayer, 0)
 })
 
-view.ui.add([queryDiv], 'bottom-left')
+view.ui.add([queryDiv], "bottom-left")
 
 // https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-Expand.html
 // https://developers.arcgis.com/javascript/latest/sample-code/layers-imagery-clientside/index.html
 const instructionsExpand = new Expand({
-  expandIconClass: 'esri-icon-question',
-  expandTooltip: 'How to use',
+  expandIconClass: "esri-icon-question",
+  expandTooltip: "How to use",
   view: view,
   expanded: true,
   content: "<div class='expand-widget'><b>Click</b> the buttons to <b>draw</b> your area of interest. For lines and polygons, <b>double click</b> to finish drawing. <br><br><b>Move</b> the slider to change the buffer distance.</div>"
 })
 
-view.ui.add(instructionsExpand, 'top-left')
+view.ui.add(instructionsExpand, "top-left")
 
 // Close the 'help' popup when view is focused
-view.watch('focused', function (isFocused) {
+view.watch("focused", function (isFocused) {
   if (isFocused) {
     instructionsExpand.expanded = false
   }
@@ -108,7 +108,7 @@ view.watch('focused', function (isFocused) {
 
 const basemapGallery = new BasemapGallery({
   view: view,
-  container: document.createElement('div')
+  container: document.createElement("div")
 })
 
 // Create an Expand instance and set the content
@@ -119,14 +119,14 @@ const basemapGallery = new BasemapGallery({
 const bgExpand = new Expand({
   view: view,
   content: basemapGallery,
-  expandTooltip: 'Change Basemap'
+  expandTooltip: "Change Basemap"
 })
 
 // close the expand whenever a basemap is selected
-basemapGallery.watch('activeBasemap', function () {
+basemapGallery.watch("activeBasemap", function () {
   const mobileSize =
-          view.heightBreakpoint === 'xsmall' ||
-          view.widthBreakpoint === 'xsmall'
+          view.heightBreakpoint === "xsmall" ||
+          view.widthBreakpoint === "xsmall"
 
   if (mobileSize) {
     bgExpand.collapse()
@@ -134,7 +134,7 @@ basemapGallery.watch('activeBasemap', function () {
 })
 
 // Add the expand instance to the ui
-view.ui.add(bgExpand, 'top-left')
+view.ui.add(bgExpand, "top-left")
 
 /// ///////////////////////////////////////
 // web map now initialised
@@ -146,31 +146,31 @@ let sketchGeometry = null
 const sketchViewModel = new SketchViewModel({
   layer: sketchLayer,
   defaultUpdateOptions: {
-    tool: 'reshape',
+    tool: "reshape",
     toggleToolOnClick: false
   },
   // Define geometry style
   // https://developers.arcgis.com/javascript/latest/sample-code/featureeffect-geometry/index.html
   pointSymbol: {
-    type: 'text',
+    type: "text",
     color: [51, 51, 204, 0.9],
-    text: '\ue61d',
+    text: "\ue61d",
     font: {
       size: 24,
-      family: 'CalciteWebCoreIcons'
+      family: "CalciteWebCoreIcons"
     }
   },
   polylineSymbol: {
-    type: 'simple-line',
+    type: "simple-line",
     color: [51, 51, 204, 0.5],
-    width: '4px'
+    width: "4px"
   },
   polygonSymbol: {
-    type: 'simple-fill', // autocasts as new SimpleFillSymbol()
+    type: "simple-fill", // autocasts as new SimpleFillSymbol()
     color: [51, 51, 204, 0.4],
-    style: 'solid',
+    style: "solid",
     outline: {
-      color: 'white',
+      color: "white",
       width: 1
     }
   },
@@ -181,16 +181,16 @@ const sketchViewModel = new SketchViewModel({
 })
 
 // query the OZP layer when geometry is created or updated
-sketchViewModel.on('create', function (event) {
-  if (event.state === 'complete') {
+sketchViewModel.on("create", function (event) {
+  if (event.state === "complete") {
     sketchGeometry = event.graphic.geometry
     showSidePanel()
     runQuery()
   }
 })
 
-sketchViewModel.on('update', function (event) {
-  if (event.state === 'complete') {
+sketchViewModel.on("update", function (event) {
+  if (event.state === "complete") {
     sketchGeometry = event.graphics[0].geometry
     showSidePanel()
     runQuery()
@@ -200,14 +200,14 @@ sketchViewModel.on('update', function (event) {
 // draw geometry buttons - use the selected geometry to sketch
 
 document
-  .getElementById('point-geometry-button')
-  .addEventListener('click', geometryButtonsClickHandler)
+  .getElementById("point-geometry-button")
+  .addEventListener("click", geometryButtonsClickHandler)
 document
-  .getElementById('line-geometry-button')
-  .addEventListener('click', geometryButtonsClickHandler)
+  .getElementById("line-geometry-button")
+  .addEventListener("click", geometryButtonsClickHandler)
 document
-  .getElementById('polygon-geometry-button')
-  .addEventListener('click', geometryButtonsClickHandler)
+  .getElementById("polygon-geometry-button")
+  .addEventListener("click", geometryButtonsClickHandler)
 
 function geometryButtonsClickHandler (event) {
   const geometryType = event.target.value
@@ -216,7 +216,7 @@ function geometryButtonsClickHandler (event) {
 }
 
 const bufferNumSlider = new Slider({
-  container: 'bufferNum',
+  container: "bufferNum",
   min: 0,
   max: 1000,
   steps: 10,
@@ -225,14 +225,14 @@ const bufferNumSlider = new Slider({
   },
   precision: 0,
   labelFormatFunction: function (value, type) {
-    return value.toString() + 'm'
+    return value.toString() + "m"
   },
   values: [0]
 })
 
 // get user entered values for buffer
 bufferNumSlider.on(
-  ['thumb-change', 'thumb-drag'],
+  ["thumb-change", "thumb-drag"],
   bufferVariablesChanged
 )
 
@@ -243,16 +243,16 @@ function bufferVariablesChanged (event) {
 
 // Listener of "Clear Results" Button
 document
-  .getElementById('clearResults')
-  .addEventListener('click', clearResults)
+  .getElementById("clearResults")
+  .addEventListener("click", clearResults)
 
 // Show the contentDiv again (by "clicking" the panel button) if folded
 // do not use it when users are changing buffer variables only
 function showSidePanel () {
-  const sidebar = document.querySelector('.contentDiv')
+  const sidebar = document.querySelector(".contentDiv")
 
-  if (sidebar.classList.contains('contentDiv_fold')) {
-    document.querySelector('.fold-button').click()
+  if (sidebar.classList.contains("contentDiv_fold")) {
+    document.querySelector(".fold-button").click()
   }
 }
 
@@ -267,14 +267,14 @@ function clearResults () {
   clearCharts()
 
   // Clear numbers
-  document.getElementById('count').innerHTML = 0
-  document.getElementById('query-geometry-size-ha').innerHTML = 0
-  document.getElementById('query-geometry-size-sqkm').innerHTML = 0
-  document.getElementById('OZP-size-ha').innerHTML = 0
-  document.getElementById('OZP-size-sqkm').innerHTML = 0
+  document.getElementById("count").innerHTML = 0
+  document.getElementById("query-geometry-size-ha").innerHTML = 0
+  document.getElementById("query-geometry-size-sqkm").innerHTML = 0
+  document.getElementById("OZP-size-ha").innerHTML = 0
+  document.getElementById("OZP-size-sqkm").innerHTML = 0
 }
 
-const selectedZonings = ['R(A)', 'R(B)', 'R(C)', 'G/IC', 'O', 'C', 'MRDJ']
+const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C", "MRDJ"]
 
 // set the geometry query on the visible webLayerView
 const debouncedRunQuery = promiseUtils.debounce(function () {
@@ -298,7 +298,7 @@ const debouncedRunQuery = promiseUtils.debounce(function () {
 
 function runQuery () {
   debouncedRunQuery().catch((error) => {
-    if (error.name === 'AbortError') {
+    if (error.name === "AbortError") {
       return
     }
 
@@ -306,12 +306,12 @@ function runQuery () {
   })
 
   // scroll to the results
-  const elmnt = document.querySelector('.query-stats')
-  elmnt.scrollIntoView({ behavior: 'smooth' })
+  const elmnt = document.querySelector(".query-stats")
+  elmnt.scrollIntoView({ behavior: "smooth" })
 }
 
 async function calculateAreaByZoning () {
-  console.time('test_parallel')
+  console.time("test_parallel")
 
   // Need to access var outside the try loop, therefore need to declare the variable first
   // https://stackoverflow.com/questions/40925094/javascript-set-const-variable-inside-of-a-try-block
@@ -325,20 +325,20 @@ async function calculateAreaByZoning () {
       selectedZonings.map(zoning => getZoningAreaInBuffer(bufferSize, zoning))
     )
 
-    console.log('selectedZoningAreas: ', selectedZoningAreas)
+    console.log("selectedZoningAreas: ", selectedZoningAreas)
   } catch (error) {
-    console.error('error: ', error)
+    console.error("error: ", error)
   }
 
-  console.timeEnd('test_parallel')
+  console.timeEnd("test_parallel")
 
   // cannot directly add up selectedZoningAreas since it only includes values of SELECTED zonings
   const totalAreaInOZP = await getZoningAreaInBuffer(bufferSize)
-  console.log('totalAreaInOZP: ', totalAreaInOZP)
+  console.log("totalAreaInOZP: ", totalAreaInOZP)
 
   // Format the size and update the value
-  document.getElementById('OZP-size-ha').innerHTML = (totalAreaInOZP * 1e-4).toLocaleString()
-  document.getElementById('OZP-size-sqkm').innerHTML = (totalAreaInOZP * 1e-6).toLocaleString()
+  document.getElementById("OZP-size-ha").innerHTML = (totalAreaInOZP * 1e-4).toLocaleString()
+  document.getElementById("OZP-size-sqkm").innerHTML = (totalAreaInOZP * 1e-6).toLocaleString()
 
   // Get total area of all zoning types
   // https://stackoverflow.com/questions/1230233/how-to-find-the-sum-of-an-array-of-numbers
@@ -347,9 +347,9 @@ async function calculateAreaByZoning () {
   // Add total area of other zonings at the end of the zoning area array
   selectedZoningAreas.push(totalAreaInOZP - majorZoningsTotalArea)
 
-  console.log('selectedZoningAreas', selectedZoningAreas)
+  console.log("selectedZoningAreas", selectedZoningAreas)
 
-  console.log('updating zoning area chart!')
+  console.log("updating zoning area chart!")
 
   // Round to nearest integer for readability
   updateChart(zoningAreaChart, selectedZoningAreas.map(Math.round))
@@ -362,7 +362,7 @@ function updateBufferGraphic (buffer) {
     const bufferGeometry = geometryEngine.geodesicBuffer(
       sketchGeometry,
       buffer,
-      'meters'
+      "meters"
     )
     // graphic layer can contain multiple features (i.e. length > 1)
     if (bufferLayer.graphics.length === 0) {
@@ -371,11 +371,11 @@ function updateBufferGraphic (buffer) {
           geometry: bufferGeometry,
           // symbol: sketchViewModel.polygonSymbol,
           symbol: {
-            type: 'simple-fill',
+            type: "simple-fill",
             color: [151, 151, 204, 0.5],
-            style: 'solid',
+            style: "solid",
             outline: {
-              color: 'white',
+              color: "white",
               width: 1
             }
           }
@@ -397,20 +397,20 @@ function updateQueryGeomSize (queryGeom, buffer) {
     const bufferGeometry = geometryEngine.geodesicBuffer(
       queryGeom,
       buffer,
-      'meters'
+      "meters"
     )
 
     // Calculate buffer size
-    queryGeomGeodesicArea = geometryEngine.geodesicArea(bufferGeometry, 'square-meters')
+    queryGeomGeodesicArea = geometryEngine.geodesicArea(bufferGeometry, "square-meters")
 
     // else if query geometry is a polygon, get the size of it (line and point must size area of 0)
-  } else if (queryGeom.type === 'polygon') {
-    queryGeomGeodesicArea = geometryEngine.geodesicArea(queryGeom, 'square-meters')
+  } else if (queryGeom.type === "polygon") {
+    queryGeomGeodesicArea = geometryEngine.geodesicArea(queryGeom, "square-meters")
   }
 
   // Format the size and update the value
-  document.getElementById('query-geometry-size-ha').innerHTML = (queryGeomGeodesicArea * 1e-4).toLocaleString()
-  document.getElementById('query-geometry-size-sqkm').innerHTML = (queryGeomGeodesicArea * 1e-6).toLocaleString()
+  document.getElementById("query-geometry-size-ha").innerHTML = (queryGeomGeodesicArea * 1e-4).toLocaleString()
+  document.getElementById("query-geometry-size-sqkm").innerHTML = (queryGeomGeodesicArea * 1e-6).toLocaleString()
 }
 
 // Get total zoning area within the buffer
@@ -432,8 +432,8 @@ async function getZoningAreaInBuffer (bufferLength, zoning) {
 
   // Sanity Check to ensure the query is not point or line (i.e. query geom has 0 area)
   // return 0 (or should be null)?
-  if (bufferLength === 0 && sketchGeometry.type !== 'polygon') {
-    console.log('The query geometry is a point/line. Returning area of 0.')
+  if (bufferLength === 0 && sketchGeometry.type !== "polygon") {
+    console.log("The query geometry is a point/line. Returning area of 0.")
     return 0
   }
 
@@ -443,7 +443,7 @@ async function getZoningAreaInBuffer (bufferLength, zoning) {
 
   query.geometry = sketchGeometry
   query.distance = bufferLength
-  query.spatialRelationship = 'intersects'
+  query.spatialRelationship = "intersects"
 
   // Select by zoning attributes if zoning params is provided
   // https://stackoverflow.com/questions/13019640/how-to-test-if-a-parameter-is-provided-to-a-function
@@ -473,7 +473,7 @@ async function getZoningAreaInBuffer (bufferLength, zoning) {
     const bufferGeometry = geometryEngine.geodesicBuffer(
       sketchGeometry,
       bufferLength,
-      'meters'
+      "meters"
     )
 
     // "Union" to merge the selected OZP zones into one single layer for intersect use
@@ -483,7 +483,7 @@ async function getZoningAreaInBuffer (bufferLength, zoning) {
     const bufferOZPIntersect = await geometryEngine.intersect(bufferGeometry, unionGeoms)
     // console.log("intersect function performed");
 
-    areaInBuffer = await geometryEngine.geodesicArea(bufferOZPIntersect, 'square-meters')
+    areaInBuffer = await geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters")
     // console.log("getZoningAreaInBuffer(): area calculated");
     // console.log("areaInBuffer: ", areaInBuffer);
   }
@@ -523,14 +523,14 @@ function highlightGeometries (objectIds) {
   clearHighlighting()
 
   const objectIdField = webLayer.objectIdField
-  document.getElementById('count').innerHTML = objectIds.length
+  document.getElementById("count").innerHTML = objectIds.length
 
   highlightHandle = webLayerView.highlight(objectIds)
 }
 
 // Change count of features within buffer
 function changeFeatureCount (objectIds) {
-  document.getElementById('count').innerHTML = objectIds.length
+  document.getElementById("count").innerHTML = objectIds.length
 }
 
 function updateMapLayer () {
@@ -545,43 +545,43 @@ function updateMapLayer () {
 
 const statDefinitions = [{
   onStatisticField: "CASE WHEN ZONE_MAS = 'R(A)' THEN 1 ELSE 0 END",
-  outStatisticFieldName: 'zone_RA',
-  statisticType: 'sum'
+  outStatisticFieldName: "zone_RA",
+  statisticType: "sum"
 },
 {
   onStatisticField: "CASE WHEN ZONE_MAS = 'R(B)' THEN 1 ELSE 0 END",
-  outStatisticFieldName: 'zone_RB',
-  statisticType: 'sum'
+  outStatisticFieldName: "zone_RB",
+  statisticType: "sum"
 },
 {
   onStatisticField: "CASE WHEN ZONE_MAS = 'R(C)' THEN 1 ELSE 0 END",
-  outStatisticFieldName: 'zone_RC',
-  statisticType: 'sum'
+  outStatisticFieldName: "zone_RC",
+  statisticType: "sum"
 },
 {
   onStatisticField: "CASE WHEN ZONE_MAS = 'G/IC' THEN 1 ELSE 0 END",
-  outStatisticFieldName: 'zone_GIC',
-  statisticType: 'sum'
+  outStatisticFieldName: "zone_GIC",
+  statisticType: "sum"
 },
 {
   onStatisticField: "CASE WHEN ZONE_MAS = 'O' THEN 1 ELSE 0 END",
-  outStatisticFieldName: 'zone_O',
-  statisticType: 'sum'
+  outStatisticFieldName: "zone_O",
+  statisticType: "sum"
 },
 {
   onStatisticField: "CASE WHEN ZONE_MAS = 'C' THEN 1 ELSE 0 END",
-  outStatisticFieldName: 'zone_C',
-  statisticType: 'sum'
+  outStatisticFieldName: "zone_C",
+  statisticType: "sum"
 },
 {
   onStatisticField: "CASE WHEN ZONE_MAS = 'MRDJ' THEN 1 ELSE 0 END",
-  outStatisticFieldName: 'zone_MRDJ',
-  statisticType: 'sum'
+  outStatisticFieldName: "zone_MRDJ",
+  statisticType: "sum"
 },
 {
   onStatisticField: "CASE WHEN ZONE_MAS NOT IN ('R(A)', 'R(B)', 'R(C)', 'G/IC', 'O', 'C', 'MRDJ') THEN 1 ELSE 0 END",
-  outStatisticFieldName: 'zone_OTHERS',
-  statisticType: 'sum'
+  outStatisticFieldName: "zone_OTHERS",
+  statisticType: "sum"
 }
 ]
 
