@@ -12,6 +12,9 @@
     },
     "rules": { 
         "no-undef": "off",
-        "no-unused-vars": "warn"
+        "no-unused-vars": "warn",
+        "quotes": [2, "double", { "avoidEscape": true }],
+        "semi": ["warn", "always"],
+        "no-multiple-empty-lines": "off"
     }
 }
