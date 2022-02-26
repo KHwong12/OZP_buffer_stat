@@ -3,15 +3,12 @@ import { zoningNumberChart, zoningAreaChart, updateChart, clearCharts } from "./
 
 import WebMap from "@arcgis/core/WebMap";
 import MapView from "@arcgis/core/views/MapView";
-import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 import SketchViewModel from "@arcgis/core/widgets/Sketch/SketchViewModel";
 import Slider from "@arcgis/core/widgets/Slider";
-import Polygon from "@arcgis/core/geometry/Polygon";
 import { geodesicBuffer, geodesicArea, union, intersect } from "@arcgis/core/geometry/geometryEngine";
 import Graphic from "@arcgis/core/Graphic";
 import { debounce, eachAlways } from "@arcgis/core/core/promiseUtils";
-import AreasAndLengthsParameters from "@arcgis/core/rest/support/AreasAndLengthsParameters";
 import Expand from "@arcgis/core/widgets/Expand";
 import BasemapGallery from "@arcgis/core/widgets/BasemapGallery";
 import ScaleBar from "@arcgis/core/widgets/ScaleBar";
