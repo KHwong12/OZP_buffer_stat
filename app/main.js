@@ -3,15 +3,12 @@ import { zoningNumberChart, zoningAreaChart, updateChart, clearCharts } from "./
 
 import WebMap from "@arcgis/core/WebMap";
 import MapView from "@arcgis/core/views/MapView";
-import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 import SketchViewModel from "@arcgis/core/widgets/Sketch/SketchViewModel";
 import Slider from "@arcgis/core/widgets/Slider";
-import Polygon from "@arcgis/core/geometry/Polygon";
-import * as geometryEngine from "@arcgis/core/geometry/geometryEngine";
+import { geodesicBuffer, geodesicArea, union, intersect } from "@arcgis/core/geometry/geometryEngine";
 import Graphic from "@arcgis/core/Graphic";
-import * as promiseUtils from "@arcgis/core/core/promiseUtils";
-import AreasAndLengthsParameters from "@arcgis/core/rest/support/AreasAndLengthsParameters";
+import { debounce, eachAlways } from "@arcgis/core/core/promiseUtils";
 import Expand from "@arcgis/core/widgets/Expand";
 import BasemapGallery from "@arcgis/core/widgets/BasemapGallery";
 import ScaleBar from "@arcgis/core/widgets/ScaleBar";
@@ -277,7 +274,7 @@ function clearResults () {
 const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C", "MRDJ"];
 
 // set the geometry query on the visible webLayerView
-const debouncedRunQuery = promiseUtils.debounce(function () {
+const debouncedRunQuery = debounce(function () {
   if (!sketchGeometry) {
     return;
   }
@@ -290,7 +287,7 @@ const debouncedRunQuery = promiseUtils.debounce(function () {
   // calculate area of each zoning type, then update the zoning area chart & area figures
   calculateAreaByZoning();
 
-  return promiseUtils.eachAlways([
+  return eachAlways([
     queryStatistics(),
     updateMapLayer()
   ]);
@@ -359,7 +356,7 @@ async function calculateAreaByZoning () {
 function updateBufferGraphic (buffer) {
   // add a polygon graphic for the buffer
   if (buffer > 0) {
-    const bufferGeometry = geometryEngine.geodesicBuffer(
+    const bufferGeometry = geodesicBuffer(
       sketchGeometry,
       buffer,
       "meters"
@@ -394,18 +391,18 @@ function updateQueryGeomSize (queryGeom, buffer) {
 
   // if buffer > 0, compute buffer geom
   if (buffer > 0) {
-    const bufferGeometry = geometryEngine.geodesicBuffer(
+    const bufferGeometry = geodesicBuffer(
       queryGeom,
       buffer,
       "meters"
     );
 
     // Calculate buffer size
-    queryGeomGeodesicArea = geometryEngine.geodesicArea(bufferGeometry, "square-meters");
+    queryGeomGeodesicArea = geodesicArea(bufferGeometry, "square-meters");
 
     // else if query geometry is a polygon, get the size of it (line and point must size area of 0)
   } else if (queryGeom.type === "polygon") {
-    queryGeomGeodesicArea = geometryEngine.geodesicArea(queryGeom, "square-meters");
+    queryGeomGeodesicArea = geodesicArea(queryGeom, "square-meters");
   }
 
   // Format the size and update the value
@@ -470,20 +467,20 @@ async function getZoningAreaInBuffer (bufferLength, zoning) {
     });
 
     // bufferGeometry is required for intersecting OZP
-    const bufferGeometry = geometryEngine.geodesicBuffer(
+    const bufferGeometry = geodesicBuffer(
       sketchGeometry,
       bufferLength,
       "meters"
     );
 
     // "Union" to merge the selected OZP zones into one single layer for intersect use
-    const unionGeoms = await geometryEngine.union(selectedOZPGeoms);
+    const unionGeoms = await union(selectedOZPGeoms);
     // console.log("union function performed");
 
-    const bufferOZPIntersect = await geometryEngine.intersect(bufferGeometry, unionGeoms);
+    const bufferOZPIntersect = await intersect(bufferGeometry, unionGeoms);
     // console.log("intersect function performed");
 
-    areaInBuffer = await geometryEngine.geodesicArea(bufferOZPIntersect, "square-meters");
+    areaInBuffer = await geodesicArea(bufferOZPIntersect, "square-meters");
     // console.log("getZoningAreaInBuffer(): area calculated");
     // console.log("areaInBuffer: ", areaInBuffer);
   }
@@ -499,7 +496,7 @@ function calculateGeodesicArea (graphicsLayer) {
   // var GeodesicArea = 0
   //
   // graphicsLayer.graphics.map(function (grap) {
-  //   GeodesicArea = geometryEngine.geodesicArea(grap.geometry, "square-meters");
+  //   GeodesicArea = geodesicArea(grap.geometry, "square-meters");
   // });
   //
   // return GeodesicArea;
