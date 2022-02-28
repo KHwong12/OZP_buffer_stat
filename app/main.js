@@ -1,4 +1,4 @@
-import { foldSidePanel } from "./ui";
+import { changeMenuIcon } from "./ui";
 import { zoningNumberChart, zoningAreaChart, updateChart, clearCharts } from "./create-chart";
 
 import WebMap from "@arcgis/core/WebMap";
@@ -35,7 +35,7 @@ const view = new MapView({
   }
 });
 
-window.view = view;
+// window.view = view;
 
 // add a GraphicsLayer for the sketches and the buffer
 const sketchLayer = new GraphicsLayer();
@@ -243,14 +243,13 @@ document
   .getElementById("clearResults")
   .addEventListener("click", clearResults);
 
-// Show the contentDiv again (by "clicking" the panel button) if folded
+// Show sidePanel again if folded
 // do not use it when users are changing buffer variables only
 function showSidePanel () {
-  const sidebar = document.querySelector(".contentDiv");
+  const sidebar = document.querySelector(".sidebar");
 
-  if (sidebar.classList.contains("contentDiv_fold")) {
-    document.querySelector(".fold-button").click();
-  }
+  // If a class that the element is already a member of is added, classList.add will ignore it
+  sidebar.classList.add("open");
 }
 
 // Clear the geometry and set the default renderer
@@ -608,3 +607,18 @@ function queryStatistics () {
     ]);
   }, console.error);
 }
+
+
+/* sidebar */
+
+const sidebar = document.querySelector(".sidebar");
+const collapseBtn = document.querySelector("#collapse-button");
+
+// Show animation of expanding side panel when webpage is first initialised
+sidebar.classList.toggle("open");
+changeMenuIcon(sidebar, collapseBtn);
+
+collapseBtn.addEventListener("click", () => {
+  sidebar.classList.toggle("open");
+  changeMenuIcon(sidebar, collapseBtn);
+});

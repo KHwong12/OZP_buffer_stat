@@ -14,6 +14,7 @@
     </title>
     <link rel="stylesheet" href="/styles/main.css">
     <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/light/main.css" />
+    <link rel='stylesheet' href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' >
 
     <!-- Load the Chart.js library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
@@ -22,10 +23,6 @@
 </head>
 
 <body>
-  
-  <div id="viewDiv" class="viewDiv">
-    <button class="fold-button esri-widget--button esri-icon-dock-left" title="Show details"></button>
-  </div>
 
   <div id="queryDiv" class="esri-widget">
     <h2>Query by geometry</h2>
@@ -46,74 +43,80 @@
     </button>
   </div>
 
-  <div id="contentDiv" class="esri-widget contentDiv">
-    <h1>Zone In</h1>
-    <h2>Query land use zonings by geometries</h2>
-    <p>
-      <b>NOTE: This application is still under development. The OZP data last updated on 30 Dec 2020.</b>
-    </p>
-    <p>
-      This is a web map application to interactively explore the land use zonings in Hong Kong.
-      You can investigate the distribution of zonings in any area of interest, as well as their proximities.
-    </p>
-    <p>
-      To start, go to any area you would like to investigate, draw a geometry and select the desired buffer distance to query the zoning "pieces" lying inside.
-      The application will then compute the area of each selected zoning type and visualise the proportions in the chart below.
-    </p>
-    <p>
-      If you are viewing this application on mobile, please click the <span class="font-size-3 esri-icon-dock-left" aria-label="dock-left icon"></span> icon on the right first to close this panel and view the full map.
-    </p>
-    <p>
-      By clicking on the zoning pieces, you could also check their details including <b>full zoning name, respective plan number and gazette date</b>.
-    </p>
-    <p>
-      It will take some time for the application to render the zoning map.
-    </p>
-    <div class="query-stats">
-      <div class="query-geometry-size">
-        <h3>Query geometry size:</h3>
-        <span id="query-geometry-size-ha">0</span>
-        ha |
-        <span id="query-geometry-size-sqkm">0</span>
-        sq.km.
-      </div>
-      <br />
-      <div class="selected-area">
-        <h3>OZP-covered area:</h3>
-        <span id="OZP-size-ha">0</span>
-        ha |
-        <span id="OZP-size-sqkm">0</span>
-        sq.km.
-      </div>
-      <br />
-      <div class="count">
-        <h3>Number of zoning "pieces":</h3>
-        <div class="count" id="count">0</div>
-      </div>
+  <div class="sidebar">
+    <div class="logo-details">
+      <i class='bx bxs-map-pin icon'></i>
+      <div class="logo_name">Zone In</div>
+      <i class='bx bx-menu' id="collapse-button"></i>
     </div>
-    <div class="charts">
-      <div>
-        <canvas id="zoning-area-chart" width="250" height="300" />
+    <div id="contentDiv">
+      <h2>Query land use zonings by geometries</h2>
+      <p>
+        <b>NOTE: This application is still under development. The OZP data last updated on 30 Dec 2020.</b>
+      </p>
+      <p>
+        This is a web map application to interactively explore the land use zonings in Hong Kong.
+        You can investigate the distribution of zonings in any area of interest, as well as their proximities.
+      </p>
+      <p>
+        To start, go to any area you would like to investigate, draw a geometry and select the desired buffer distance to query the zoning "pieces" lying inside.
+        The application will then compute the area of each selected zoning type and visualise the proportions in the chart below.
+      </p>
+      <p>
+        By clicking on the zoning pieces, you could also check their details including <b>full zoning name, respective plan number and gazette date</b>.
+      </p>
+      <p>
+        It will take some time for the application to render the zoning map.
+      </p>
+      <div class="query-stats">
+        <div class="query-geometry-size">
+          <h3>Query geometry size:</h3>
+          <span id="query-geometry-size-ha">0</span>
+          ha |
+          <span id="query-geometry-size-sqkm">0</span>
+          sq.km.
+        </div>
+        <br />
+        <div class="selected-area">
+          <h3>OZP-covered area:</h3>
+          <span id="OZP-size-ha">0</span>
+          ha |
+          <span id="OZP-size-sqkm">0</span>
+          sq.km.
+        </div>
+        <br />
+        <div class="count">
+          <h3>Number of zoning "pieces":</h3>
+          <div class="count" id="count">0</div>
+        </div>
       </div>
-    </div>
-    <div class="charts">
-      <div>
-        <canvas id="zoning-number-chart" width="250" height="300" />
+      <div class="charts">
+        <div>
+          <canvas id="zoning-area-chart" width="250" height="300" />
+        </div>
       </div>
-    </div>
+      <div class="charts">
+        <div>
+          <canvas id="zoning-number-chart" width="250" height="300" />
+        </div>
+      </div>
 
-    <footer>
-      Created by <a href="https://twitter.com/Kenneth_KHW" target="_blank">Kenneth Wong</a>.
-      <br />
-      Last modified on <span id="lastModified"></span>.
-      <br />
-      This application is made for practice and demonstration use. Accuracy of data and results are not guaranteed.
-      <br />
-      Made and developed with
-      <a href="https://pro.arcgis.com/en/pro-app/" target="_blank">ArcGIS Pro</a>,
-      <a href="https://developers.arcgis.com/javascript/" target="_blank">ArcGIS API for JavaScript</a>
-      and ☕.
-    </footer>
+      <footer>
+        Created by <a href="https://twitter.com/Kenneth_KHW" target="_blank">Kenneth Wong</a>.
+        <br />
+        Last modified on <span id="lastModified"></span>.
+        <br />
+        This application is made for practice and demonstration use. Accuracy of data and results are not guaranteed.
+        <br />
+        Made and developed with
+        <a href="https://pro.arcgis.com/en/pro-app/" target="_blank">ArcGIS Pro</a>,
+        <a href="https://developers.arcgis.com/javascript/" target="_blank">ArcGIS API for JavaScript</a>
+        and ☕.
+      </footer>
+    </div>
+  </div>
+
+  <div id="viewDiv">
   </div>
 
 </body>

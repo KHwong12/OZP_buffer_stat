@@ -1,3 +1,5 @@
+@import './sidebar.css';
+
 html,
 body {
   padding: 0;
@@ -7,48 +9,43 @@ body {
   overflow: hidden;
 }
 
+body {
+  background-color: #fff;
+  color: #232323;
+  font-family: "Avenir Next", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+}
+
 .esri-ui-top-right {
   max-height: 100%;
 }
 
-.viewDiv {
-  position: absolute;
-  right: 0;
-  /* min-width of contentDiv or current width of contentDiv */
-  left: max(300px, 30%);
-  top: 0;
-  bottom: 0;
-  height: 100%;
-}
-
-.viewDiv_large {
-  left: 0;
-}
-
-.contentDiv {
-  position: absolute;
-  left: 0;
-  height: 100%;
-  width: max(30%, 300px);
-  overflow: scroll;
-  padding: 10px;
-  overflow-y: auto;
-  overflow-x: hidden;
+/* state when sidebar is closed */
+#viewDiv {
+  position: relative;
+  background: #E4E9F7;
+  min-height: 100vh;
+  left: 60px;
+  width: calc(100% - 60px);
   transition: all 0.5s ease;
-}
-
-.contentDiv_fold {
-  width: 0;
-  padding: 0;
+  z-index: 2;
 }
 
 #queryDiv {
+  position: relative;
   min-width: 250px;
   font-size: 14px;
   padding: 10px;
   display: none;
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+.expand-widget {
+  width: 200px;
+  background-color: #fff;
+  opacity: 90%;
+  padding: 10px;
 }
 
 .geometry-options {
@@ -98,24 +95,4 @@ a {
 
 a:hover {
   border-bottom: 1px solid #232323;
-}
-
-.fold-button {
-  position: absolute;
-  border: none;
-  /* override esri css settings */
-  height: 40px !important;
-  width: 40px !important;
-  /* border-radius: 50%; */
-  box-shadow: 1px 1px 4px 1px rgba(0, 0, 0, .3);
-  left: 0%;
-  top: 50%;
-  /* transform: translateX(-50%); */
-  cursor: pointer;
-}
-
-.expand-widget {
-  width: 200px;
-  padding: 10px;
-  background-color: #ffffff;
 }

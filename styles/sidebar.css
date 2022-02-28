@@ -1,0 +1,93 @@
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 60px;
+  background: #fff;
+  color: #232323;
+  z-index: 99;
+  /* animation when collapse/expand sidebar */
+  transition: all 0.5s ease;
+}
+  
+.sidebar.open {
+  width: max(30%, 300px);
+  overflow-y: auto;
+}
+
+/* collapse sidebar */
+.sidebar #contentDiv > * {
+  opacity: 0;
+  /* enable fade-out effect when collapsing sidebar */
+  transition: all 0.5s ease;
+}
+
+.sidebar.open #contentDiv > * {
+  opacity: 1;
+}
+
+.sidebar > * {
+  margin: 5%;
+}
+
+/* header of content */
+
+.sidebar .logo-details {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+}
+
+.sidebar .logo-details .icon,
+.sidebar .logo-details .logo_name {
+  opacity: 0;
+  transition: all 0.5s ease;
+}
+
+.sidebar .logo-details .logo_name {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.sidebar.open .logo-details .icon,
+.sidebar.open .logo-details .logo_name {
+  opacity: 1;
+}
+
+.sidebar .logo-details #collapse-button {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  font-size: 22px;
+  /* transition: all 0.4s ease; */
+  font-size: 23px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.5s ease;
+}
+
+.sidebar.open .logo-details #collapse-button {
+  text-align: right;
+}
+
+/* icons */
+.sidebar .bx {
+  color: #232323;
+  height: 60px;
+  min-width: 50px;
+  font-size: 28px;
+  text-align: center;
+  line-height: 60px;
+}
+
+/* choose the viewDiv BELOW (i.e. next sibling) as in HTML */
+/* ensure viewDiv is below sidebar inside HTML for this to work */
+.sidebar.open ~ #viewDiv {
+  left: max(30%, 300px);
+  width: calc(100% - max(30%, 300px));
+}
