@@ -41,6 +41,13 @@ body {
   overflow-x: hidden;
 }
 
+.expand-widget {
+  width: 200px;
+  background-color: #fff;
+  opacity: 90%;
+  padding: 10px;
+}
+
 .geometry-options {
   display: flex;
   flex-direction: row;
