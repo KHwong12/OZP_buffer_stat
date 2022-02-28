@@ -1,4 +1,4 @@
-import { foldSidePanel } from "./ui";
+import { changeMenuIcon } from "./ui";
 import { zoningNumberChart, zoningAreaChart, updateChart, clearCharts } from "./create-chart";
 
 import WebMap from "@arcgis/core/WebMap";
@@ -35,7 +35,7 @@ const view = new MapView({
   }
 });
 
-window.view = view;
+// window.view = view;
 
 // add a GraphicsLayer for the sketches and the buffer
 const sketchLayer = new GraphicsLayer();
@@ -608,3 +608,18 @@ function queryStatistics () {
     ]);
   }, console.error);
 }
+
+
+/* sidebar */
+
+const sidebar = document.querySelector(".sidebar");
+const collapseBtn = document.querySelector("#collapse-button");
+
+// Show animation of expanding side panel when webpage is first initialised
+sidebar.classList.toggle("open");
+changeMenuIcon(sidebar, collapseBtn);
+
+collapseBtn.addEventListener("click", () => {
+  sidebar.classList.toggle("open");
+  changeMenuIcon(sidebar, collapseBtn);
+});

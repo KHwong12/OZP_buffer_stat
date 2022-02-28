@@ -1,14 +1,14 @@
 // UI function for fold/unfold side panel
 // https://codepen.io/DeolaJ/pen/xvjbKY
 
-export const foldSidePanel = document.addEventListener("DOMContentLoaded", function () {
-  const sidebar = document.querySelector(".contentDiv");
-  const mainContent = document.querySelector(".viewDiv");
+export function changeMenuIcon (sidebar, collapseBtn) {
+  if (sidebar.classList.contains("open")) {
+    // change the icon from "menu" to "right-padded menu"
+    collapseBtn.classList.replace("bx-menu", "bx-menu-alt-right");
+  } else {
+    collapseBtn.classList.replace("bx-menu-alt-right", "bx-menu");
+  }
+}
 
-  document.querySelector(".fold-button").onclick = function () {
-    sidebar.classList.toggle("contentDiv_fold");
-    mainContent.classList.toggle("viewDiv_large");
-  };
 
-  document.getElementById("lastModified").innerHTML = document.lastModified;
-});
+document.getElementById("lastModified").innerHTML = document.lastModified;
