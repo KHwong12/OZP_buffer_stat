@@ -25,23 +25,6 @@ body {
   left: 0;
 }
 
-.contentDiv {
-  position: absolute;
-  left: 0;
-  height: 100%;
-  width: max(30%, 300px);
-  overflow: scroll;
-  padding: 10px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  transition: all 0.5s ease;
-}
-
-.contentDiv_fold {
-  width: 0;
-  padding: 0;
-}
-
 #queryDiv {
   min-width: 250px;
   font-size: 14px;
@@ -100,22 +83,4 @@ a:hover {
   border-bottom: 1px solid #232323;
 }
 
-.fold-button {
-  position: absolute;
-  border: none;
-  /* override esri css settings */
-  height: 40px !important;
-  width: 40px !important;
-  /* border-radius: 50%; */
-  box-shadow: 1px 1px 4px 1px rgba(0, 0, 0, .3);
-  left: 0%;
-  top: 50%;
-  /* transform: translateX(-50%); */
-  cursor: pointer;
-}
 
-.expand-widget {
-  width: 200px;
-  padding: 10px;
-  background-color: #ffffff;
-}
