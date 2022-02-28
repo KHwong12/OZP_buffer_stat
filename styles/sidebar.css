@@ -4,8 +4,8 @@
   top: 0;
   height: 100%;
   width: 60px;
-  background: #f4efe3;
-  color: #56481f;
+  background: #fff;
+  color: #232323;
   z-index: 99;
   /* animation when collapse/expand sidebar */
   transition: all 0.5s ease;
@@ -77,7 +77,7 @@
 
 /* icons */
 .sidebar .bx {
-  color: #56481f;
+  color: #232323;
   height: 60px;
   min-width: 50px;
   font-size: 28px;

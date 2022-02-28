@@ -9,6 +9,13 @@ body {
   overflow: hidden;
 }
 
+body {
+  background-color: #fff;
+  color: #232323;
+  font-family: "Avenir Next", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+}
+
 .esri-ui-top-right {
   max-height: 100%;
 }
@@ -82,5 +89,3 @@ a {
 a:hover {
   border-bottom: 1px solid #232323;
 }
-
-
