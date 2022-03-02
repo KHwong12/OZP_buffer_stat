@@ -1,4 +1,4 @@
-import { changeMenuIcon } from "./ui";
+import { changeMenuIcon, showSidePanel } from "./ui";
 import { zoningNumberChart, zoningAreaChart, updateChart, clearCharts } from "./create-chart";
 
 
@@ -298,15 +298,6 @@ function bufferVariablesChanged (event) {
 document
   .getElementById("clearResults")
   .addEventListener("click", clearResults);
-
-// Show sidePanel again if folded
-// do not use it when users are changing buffer variables only
-function showSidePanel () {
-  const sidebar = document.querySelector(".sidebar");
-
-  // If a class that the element is already a member of is added, classList.add will ignore it
-  sidebar.classList.add("open");
-}
 
 // Clear the geometry and set the default renderer
 // Reset all to default
