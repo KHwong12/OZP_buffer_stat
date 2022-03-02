@@ -1,7 +1,11 @@
 import { changeMenuIcon } from "./ui";
 import { zoningNumberChart, zoningAreaChart, updateChart, clearCharts } from "./create-chart";
 
+
+import Map from "@arcgis/core/Map";
 import WebMap from "@arcgis/core/WebMap";
+import PopupTemplate from "@arcgis/core/PopupTemplate";
+import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import MapView from "@arcgis/core/views/MapView";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 import SketchViewModel from "@arcgis/core/widgets/Sketch/SketchViewModel";
@@ -13,19 +17,28 @@ import Expand from "@arcgis/core/widgets/Expand";
 import BasemapGallery from "@arcgis/core/widgets/BasemapGallery";
 import ScaleBar from "@arcgis/core/widgets/ScaleBar";
 
-// Load webmap and display it in a MapView
-const webmap = new WebMap({
-  portalItem: { // autocasts as new PortalItem()
-    // https://foa-hku.maps.arcgis.com/home/item.html?id=01807d9d7e954671bcfbcbe64290ac92
-    id: "ae69499b5942429b95a88e3a5bdd97c1"
-  },
+const map = new Map({
   basemap: "gray-vector"
 });
+
+const zone = new FeatureLayer({
+  url: "https://services5.arcgis.com/xH8UmTNerx1qYfXM/ArcGIS/rest/services/ZONE_MASTER_LATEST/FeatureServer",
+  outFields: ["*"]
+});
+
+const schemeArea = new FeatureLayer({
+  url: "https://services5.arcgis.com/xH8UmTNerx1qYfXM/arcgis/rest/services/PLAN_SCHEME_AREA_20220224/FeatureServer",
+  outFields: ["*"]
+});
+
+// Put zoning polygons to the bottom. bottom-most layer has an index of 0.
+map.add(zone, 0);
+map.add(schemeArea);
 
 // create the MapView
 const view = new MapView({
   container: "viewDiv",
-  map: webmap,
+  map: map,
   zoom: 14,
   center: [114.172, 22.281], // lon, lat
   constraints: {
@@ -57,26 +70,30 @@ view.ui.add(scaleBar, {
   position: "bottom-right"
 });
 
-// Assign web layer once webmap is loaded and initialize UI
-webmap.load().then(function () {
-  webLayer = webmap.layers.find(function (layer) {
-    // title of layer, not name of the webmap
-    return layer.title === "ZONE_nonSea_planAttr_MASTER_30DEC2020";
-  });
-  // Fetch all fields
-  // https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-FeatureLayer.html#outFields
-  webLayer.outFields = ["*"];
+// TODO: Display queryDiv only after DOM content is fully loaded
+const queryPanel = document.getElementById("queryDiv");
+queryPanel.style.display = "block";
 
-  // Show query UI only after the map is loaded
-  view.whenLayerView(webLayer).then(function (layerView) {
-    webLayerView = layerView;
-    queryDiv.style.display = "block";
-  });
+// // Assign web layer once webmap is loaded and initialize UI
+// webmap.load().then(function () {
+//   webLayer = webmap.layers.find(function (layer) {
+//     // title of layer, not name of the webmap
+//     return layer.title === "ZONE_nonSea_planAttr_MASTER_30DEC2020";
+//   });
+//   // Fetch all fields
+//   // https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-FeatureLayer.html#outFields
+//   webLayer.outFields = ["*"];
 
-  // Put OZP zoning feature layer to the bottom, otherwise query geoms will be hided by the OZP polygons
-  // https://developers.arcgis.com/javascript/latest/api-reference/esri-Map.html#reorder
-  webmap.reorder(webLayer, 0);
-});
+//   // Show query UI only after the map is loaded
+//   view.whenLayerView(webLayer).then(function (layerView) {
+//     webLayerView = layerView;
+//     queryDiv.style.display = "block";
+//   });
+
+//   // Put OZP zoning feature layer to the bottom, otherwise query geoms will be hided by the OZP polygons
+//   // https://developers.arcgis.com/javascript/latest/api-reference/esri-Map.html#reorder
+//   webmap.reorder(webLayer, 0);
+// });
 
 view.ui.add([queryDiv], "bottom-left");
 
