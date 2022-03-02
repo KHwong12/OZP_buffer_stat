@@ -1,5 +1,6 @@
 import { changeMenuIcon, showSidePanel } from "./ui";
 import { queryStatistics } from "./query-zoning";
+import { updateBufferGraphic } from "./buffer";
 import { zoningNumberChart, zoningAreaChart, updateChart, clearCharts } from "./create-chart";
 
 
@@ -11,8 +12,7 @@ import MapView from "@arcgis/core/views/MapView";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 import SketchViewModel from "@arcgis/core/widgets/Sketch/SketchViewModel";
 import Slider from "@arcgis/core/widgets/Slider";
-import { geodesicBuffer, geodesicArea, union, intersect } from "@arcgis/core/geometry/geometryEngine";
-import Graphic from "@arcgis/core/Graphic";
+import { geodesicArea, union, intersect } from "@arcgis/core/geometry/geometryEngine";
 import { debounce, eachAlways } from "@arcgis/core/core/promiseUtils";
 import Expand from "@arcgis/core/widgets/Expand";
 import BasemapGallery from "@arcgis/core/widgets/BasemapGallery";
@@ -326,7 +326,7 @@ const debouncedRunQuery = debounce(function () {
     return;
   }
 
-  updateBufferGraphic(bufferSize);
+  updateBufferGraphic(bufferSize, sketchGeometry, bufferLayer);
 
   // Update geometry stats
   updateQueryGeomSize(sketchGeometry, bufferSize);
@@ -397,40 +397,6 @@ async function calculateAreaByZoning () {
 
   // Round to nearest integer for readability
   updateChart(zoningAreaChart, selectedZoningAreas.map(Math.round));
-}
-
-// update graphic and size figure of buffer
-function updateBufferGraphic (buffer) {
-  // add a polygon graphic for the buffer
-  if (buffer > 0) {
-    const bufferGeometry = geodesicBuffer(
-      sketchGeometry,
-      buffer,
-      "meters"
-    );
-    // graphic layer can contain multiple features (i.e. length > 1)
-    if (bufferLayer.graphics.length === 0) {
-      bufferLayer.add(
-        new Graphic({
-          geometry: bufferGeometry,
-          // symbol: sketchViewModel.polygonSymbol,
-          symbol: {
-            type: "simple-fill",
-            color: [151, 151, 204, 0.5],
-            style: "solid",
-            outline: {
-              color: "white",
-              width: 1
-            }
-          }
-        })
-      );
-    } else {
-      bufferLayer.graphics.getItemAt(0).geometry = bufferGeometry;
-    }
-  } else {
-    bufferLayer.removeAll();
-  }
 }
 
 function updateQueryGeomSize (queryGeom, buffer) {
@@ -577,14 +543,15 @@ function changeFeatureCount (objectIds) {
   document.getElementById("count").innerHTML = objectIds.length;
 }
 
-function updateMapLayer () {
+async function updateMapLayer () {
   const query = featureToQuery.createQuery();
 
   query.geometry = sketchGeometry;
   query.distance = bufferSize;
 
-  return featureToQuery.queryObjectIds(query).then(changeFeatureCount);
-  // return webLayerView.queryObjectIds(query).then(highlightGeometries);
+  const objectIds = await featureToQuery.queryObjectIds(query);
+
+  changeFeatureCount(objectIds);
 }
 
 /* sidebar */
