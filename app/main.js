@@ -126,30 +126,13 @@ view.ui.add(scaleBar, {
   position: "bottom-right"
 });
 
-// TODO: Display queryDiv only after DOM content is fully loaded
 const queryPanel = document.getElementById("queryDiv");
-queryPanel.style.display = "block";
 
-// // Assign web layer once webmap is loaded and initialize UI
-// webmap.load().then(function () {
-//   webLayer = webmap.layers.find(function (layer) {
-//     // title of layer, not name of the webmap
-//     return layer.title === "ZONE_nonSea_planAttr_MASTER_30DEC2020";
-//   });
-//   // Fetch all fields
-//   // https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-FeatureLayer.html#outFields
-//   webLayer.outFields = ["*"];
-
-//   // Show query UI only after the map is loaded
-//   view.whenLayerView(webLayer).then(function (layerView) {
-//     webLayerView = layerView;
-//     queryDiv.style.display = "block";
-//   });
-
-//   // Put OZP zoning feature layer to the bottom, otherwise query geoms will be hided by the OZP polygons
-//   // https://developers.arcgis.com/javascript/latest/api-reference/esri-Map.html#reorder
-//   webmap.reorder(webLayer, 0);
-// });
+zone
+  .load()
+  .then(() => {
+    queryPanel.style.display = "block";
+  });
 
 view.ui.add([queryDiv], "bottom-left");
 
