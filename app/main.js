@@ -320,16 +320,19 @@ function clearResults () {
 
 const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C", "MRDJ"];
 
-// set the geometry query on the visible webLayerView
-const debouncedRunQuery = debounce(function () {
+// The debounce() method is a "wrapper" that
+// prevents the calculateAreaByZoning function from executing before
+// a previous invocation of the same function finishes.
+
+// calculateAreaByZoning is computation intensive, thus need to restrict
+// usage instead of simply calling the function every time runQuery() is called
+// (e.g. changing buffer number)
+const debouncedCalculateZoningArea = debounce((selectedZonings) => {
   if (!sketchGeometry) {
     return;
   }
 
-  return eachAlways([
-    // calculate area of each zoning type, then update the zoning area chart & area figures
-    calculateAreaByZoning()
-  ]);
+  return calculateAreaByZoning(selectedZonings);
 });
 
 async function runQuery () {
@@ -338,16 +341,16 @@ async function runQuery () {
   // Update geometry stats
   updateQueryGeomSize(sketchGeometry, bufferSize);
 
-  // Functions that are "slow" and require area computation are in eachAlways function in debouncedRunQuery
-  // Promises will wait together until all resolved
-
-  debouncedRunQuery().catch((error) => {
-    if (error.name === "AbortError") {
-      return;
-    }
-
-    console.error(error);
-  });
+  // Get area of each zoning intersects with buffer
+  // Then update the chart
+  debouncedCalculateZoningArea(selectedZonings)
+    .then((selectedZoningAreas) => {
+      updateChart(zoningAreaChart, selectedZoningAreas.map(Math.round));
+    })
+    .catch((error) => {
+      if (error.name === "AbortError") { return; }
+      console.error(error);
+    });
 
   // query statstics inside the buffer and change the chart
   const zoneStats = await queryStatistics(featureToQuery, sketchGeometry, bufferSize);
@@ -370,7 +373,7 @@ async function runQuery () {
   elmnt.scrollIntoView({ behavior: "smooth" });
 }
 
-async function calculateAreaByZoning () {
+async function calculateAreaByZoning (selectedZonings) {
   console.time("test_parallel");
 
   // Need to access var outside the try loop, therefore need to declare the variable first
@@ -409,10 +412,7 @@ async function calculateAreaByZoning () {
 
   console.log("selectedZoningAreas", selectedZoningAreas);
 
-  console.log("updating zoning area chart!");
-
-  // Round to nearest integer for readability
-  updateChart(zoningAreaChart, selectedZoningAreas.map(Math.round));
+  return selectedZoningAreas;
 }
 
 function updateQueryGeomSize (queryGeom, buffer) {
