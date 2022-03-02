@@ -55,8 +55,7 @@ const sketchLayer = new GraphicsLayer();
 const bufferLayer = new GraphicsLayer();
 view.map.addMany([bufferLayer, sketchLayer]);
 
-let webLayer = null;
-let webLayerView = null;
+const featureToQuery = zone;
 let bufferSize = 0;
 
 // https://developers.arcgis.com/javascript/latest/sample-code/widgets-scalebar/index.html
@@ -452,7 +451,7 @@ async function getZoningAreaInBuffer (bufferLength, zoning) {
 
   let areaInBuffer = 0;
 
-  const query = webLayerView.createQuery();
+  const query = featureToQuery.createQuery();
 
   query.geometry = sketchGeometry;
   query.distance = bufferLength;
@@ -465,7 +464,7 @@ async function getZoningAreaInBuffer (bufferLength, zoning) {
     console.log(`Query zoning of ${zoning} intersects with buffer`);
   }
 
-  const results = await webLayerView.queryFeatures(query);
+  const results = await featureToQuery.queryFeatures(query);
 
   // console.log("Queried zoning intersects with buffer");
   // console.log(results);
@@ -538,7 +537,7 @@ function highlightGeometries (objectIds) {
   const objectIdField = webLayer.objectIdField;
   document.getElementById("count").innerHTML = objectIds.length;
 
-  highlightHandle = webLayerView.highlight(objectIds);
+  highlightHandle = featureToQuery.highlight(objectIds);
 }
 
 // Change count of features within buffer
@@ -547,12 +546,12 @@ function changeFeatureCount (objectIds) {
 }
 
 function updateMapLayer () {
-  const query = webLayerView.createQuery();
+  const query = featureToQuery.createQuery();
 
   query.geometry = sketchGeometry;
   query.distance = bufferSize;
 
-  return webLayerView.queryObjectIds(query).then(changeFeatureCount);
+  return featureToQuery.queryObjectIds(query).then(changeFeatureCount);
   // return webLayerView.queryObjectIds(query).then(highlightGeometries);
 }
 
@@ -600,14 +599,14 @@ const statDefinitions = [{
 
 function queryStatistics () {
   // https://developers.arcgis.com/javascript/latest/api-reference/esri-tasks-support-Query.html
-  const query = webLayerView.createQuery();
+  const query = featureToQuery.createQuery();
 
   query.geometry = sketchGeometry;
   query.distance = bufferSize;
   query.outStatistics = statDefinitions;
 
   // with outStatistics returned result is a "table" with geometry of null
-  return webLayerView.queryFeatures(query).then(function (result) {
+  return featureToQuery.queryFeatures(query).then(function (result) {
     // console.log(result);
 
     const allStats = result.features[0].attributes;
