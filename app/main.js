@@ -21,9 +21,66 @@ const map = new Map({
   basemap: "gray-vector"
 });
 
+const zonePopupTemplate = new PopupTemplate({
+  title: "Zoning Details",
+  defaultPopupTemplateEnabled: true,
+  content: [
+    {
+      type: "fields",
+      fieldInfos: [
+        {
+          fieldName: "ZONE_LABEL",
+          label: "ZONE_LABEL"
+        },
+        {
+          fieldName: "DESC_ENG",
+          label: "DESC_ENG"
+        },
+        {
+          fieldName: "DESC_CHT",
+          label: "DESC_CHT"
+        },
+        {
+          fieldName: "SPUSE_ENG",
+          label: "SPUSE_ENG"
+        },
+        {
+          fieldName: "SPUSE_CHT",
+          label: "SPUSE_CHT"
+        },
+        {
+          fieldName: "PLAN_NO",
+          label: "PLAN_NO"
+        },
+        {
+          fieldName: "NAME_ENG",
+          label: "NAME_ENG"
+        },
+        {
+          fieldName: "NAME_CHT",
+          label: "NAME_CHT"
+        },
+        {
+          fieldName: "PUB_DATE",
+          label: "PUB_DATE"
+        },
+        {
+          fieldName: "APRV_DATE",
+          label: "APRV_DATE"
+        },
+        {
+          fieldName: "SECT_NO",
+          label: "SECT_NO"
+        }
+      ]
+    }
+  ]
+});
+
 const zone = new FeatureLayer({
   url: "https://services5.arcgis.com/xH8UmTNerx1qYfXM/ArcGIS/rest/services/ZONE_MASTER_LATEST/FeatureServer",
-  outFields: ["*"]
+  outFields: ["*"],
+  popupTemplate: zonePopupTemplate
 });
 
 const schemeArea = new FeatureLayer({
