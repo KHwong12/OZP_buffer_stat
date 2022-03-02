@@ -55,15 +55,6 @@ export function queryStatistics (zoningFeature, sketchGeometry, bufferSize) {
 
     const allStats = result.features[0].attributes;
 
-    updateChart(zoningNumberChart, [
-      allStats.zone_RA,
-      allStats.zone_RB,
-      allStats.zone_RC,
-      allStats.zone_GIC,
-      allStats.zone_O,
-      allStats.zone_C,
-      allStats.zone_MRDJ,
-      allStats.zone_OTHERS
-    ]);
+    return allStats;
   }, console.error);
 }

@@ -12,7 +12,7 @@ import MapView from "@arcgis/core/views/MapView";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 import SketchViewModel from "@arcgis/core/widgets/Sketch/SketchViewModel";
 import Slider from "@arcgis/core/widgets/Slider";
-import { geodesicArea, union, intersect } from "@arcgis/core/geometry/geometryEngine";
+import { geodesicBuffer, geodesicArea, union, intersect } from "@arcgis/core/geometry/geometryEngine";
 import { debounce, eachAlways } from "@arcgis/core/core/promiseUtils";
 import Expand from "@arcgis/core/widgets/Expand";
 import BasemapGallery from "@arcgis/core/widgets/BasemapGallery";
@@ -326,21 +326,21 @@ const debouncedRunQuery = debounce(function () {
     return;
   }
 
-  updateBufferGraphic(bufferSize, sketchGeometry, bufferLayer);
-
-  // Update geometry stats
-  updateQueryGeomSize(sketchGeometry, bufferSize);
-
-  // calculate area of each zoning type, then update the zoning area chart & area figures
-  calculateAreaByZoning();
-
   return eachAlways([
-    queryStatistics(featureToQuery, sketchGeometry, bufferSize),
-    updateMapLayer()
+    // calculate area of each zoning type, then update the zoning area chart & area figures
+    calculateAreaByZoning()
   ]);
 });
 
-function runQuery () {
+async function runQuery () {
+  // Update the vuew of buffer graphic layer on map
+  updateBufferGraphic(bufferSize, sketchGeometry, bufferLayer);
+  // Update geometry stats
+  updateQueryGeomSize(sketchGeometry, bufferSize);
+
+  // Functions that are "slow" and require area computation are in eachAlways function in debouncedRunQuery
+  // Promises will wait together until all resolved
+
   debouncedRunQuery().catch((error) => {
     if (error.name === "AbortError") {
       return;
@@ -348,6 +348,22 @@ function runQuery () {
 
     console.error(error);
   });
+
+  // query statstics inside the buffer and change the chart
+  const zoneStats = await queryStatistics(featureToQuery, sketchGeometry, bufferSize);
+
+  updateChart(zoningNumberChart, [
+    zoneStats.zone_RA,
+    zoneStats.zone_RB,
+    zoneStats.zone_RC,
+    zoneStats.zone_GIC,
+    zoneStats.zone_O,
+    zoneStats.zone_C,
+    zoneStats.zone_MRDJ,
+    zoneStats.zone_OTHERS
+  ]);
+
+  updateMapLayer();
 
   // scroll to the results
   const elmnt = document.querySelector(".query-stats");
