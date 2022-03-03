@@ -336,7 +336,7 @@ const debouncedCalculateZoningArea = debounce((selectedZonings) => {
 });
 
 async function runQuery () {
-  // Update the vuew of buffer graphic layer on map
+  // Update the view of buffer graphic layer on map
   updateBufferGraphic(bufferSize, sketchGeometry, bufferLayer);
   // Update geometry stats
   updateQueryGeomSize(sketchGeometry, bufferSize);
@@ -518,43 +518,6 @@ async function getZoningAreaInBuffer (bufferLength, zoning) {
   }
 
   return areaInBuffer;
-}
-
-// Calculate geodesic area of a graphic layer (multiple features possible)
-// https://community.esri.com/t5/arcgis-api-for-javascript/calculate-geodesic-area-of-polygon/td-p/367598
-function calculateGeodesicArea (graphicsLayer) {
-  // TODO
-
-  // var GeodesicArea = 0
-  //
-  // graphicsLayer.graphics.map(function (grap) {
-  //   GeodesicArea = geodesicArea(grap.geometry, "square-meters");
-  // });
-  //
-  // return GeodesicArea;
-}
-
-// Highlight feautres within buffer area
-// Not used now
-
-let highlightHandle = null;
-
-function clearHighlighting () {
-  if (highlightHandle) {
-    highlightHandle.remove();
-    highlightHandle = null;
-  }
-}
-
-// Highlight (i.e. select) the geometries selected in the OZP layer
-function highlightGeometries (objectIds) {
-  // Remove any previous highlighting
-  clearHighlighting();
-
-  const objectIdField = webLayer.objectIdField;
-  document.getElementById("count").innerHTML = objectIds.length;
-
-  highlightHandle = featureToQuery.highlight(objectIds);
 }
 
 // Change count of features within buffer
