@@ -355,6 +355,8 @@ async function runQuery () {
   // query statstics inside the buffer and change the chart
   const zoneStats = await queryStatistics(featureToQuery, sketchGeometry, bufferSize);
 
+  console.log(zoneStats);
+
   updateChart(zoningNumberChart, [
     zoneStats.zone_RA,
     zoneStats.zone_RB,
@@ -366,7 +368,8 @@ async function runQuery () {
     zoneStats.zone_OTHERS
   ]);
 
-  updateMapLayer();
+  updateZoningPiecesCount(zoneStats);
+
 
   // scroll to the results
   const elmnt = document.querySelector(".query-stats");
@@ -555,19 +558,12 @@ function highlightGeometries (objectIds) {
 }
 
 // Change count of features within buffer
-function changeFeatureCount (objectIds) {
-  document.getElementById("count").innerHTML = objectIds.length;
-}
+function updateZoningPiecesCount (zoneStats) {
+  // sum up all values in JavaScript Object
+  // https://stackoverflow.com/questions/16449295/how-to-sum-the-values-of-a-javascript-object
+  const zoningPieceCount = Object.values(zoneStats).reduce((a, b) => a + b, 0);
 
-async function updateMapLayer () {
-  const query = featureToQuery.createQuery();
-
-  query.geometry = sketchGeometry;
-  query.distance = bufferSize;
-
-  const objectIds = await featureToQuery.queryObjectIds(query);
-
-  changeFeatureCount(objectIds);
+  document.getElementById("count").innerHTML = zoningPieceCount;
 }
 
 /* sidebar */
