@@ -129,6 +129,7 @@ view.ui.add(scaleBar, {
 
 const queryPanel = document.getElementById("queryDiv");
 
+// Show the "Query by geometry" panel only after zoning polygons are loaded
 zone
   .load()
   .then(() => {
@@ -335,6 +336,15 @@ const debouncedCalculateZoningArea = debounce((selectedZonings) => {
   return calculateAreaByZoning(selectedZonings);
 });
 
+// runQuery() Conduct the following tasks:
+// 1. Update the geometry buffer graphic layer on map
+// 2. Update buffer size
+// 3. Get area of each zoning intersects with buffer
+// 4. Update zoningAreaChart
+// 5. Query statstics inside the buffer
+// 6. Update zoningNumberChart
+// 7. Update number of zoning pieces shown
+// 8. Scroll to the charts
 async function runQuery () {
   // Update the view of buffer graphic layer on map
   updateBufferGraphic(bufferSize, sketchGeometry, bufferLayer);
@@ -398,6 +408,9 @@ async function calculateAreaByZoning (selectedZonings) {
 
   console.timeEnd("test_parallel");
 
+  // compute OZP-covered area in the geometry
+  // TODO: Create separate function to handle the task
+
   // cannot directly add up selectedZoningAreas since it only includes values of SELECTED zonings
   const totalAreaInOZP = await getZoningAreaInBuffer(bufferSize);
   console.log("totalAreaInOZP: ", totalAreaInOZP);
@@ -453,9 +466,6 @@ function updateQueryGeomSize (queryGeom, buffer) {
 
 // TODO: to improve, find ways to clip FeatureLayer by Graphics, GeometryEngine seems only works with graphics
 async function getZoningAreaInBuffer (bufferLength, zoning) {
-  // console.log("sketchGeometry: ", sketchGeometry);
-  // console.log("bufferLength === 0:", bufferLength === 0);
-
   // TODO: test if Only execute function when buffer has actual size?
   // TODO: write unit test
 
@@ -482,9 +492,6 @@ async function getZoningAreaInBuffer (bufferLength, zoning) {
   }
 
   const results = await featureToQuery.queryFeatures(query);
-
-  // console.log("Queried zoning intersects with buffer");
-  // console.log(results);
 
   // Check if any features intersect with the buffer
   // If no, length of results will be 0, i.e. area in buffer = 0
@@ -513,8 +520,6 @@ async function getZoningAreaInBuffer (bufferLength, zoning) {
     // console.log("intersect function performed");
 
     areaInBuffer = await geodesicArea(bufferOZPIntersect, "square-meters");
-    // console.log("getZoningAreaInBuffer(): area calculated");
-    // console.log("areaInBuffer: ", areaInBuffer);
   }
 
   return areaInBuffer;
