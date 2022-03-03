@@ -513,13 +513,13 @@ async function getZoningAreaInBuffer (bufferLength, zoning) {
     );
 
     // "Union" to merge the selected OZP zones into one single layer for intersect use
-    const unionGeoms = await union(selectedOZPGeoms);
+    const unionGeoms = union(selectedOZPGeoms);
     // console.log("union function performed");
 
-    const bufferOZPIntersect = await intersect(bufferGeometry, unionGeoms);
+    const bufferOZPIntersect = intersect(bufferGeometry, unionGeoms);
     // console.log("intersect function performed");
 
-    areaInBuffer = await geodesicArea(bufferOZPIntersect, "square-meters");
+    areaInBuffer = geodesicArea(bufferOZPIntersect, "square-meters");
   }
 
   return areaInBuffer;
