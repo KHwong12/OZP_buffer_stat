@@ -1,4 +1,6 @@
-import { changeMenuIcon } from "./ui";
+import { changeMenuIcon, showSidePanel } from "./ui";
+import { queryStatistics } from "./query-zoning";
+import { updateBufferGraphic } from "./buffer";
 import { zoningNumberChart, zoningAreaChart, updateChart, clearCharts } from "./create-chart";
 
 
@@ -11,7 +13,6 @@ import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 import SketchViewModel from "@arcgis/core/widgets/Sketch/SketchViewModel";
 import Slider from "@arcgis/core/widgets/Slider";
 import { geodesicBuffer, geodesicArea, union, intersect } from "@arcgis/core/geometry/geometryEngine";
-import Graphic from "@arcgis/core/Graphic";
 import { debounce, eachAlways } from "@arcgis/core/core/promiseUtils";
 import Expand from "@arcgis/core/widgets/Expand";
 import BasemapGallery from "@arcgis/core/widgets/BasemapGallery";
@@ -128,6 +129,7 @@ view.ui.add(scaleBar, {
 
 const queryPanel = document.getElementById("queryDiv");
 
+// Show the "Query by geometry" panel only after zoning polygons are loaded
 zone
   .load()
   .then(() => {
@@ -299,15 +301,6 @@ document
   .getElementById("clearResults")
   .addEventListener("click", clearResults);
 
-// Show sidePanel again if folded
-// do not use it when users are changing buffer variables only
-function showSidePanel () {
-  const sidebar = document.querySelector(".sidebar");
-
-  // If a class that the element is already a member of is added, classList.add will ignore it
-  sidebar.classList.add("open");
-}
-
 // Clear the geometry and set the default renderer
 // Reset all to default
 function clearResults () {
@@ -328,41 +321,72 @@ function clearResults () {
 
 const selectedZonings = ["R(A)", "R(B)", "R(C)", "G/IC", "O", "C", "MRDJ"];
 
-// set the geometry query on the visible webLayerView
-const debouncedRunQuery = debounce(function () {
+// The debounce() method is a "wrapper" that
+// prevents the calculateAreaByZoning function from executing before
+// a previous invocation of the same function finishes.
+
+// calculateAreaByZoning is computation intensive, thus need to restrict
+// usage instead of simply calling the function every time runQuery() is called
+// (e.g. changing buffer number)
+const debouncedCalculateZoningArea = debounce((selectedZonings) => {
   if (!sketchGeometry) {
     return;
   }
 
-  updateBufferGraphic(bufferSize);
+  return calculateAreaByZoning(selectedZonings);
+});
 
+// runQuery() Conduct the following tasks:
+// 1. Update the geometry buffer graphic layer on map
+// 2. Update buffer size
+// 3. Get area of each zoning intersects with buffer
+// 4. Update zoningAreaChart
+// 5. Query statstics inside the buffer
+// 6. Update zoningNumberChart
+// 7. Update number of zoning pieces shown
+// 8. Scroll to the charts
+async function runQuery () {
+  // Update the view of buffer graphic layer on map
+  updateBufferGraphic(bufferSize, sketchGeometry, bufferLayer);
   // Update geometry stats
   updateQueryGeomSize(sketchGeometry, bufferSize);
 
-  // calculate area of each zoning type, then update the zoning area chart & area figures
-  calculateAreaByZoning();
+  // Get area of each zoning intersects with buffer
+  // Then update the chart
+  debouncedCalculateZoningArea(selectedZonings)
+    .then((selectedZoningAreas) => {
+      updateChart(zoningAreaChart, selectedZoningAreas.map(Math.round));
+    })
+    .catch((error) => {
+      if (error.name === "AbortError") { return; }
+      console.error(error);
+    });
 
-  return eachAlways([
-    queryStatistics(),
-    updateMapLayer()
+  // query statstics inside the buffer and change the chart
+  const zoneStats = await queryStatistics(featureToQuery, sketchGeometry, bufferSize);
+
+  console.log(zoneStats);
+
+  updateChart(zoningNumberChart, [
+    zoneStats.zone_RA,
+    zoneStats.zone_RB,
+    zoneStats.zone_RC,
+    zoneStats.zone_GIC,
+    zoneStats.zone_O,
+    zoneStats.zone_C,
+    zoneStats.zone_MRDJ,
+    zoneStats.zone_OTHERS
   ]);
-});
 
-function runQuery () {
-  debouncedRunQuery().catch((error) => {
-    if (error.name === "AbortError") {
-      return;
-    }
+  updateZoningPiecesCount(zoneStats);
 
-    console.error(error);
-  });
 
   // scroll to the results
   const elmnt = document.querySelector(".query-stats");
   elmnt.scrollIntoView({ behavior: "smooth" });
 }
 
-async function calculateAreaByZoning () {
+async function calculateAreaByZoning (selectedZonings) {
   console.time("test_parallel");
 
   // Need to access var outside the try loop, therefore need to declare the variable first
@@ -384,6 +408,9 @@ async function calculateAreaByZoning () {
 
   console.timeEnd("test_parallel");
 
+  // compute OZP-covered area in the geometry
+  // TODO: Create separate function to handle the task
+
   // cannot directly add up selectedZoningAreas since it only includes values of SELECTED zonings
   const totalAreaInOZP = await getZoningAreaInBuffer(bufferSize);
   console.log("totalAreaInOZP: ", totalAreaInOZP);
@@ -401,44 +428,7 @@ async function calculateAreaByZoning () {
 
   console.log("selectedZoningAreas", selectedZoningAreas);
 
-  console.log("updating zoning area chart!");
-
-  // Round to nearest integer for readability
-  updateChart(zoningAreaChart, selectedZoningAreas.map(Math.round));
-}
-
-// update graphic and size figure of buffer
-function updateBufferGraphic (buffer) {
-  // add a polygon graphic for the buffer
-  if (buffer > 0) {
-    const bufferGeometry = geodesicBuffer(
-      sketchGeometry,
-      buffer,
-      "meters"
-    );
-    // graphic layer can contain multiple features (i.e. length > 1)
-    if (bufferLayer.graphics.length === 0) {
-      bufferLayer.add(
-        new Graphic({
-          geometry: bufferGeometry,
-          // symbol: sketchViewModel.polygonSymbol,
-          symbol: {
-            type: "simple-fill",
-            color: [151, 151, 204, 0.5],
-            style: "solid",
-            outline: {
-              color: "white",
-              width: 1
-            }
-          }
-        })
-      );
-    } else {
-      bufferLayer.graphics.getItemAt(0).geometry = bufferGeometry;
-    }
-  } else {
-    bufferLayer.removeAll();
-  }
+  return selectedZoningAreas;
 }
 
 function updateQueryGeomSize (queryGeom, buffer) {
@@ -476,9 +466,6 @@ function updateQueryGeomSize (queryGeom, buffer) {
 
 // TODO: to improve, find ways to clip FeatureLayer by Graphics, GeometryEngine seems only works with graphics
 async function getZoningAreaInBuffer (bufferLength, zoning) {
-  // console.log("sketchGeometry: ", sketchGeometry);
-  // console.log("bufferLength === 0:", bufferLength === 0);
-
   // TODO: test if Only execute function when buffer has actual size?
   // TODO: write unit test
 
@@ -506,9 +493,6 @@ async function getZoningAreaInBuffer (bufferLength, zoning) {
 
   const results = await featureToQuery.queryFeatures(query);
 
-  // console.log("Queried zoning intersects with buffer");
-  // console.log(results);
-
   // Check if any features intersect with the buffer
   // If no, length of results will be 0, i.e. area in buffer = 0
   if (results.features.length > 0) {
@@ -529,141 +513,26 @@ async function getZoningAreaInBuffer (bufferLength, zoning) {
     );
 
     // "Union" to merge the selected OZP zones into one single layer for intersect use
-    const unionGeoms = await union(selectedOZPGeoms);
+    const unionGeoms = union(selectedOZPGeoms);
     // console.log("union function performed");
 
-    const bufferOZPIntersect = await intersect(bufferGeometry, unionGeoms);
+    const bufferOZPIntersect = intersect(bufferGeometry, unionGeoms);
     // console.log("intersect function performed");
 
-    areaInBuffer = await geodesicArea(bufferOZPIntersect, "square-meters");
-    // console.log("getZoningAreaInBuffer(): area calculated");
-    // console.log("areaInBuffer: ", areaInBuffer);
+    areaInBuffer = geodesicArea(bufferOZPIntersect, "square-meters");
   }
 
   return areaInBuffer;
 }
 
-// Calculate geodesic area of a graphic layer (multiple features possible)
-// https://community.esri.com/t5/arcgis-api-for-javascript/calculate-geodesic-area-of-polygon/td-p/367598
-function calculateGeodesicArea (graphicsLayer) {
-  // TODO
-
-  // var GeodesicArea = 0
-  //
-  // graphicsLayer.graphics.map(function (grap) {
-  //   GeodesicArea = geodesicArea(grap.geometry, "square-meters");
-  // });
-  //
-  // return GeodesicArea;
-}
-
-// Highlight feautres within buffer area
-// Not used now
-
-let highlightHandle = null;
-
-function clearHighlighting () {
-  if (highlightHandle) {
-    highlightHandle.remove();
-    highlightHandle = null;
-  }
-}
-
-// Highlight (i.e. select) the geometries selected in the OZP layer
-function highlightGeometries (objectIds) {
-  // Remove any previous highlighting
-  clearHighlighting();
-
-  const objectIdField = webLayer.objectIdField;
-  document.getElementById("count").innerHTML = objectIds.length;
-
-  highlightHandle = featureToQuery.highlight(objectIds);
-}
-
 // Change count of features within buffer
-function changeFeatureCount (objectIds) {
-  document.getElementById("count").innerHTML = objectIds.length;
+function updateZoningPiecesCount (zoneStats) {
+  // sum up all values in JavaScript Object
+  // https://stackoverflow.com/questions/16449295/how-to-sum-the-values-of-a-javascript-object
+  const zoningPieceCount = Object.values(zoneStats).reduce((a, b) => a + b, 0);
+
+  document.getElementById("count").innerHTML = zoningPieceCount;
 }
-
-function updateMapLayer () {
-  const query = featureToQuery.createQuery();
-
-  query.geometry = sketchGeometry;
-  query.distance = bufferSize;
-
-  return featureToQuery.queryObjectIds(query).then(changeFeatureCount);
-  // return webLayerView.queryObjectIds(query).then(highlightGeometries);
-}
-
-const statDefinitions = [{
-  onStatisticField: "CASE WHEN ZONE_MAS = 'R(A)' THEN 1 ELSE 0 END",
-  outStatisticFieldName: "zone_RA",
-  statisticType: "sum"
-},
-{
-  onStatisticField: "CASE WHEN ZONE_MAS = 'R(B)' THEN 1 ELSE 0 END",
-  outStatisticFieldName: "zone_RB",
-  statisticType: "sum"
-},
-{
-  onStatisticField: "CASE WHEN ZONE_MAS = 'R(C)' THEN 1 ELSE 0 END",
-  outStatisticFieldName: "zone_RC",
-  statisticType: "sum"
-},
-{
-  onStatisticField: "CASE WHEN ZONE_MAS = 'G/IC' THEN 1 ELSE 0 END",
-  outStatisticFieldName: "zone_GIC",
-  statisticType: "sum"
-},
-{
-  onStatisticField: "CASE WHEN ZONE_MAS = 'O' THEN 1 ELSE 0 END",
-  outStatisticFieldName: "zone_O",
-  statisticType: "sum"
-},
-{
-  onStatisticField: "CASE WHEN ZONE_MAS = 'C' THEN 1 ELSE 0 END",
-  outStatisticFieldName: "zone_C",
-  statisticType: "sum"
-},
-{
-  onStatisticField: "CASE WHEN ZONE_MAS = 'MRDJ' THEN 1 ELSE 0 END",
-  outStatisticFieldName: "zone_MRDJ",
-  statisticType: "sum"
-},
-{
-  onStatisticField: "CASE WHEN ZONE_MAS NOT IN ('R(A)', 'R(B)', 'R(C)', 'G/IC', 'O', 'C', 'MRDJ') THEN 1 ELSE 0 END",
-  outStatisticFieldName: "zone_OTHERS",
-  statisticType: "sum"
-}
-];
-
-function queryStatistics () {
-  // https://developers.arcgis.com/javascript/latest/api-reference/esri-tasks-support-Query.html
-  const query = featureToQuery.createQuery();
-
-  query.geometry = sketchGeometry;
-  query.distance = bufferSize;
-  query.outStatistics = statDefinitions;
-
-  // with outStatistics returned result is a "table" with geometry of null
-  return featureToQuery.queryFeatures(query).then(function (result) {
-    // console.log(result);
-
-    const allStats = result.features[0].attributes;
-
-    updateChart(zoningNumberChart, [
-      allStats.zone_RA,
-      allStats.zone_RB,
-      allStats.zone_RC,
-      allStats.zone_GIC,
-      allStats.zone_O,
-      allStats.zone_C,
-      allStats.zone_MRDJ,
-      allStats.zone_OTHERS
-    ]);
-  }, console.error);
-}
-
 
 /* sidebar */
 

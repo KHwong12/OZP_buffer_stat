@@ -8,3 +8,12 @@ export function changeMenuIcon (sidebar, collapseBtn) {
 }
 
 document.getElementById("lastModified").innerHTML = document.lastModified;
+
+// Show sidePanel again if folded
+// do not use it when users are changing buffer variables only
+export function showSidePanel () {
+  const sidebar = document.querySelector(".sidebar");
+
+  // If a class that the element is already a member of is added, classList.add will ignore it
+  sidebar.classList.add("open");
+}
