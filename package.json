@@ -32,6 +32,6 @@
     "vite": "^2.8.4"
   },
   "dependencies": {
-    "@arcgis/core": "^4.22.2"
+    "@arcgis/core": "^4.23.5"
   }
 }
