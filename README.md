@@ -1,7 +1,11 @@
 # Zone In: Query zonings within neighbourhood
 
-<p style='font-size:20px;align:center;'>
-  <a href='https://khwong12.github.io/OZP_buffer_stat/'>CHECK THE WEB APPLICATION</a>
+[![pages-build-deployment](https://github.com/KHwong12/OZP_buffer_stat/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/KHwong12/OZP_buffer_stat/actions/workflows/pages/pages-build-deployment)
+
+<p align="center">
+  <a href='https://khwong12.github.io/OZP_buffer_stat/'>
+    <b>CHECK THE WEB APPLICATION</b>
+  </a>
 </p>
 
 ![](fig/overview.png)
@@ -23,7 +27,11 @@
 
 ## Overview
 
+TODO
+
 ## Example Usage
+
+TODO
 
 ## How to Use
 
@@ -41,16 +49,11 @@
 
 ## Issues
 
+TODO
+
 ## Licensing
 
 TODO
-
-## TODO
-
-- Features: Add historical OZP to show temporal changes
-- UI: allow users to control transparency of OZP layer
-- UI: use "reverse-clip" to disable/decrease opacity of the zones outside query geometry
-- performance: drop async/await
 
 ## Caveats
 
