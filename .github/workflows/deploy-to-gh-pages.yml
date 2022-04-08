@@ -9,12 +9,6 @@ name: Build and Deploy
 on:
   push:
     branches: [master]
-    paths:
-      - '**.js'
-      - '**.ts'
-      - '**.css'
-      - '**.scss'
-      - '**.html'
     
 jobs:
   deploy:
