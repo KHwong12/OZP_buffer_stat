@@ -8,7 +8,7 @@
   </a>
 </p>
 
-![](fig/overview.png)
+[![](fig/overview.png)](https://khwong12.github.io/OZP_buffer_stat/)
 
 **Zone In** is a web map application for users to interactively explore the land use zonings in Hong Kong and investigate the distribution of zonings in the proximity in any areas.
 
