@@ -85,7 +85,7 @@ const zone = new FeatureLayer({
 });
 
 const schemeArea = new FeatureLayer({
-  url: "https://services5.arcgis.com/xH8UmTNerx1qYfXM/arcgis/rest/services/PLAN_SCHEME_AREA_20220224/FeatureServer",
+  url: "https://services5.arcgis.com/xH8UmTNerx1qYfXM/arcgis/rest/services/PLAN_SCHEME_AREA_LATEST/FeatureServer",
   outFields: ["*"]
 });
 
