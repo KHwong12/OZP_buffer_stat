@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from "vite";
 
 // vite.config.js
 export default defineConfig({
@@ -6,5 +6,5 @@ export default defineConfig({
 
   // For specifying sub-page when deploying to gh pages
   // https://vitejs.dev/guide/static-deploy.html#github-pages
-  base: '/OZP_buffer_stat/'
-})
+  base: "/OZP_buffer_stat/"
+});
