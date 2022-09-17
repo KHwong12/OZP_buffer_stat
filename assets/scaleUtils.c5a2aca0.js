@@ -1,0 +1,1 @@
+import{cU as r,kD as c}from"./index.4188ada5.js";const i=96;function a(t,n){const e=n||t.extent,o=t.width,s=r(e&&e.spatialReference);return e&&o?e.width/o*s*c*i:0}function f(t,n){return t/(r(n)*c*i)}export{f as i,a as r};

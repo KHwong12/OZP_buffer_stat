@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta property="og:title" content="Zone In - Query land use zonings with geometries" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://khwong12.github.io/OZP_buffer_stat/" />
+    <meta property="og:image" content="https://raw.githubusercontent.com/KHwong12/OZP_buffer_stat/master/fig/overview.png" />
+    <meta property="og:description" content="A web map application to interactively explore, analyse and visualise distribution of land use zonings in Hong Kong." />
+    <title>
+        Zone In - Query land use zonings with geometries
+    </title>
+    
+    <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/light/main.css" />
+    <link rel='stylesheet' href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' >
+
+    <!-- Load the Chart.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+
+    
+  <script type="module" crossorigin src="/OZP_buffer_stat/assets/index.4188ada5.js"></script>
+  <link rel="stylesheet" href="/OZP_buffer_stat/assets/index.313b6d72.css">
+</head>
+
+<body>
+
+  <div id="queryDiv" class="esri-widget">
+    <h2>Query by geometry</h2>
+    Draw a geometry to query zones:
+    <div class="geometry-options">
+      <button class="esri-widget--button esri-icon-map-pin geometry-button" id="point-geometry-button" value="point" title="Query by point"></button>
+      <button class="esri-widget--button esri-icon-polyline geometry-button" id="line-geometry-button" value="polyline" title="Query by line"></button>
+      <button class="esri-widget--button esri-icon-polygon geometry-button" id="polygon-geometry-button" value="polygon" title="Query by polygon"></button>
+    </div>
+    <br />
+    <div class="tooltip">
+      <label for="bufferNum">Distance (buffer size):</label>
+      <div id="bufferNum"></div>
+    </div>
+    <br />
+    <button class="esri-button" id="clearResults" type="button">
+      Clear
+    </button>
+  </div>
+
+  <div class="sidebar">
+    <div class="logo-details">
+      <i class='bx bxs-map-pin icon'></i>
+      <div class="logo_name">Zone In</div>
+      <i class='bx bx-menu' id="collapse-button"></i>
+    </div>
+    <div id="contentDiv">
+      <h2>Query land use zonings by geometries</h2>
+      <p>
+        This is a web map application to interactively explore the land use zonings in Hong Kong.
+        You can investigate the distribution of zonings in any area of interest, as well as their proximities.
+      </p>
+      <p>
+        To start, go to any area you would like to investigate, draw a geometry and select the desired buffer distance to query the zoning "pieces" lying inside.
+        The application will then compute the area of each selected zoning type and visualise the proportions in the chart below.
+      </p>
+      <p>
+        By clicking on the zoning pieces, you could also check their details including <b>full zoning name, respective plan number and gazette date</b>.
+      </p>
+      <p>
+        It will take some time for the application to render the zoning map.
+      </p>
+      <div class="query-stats">
+        <div class="query-geometry-size">
+          <h3>Query geometry size:</h3>
+          <span id="query-geometry-size-ha">0</span>
+          ha |
+          <span id="query-geometry-size-sqkm">0</span>
+          sq.km.
+        </div>
+        <br />
+        <div class="selected-area">
+          <h3>OZP-covered area:</h3>
+          <span id="OZP-size-ha">0</span>
+          ha |
+          <span id="OZP-size-sqkm">0</span>
+          sq.km.
+        </div>
+        <br />
+        <div class="count">
+          <h3>Number of zoning "pieces":</h3>
+          <div class="count" id="count">0</div>
+        </div>
+      </div>
+      <div class="charts">
+        <div>
+          <canvas id="zoning-area-chart" width="250" height="300" />
+        </div>
+      </div>
+      <div class="charts">
+        <div>
+          <canvas id="zoning-number-chart" width="250" height="300" />
+        </div>
+      </div>
+
+      <footer>
+        Created by <a href="https://twitter.com/Kenneth_KHW" target="_blank">Kenneth Wong</a>.
+        <br />
+        Last modified on <span id="lastModified"></span>.
+        <br />
+        This application is made for practice and demonstration use. Accuracy of data and results are not guaranteed.
+        <br />
+        Made and developed with
+        <a href="https://pro.arcgis.com/en/pro-app/" target="_blank">ArcGIS Pro</a>,
+        <a href="https://developers.arcgis.com/javascript/" target="_blank">ArcGIS API for JavaScript</a>
+        and ☕.
+      </footer>
+    </div>
+  </div>
+
+  <div id="viewDiv">
+  </div>
+
+</body>
+
+</html>
